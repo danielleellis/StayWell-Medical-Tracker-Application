@@ -15,4 +15,4 @@ vendor/
 *.sqlite3-journal
 
 # Ensure the database is tracked
-!database/mydatabase.db
+!database/database.db
