@@ -1,0 +1,114 @@
+-- User Table
+CREATE TABLE User (
+    userID TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    legalName TEXT,
+    pronouns TEXT,
+    birthday DATE,
+    phoneNumber TEXT,
+    emailAddress TEXT,
+    userCalendar TEXT,  -- Foreign key to Calendar
+    medicationList TEXT,  -- Could be handled with a separate junction table
+    journal TEXT,  -- Foreign key to Journal
+    documents TEXT,  -- Could be handled with a separate junction table
+    friendsList TEXT  -- Could be handled with a separate junction table
+);
+
+-- Document Table
+CREATE TABLE Document (
+    documentID INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    images TEXT  -- Storing as JSON list
+);
+
+-- Journal Table
+CREATE TABLE Journal (
+    journalID INTEGER PRIMARY KEY AUTOINCREMENT,
+    userID TEXT NOT NULL,
+    FOREIGN KEY (userID) REFERENCES User(userID)
+);
+
+-- JournalEntry Table
+CREATE TABLE JournalEntry (
+    entryID INTEGER PRIMARY KEY AUTOINCREMENT,
+    journalID INTEGER NOT NULL,
+    date DATE NOT NULL,
+    entry TEXT NOT NULL,
+    moods TEXT,  -- Storing as JSON list
+    isPublic BOOLEAN,
+    FOREIGN KEY (journalID) REFERENCES Journal(journalID)
+);
+
+-- Calendar Table
+CREATE TABLE Calendar (
+    calendarID INTEGER PRIMARY KEY AUTOINCREMENT,
+    userID TEXT NOT NULL,
+    FOREIGN KEY (userID) REFERENCES User(userID)
+);
+
+-- Event Table
+CREATE TABLE Event (
+    eventID TEXT PRIMARY KEY,
+    calendarID INTEGER NOT NULL,
+    dateTime DATE NOT NULL,
+    eventName TEXT NOT NULL,
+    isPublic BOOLEAN,
+    viewableBy TEXT,  -- Storing as JSON list
+    frequencyDays INTEGER,
+    fulfilled BOOLEAN,
+    notes TEXT,
+    selectionOption TEXT,  -- Foreign key to SelectionMenu
+    streakDays INTEGER,
+    reminder TEXT,  -- Foreign key to Notification
+    FOREIGN KEY (calendarID) REFERENCES Calendar(calendarID),
+    FOREIGN KEY (selectionOption) REFERENCES SelectionMenu(selectionMenuID),
+    FOREIGN KEY (reminder) REFERENCES Notification(notificationID)
+);
+
+-- SelectionMenu Table
+CREATE TABLE SelectionMenu (
+    selectionMenuID INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+
+-- Selection Table
+CREATE TABLE Selection (
+    selectionID INTEGER PRIMARY KEY AUTOINCREMENT,
+    selectionMenuID INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    image TEXT,  -- Storing as filename
+    FOREIGN KEY (selectionMenuID) REFERENCES SelectionMenu(selectionMenuID)
+);
+
+-- Notification Table
+CREATE TABLE Notification (
+    notificationID INTEGER PRIMARY KEY AUTOINCREMENT,
+    message TEXT NOT NULL,
+    time DATE NOT NULL
+);
+
+-- Appointment Table
+CREATE TABLE Appointment (
+    eventID TEXT PRIMARY KEY,
+    address TEXT NOT NULL,
+    durationMinutes INTEGER NOT NULL,
+    FOREIGN KEY (eventID) REFERENCES Event(eventID)
+);
+
+-- Habit Table
+CREATE TABLE Habit (
+    eventID TEXT PRIMARY KEY,
+    currentValue INTEGER NOT NULL,
+    goalValue INTEGER NOT NULL,
+    FOREIGN KEY (eventID) REFERENCES Event(eventID)
+);
+
+-- Medication Table
+CREATE TABLE Medication (
+    medicationID INTEGER PRIMARY KEY AUTOINCREMENT,
+    userID TEXT NOT NULL,
+    dosageAmount INTEGER NOT NULL,
+    dosageUnits TEXT NOT NULL,
+    FOREIGN KEY (userID) REFERENCES User(userID)
+);
