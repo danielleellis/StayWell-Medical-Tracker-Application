@@ -1,8 +1,8 @@
 // features/counter/Counter.tsx
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from './../store/store';
-import { increment, decrement, incrementByAmount } from './../store/member/slice';
+import { RootState } from '../../store/store';
+import { increment, decrement, incrementByAmount } from '../../store/Member/slice';
 import { View, Text, Button } from 'react-native';
 
 const Home = () => {
