@@ -4,12 +4,11 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { signIn } from '../redux/slices/authSlice';
+import { forgotPassword } from '../redux/slices/authSlice';
 import { useFonts } from 'expo-font';
 
-const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
 
   const [loaded] = useFonts({
@@ -21,14 +20,18 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return null;
   }
 
-  const handleSignIn = () => {
-    dispatch(signIn({ email, password }));
-    navigation.navigate('Dashboard');
+  const handleForgotPassword = () => {
+    dispatch(forgotPassword(email));
+    // Navigate to a success screen or show a success message
+    navigation.navigate('SignIn');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
+      <Text style={styles.title}>Forgot Password</Text>
+      <Text style={styles.description}>
+        Enter your email address and we'll send you a link to reset your password.
+      </Text>
       <Input
         placeholder="Email"
         value={email}
@@ -36,19 +39,9 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         keyboardType="email-address"
         style={styles.input}
       />
-      <Input
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-      </TouchableOpacity>
-      <Button title="Sign In" onPress={handleSignIn} disabled={!email || !password} />
-      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.signUpText}>Don't have an account? Sign Up</Text>
+      <Button title="Send Reset Link" onPress={handleForgotPassword} disabled={!email} />
+      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+        <Text style={styles.backToSignInText}>Back to Sign In</Text>
       </TouchableOpacity>
     </View>
   );
@@ -63,21 +56,22 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    marginBottom: 24,
+    marginBottom: 16,
     textAlign: 'center',
     color: '#45A6FF',
+    fontFamily: 'Poppins-Regular',
+  },
+  description: {
+    fontSize: 16,
+    marginBottom: 24,
+    textAlign: 'center',
+    color: '#666',
     fontFamily: 'Poppins-Regular',
   },
   input: {
     marginBottom: 16,
   },
-  forgotPasswordText: {
-    marginBottom: 16,
-    textAlign: 'right',
-    color: '#45A6FF',
-    fontFamily: 'Poppins-Regular',
-  },
-  signUpText: {
+  backToSignInText: {
     marginTop: 16,
     textAlign: 'center',
     color: '#45A6FF',
@@ -85,4 +79,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignInScreen;
+export default ForgotPasswordScreen;

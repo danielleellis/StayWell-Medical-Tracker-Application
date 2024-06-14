@@ -46,6 +46,11 @@ const authSlice = createSlice({
         profilePhoto: null,
       };
     },
+    forgotPassword: (state, action: PayloadAction<string>) => {
+      // Implement the forgot password logic here
+      // For simplicity, let's assume the reset password email is sent successfully
+      console.log('Reset password email sent to:', action.payload);
+    },
     verifyEmail: (state, action: PayloadAction<string>) => {
       state.isVerified = true;
     },
@@ -61,6 +66,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { signUp, signIn, verifyEmail, setupProfile } = authSlice.actions;
+export const { signUp, signIn, verifyEmail, setupProfile, forgotPassword } = authSlice.actions;
 
 export default authSlice.reducer;
