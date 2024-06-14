@@ -90,7 +90,7 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({ navigation }) 
         />
       </View>
       <Button
-        title="Verify Email"
+        title="Next"
         onPress={handleVerifyEmail}
         disabled={!code1 || !code2 || !code3 || !code4}
       />
