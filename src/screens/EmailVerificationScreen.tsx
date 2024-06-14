@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/store';
 import { verifyEmail } from '../redux/slices/authSlice';
 import { useFonts } from 'expo-font';
 
 const EmailVerificationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [verificationCode, setVerificationCode] = useState('');
-  const [email, setEmail] = useState('');
   const dispatch = useDispatch<AppDispatch>();
+  const email = useSelector((state: RootState) => state.auth.user?.email);
 
   const [loaded] = useFonts({
     'Poppins-Regular': require('../../assets/fonts/Poppins/Poppins-Regular.ttf'),
@@ -35,15 +35,8 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({ navigation }) 
     <View style={styles.container}>
       <Text style={styles.title}>Verify Email</Text>
       <Text style={styles.description}>
-        Please enter the verification code sent to your email address.
+        Please enter the verification code sent to : {email}
       </Text>
-      <Input
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        style={styles.input}
-      />
       <Input
         placeholder="Verification Code"
         value={verificationCode}
@@ -70,7 +63,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
     color: '#45A6FF',
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'Poppins-Regular',
   },
   description: {
     fontSize: 16,
