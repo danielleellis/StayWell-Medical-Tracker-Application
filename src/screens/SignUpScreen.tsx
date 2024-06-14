@@ -41,7 +41,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/logo.png')} style={styles.logo} />
+      <Image source={require('../../assets/sun.png')} style={styles.logo} />
       <Text style={styles.title}>Create an Account</Text>
       <Input
         placeholder="First Name"
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 240,
-    height: 100,
+    height: 75,
     alignSelf: 'center',
     marginBottom: 24,
   },
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 24,
     textAlign: 'center',
+    color: '#45A6FF',
     fontFamily: 'Poppins-Regular',
   },
   input: {
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
   signInText: {
     marginTop: 16,
     textAlign: 'center',
-    color: '#007bff',
+    color: '#45A6FF',
     fontFamily: 'Poppins-Regular',
   },
 });
