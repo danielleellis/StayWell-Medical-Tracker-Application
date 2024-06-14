@@ -1,6 +1,6 @@
 // store.ts
 import { configureStore } from '@reduxjs/toolkit';
-import memberReducer from './Member/slice';
+import memberReducer from './member/slice';
 import calendarReducer from './Calendar/calendarSlice';
 
 const store = configureStore({
