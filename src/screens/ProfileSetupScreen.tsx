@@ -83,7 +83,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         onChangeText={setBirthday}
         style={styles.input}
       />
-      <Button title="Complete Profile" onPress={handleProfileSetup} />
+      <Button title="Save" onPress={handleProfileSetup} />
     </View>
   );
 };
