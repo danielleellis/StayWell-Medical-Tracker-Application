@@ -41,7 +41,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/sun.png')} style={styles.logo} />
+      <Image source={require('../../assets/images/sun.png')} style={styles.logo} />
       <Text style={styles.title}>Create an Account</Text>
       <Input
         placeholder="First Name"
