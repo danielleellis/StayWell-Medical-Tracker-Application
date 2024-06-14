@@ -1,22 +1,18 @@
-// App.tsx
+import 'react-native-gesture-handler';
 import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
-import store from './src/store/store';
-import { StyleSheet, Text, View } from 'react-native';
-import CalendarScreen from './src/screens/Calendar/CalendarScreen';
+import store from './src/redux/store';
+import AppNavigator from './src/navigation/AppNavigator';
 
-export default function App() {
+const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <View style={styles.container}>
-        <CalendarScreen />
-      </View>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
     </Provider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+export default App;
