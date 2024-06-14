@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useDispatch } from 'react-redux';
@@ -28,6 +28,7 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../../assets/images/sun.png')} style={styles.logo} />
       <Text style={styles.title}>Sign In</Text>
       <Input
         placeholder="Email"
@@ -67,6 +68,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#45A6FF',
     fontFamily: 'Poppins-Regular',
+  },
+  logo: {
+    width: 240,
+    height: 75,
+    alignSelf: 'center',
+    marginBottom: 24,
   },
   input: {
     marginBottom: 16,
