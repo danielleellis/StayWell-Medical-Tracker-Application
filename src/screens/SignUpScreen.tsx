@@ -5,7 +5,7 @@ import Button from '../components/Button';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { signUp } from '../redux/slices/authSlice';
-
+import { useFonts } from 'expo-font';
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
@@ -14,6 +14,15 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const dispatch = useDispatch<AppDispatch>();
+
+  const [loaded] = useFonts({
+    'Poppins-Regular': require('../../assets/fonts/Poppins/Poppins-Regular.ttf'),
+    'Poppins-Bold': require('../../assets/fonts/Poppins/Poppins-Bold.ttf'),
+  });
+
+  if (!loaded) {
+    return null;
+  }
 
   const handleNext = () => {
     const userData = {
@@ -69,7 +78,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  
+
   container: {
     flex: 1,
     justifyContent: 'center',
