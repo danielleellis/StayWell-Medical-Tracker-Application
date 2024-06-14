@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useDispatch } from 'react-redux';
@@ -28,6 +28,7 @@ const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
 
   return (
     <View style={styles.container}>
+      <Image source={require('../../assets/images/sun.png')} style={styles.logo} />
       <Text style={styles.title}>Forgot Password</Text>
       <Text style={styles.description}>
         Enter your email address and we'll send you a link to reset your password.
@@ -60,6 +61,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#45A6FF',
     fontFamily: 'Poppins-Regular',
+  },
+  logo: {
+    width: 240,
+    height: 75,
+    alignSelf: 'center',
+    marginBottom: 24,
   },
   description: {
     fontSize: 16,

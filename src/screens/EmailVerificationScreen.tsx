@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,6 +33,7 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({ navigation }) 
 
   return (
     <View style={styles.container}>
+      <Image source={require('../../assets/images/sun.png')} style={styles.logo} />
       <Text style={styles.title}>Verify Email</Text>
       <Text style={styles.description}>
         Please enter the verification code sent to : {email}
@@ -64,6 +65,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#45A6FF',
     fontFamily: 'Poppins-Regular',
+  },
+  logo: {
+    width: 240,
+    height: 75,
+    alignSelf: 'center',
+    marginBottom: 24,
   },
   description: {
     fontSize: 16,
