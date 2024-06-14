@@ -4,12 +4,19 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 type ButtonProps = {
   title: string;
   onPress: () => void;
+  disabled?: boolean;
 };
 
-const Button: React.FC<ButtonProps> = ({ title, onPress }) => {
+const Button: React.FC<ButtonProps> = ({ title, onPress, disabled = false }) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>{title}</Text>
+    <TouchableOpacity
+      style={[styles.button, disabled && styles.disabledButton]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <Text style={[styles.buttonText, disabled && styles.disabledButtonText]}>
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -24,6 +31,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+  },
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
+  disabledButtonText: {
+    color: '#999',
   },
 });
 

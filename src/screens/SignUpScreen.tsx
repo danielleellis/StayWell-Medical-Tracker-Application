@@ -1,64 +1,101 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { signUp } from '../redux/slices/authSlice';
 
+
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [pronouns, setPronouns] = useState('');
-  const [phone, setPhone] = useState('');
-  const [birthday, setBirthday] = useState('');
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleSignUp = () => {
+  const handleNext = () => {
     const userData = {
       firstName,
       lastName,
       email,
-      username,
       password,
-      pronouns,
-      phone,
-      birthday,
     };
     dispatch(signUp(userData));
     navigation.navigate('EmailVerification');
   };
 
+  const isFormValid = () => {
+    return firstName !== '' && lastName !== '' && email !== '' && password !== '';
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
-      <Input placeholder="First Name" value={firstName} onChangeText={setFirstName} />
-      <Input placeholder="Last Name" value={lastName} onChangeText={setLastName} />
-      <Input placeholder="Email" value={email} onChangeText={setEmail} />
-      <Input placeholder="Username" value={username} onChangeText={setUsername} />
-      <Input placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-      <Input placeholder="Pronouns" value={pronouns} onChangeText={setPronouns} />
-      <Input placeholder="Phone" value={phone} onChangeText={setPhone} />
-      <Input placeholder="Birthday" value={birthday} onChangeText={setBirthday} />
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <Image source={require('../../assets/logo.png')} style={styles.logo} />
+      <Text style={styles.title}>Create an Account</Text>
+      <Input
+        placeholder="First Name"
+        value={firstName}
+        onChangeText={setFirstName}
+        style={styles.input}
+      />
+      <Input
+        placeholder="Last Name"
+        value={lastName}
+        onChangeText={setLastName}
+        style={styles.input}
+      />
+      <Input
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        style={styles.input}
+      />
+      <Input
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <Button title="Next" onPress={handleNext} disabled={!isFormValid()} />
+      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+        <Text style={styles.signInText}>Already have an account? Sign In</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  
   container: {
     flex: 1,
     justifyContent: 'center',
     padding: 16,
+    backgroundColor: '#fff',
+  },
+  logo: {
+    width: 240,
+    height: 100,
+    alignSelf: 'center',
+    marginBottom: 24,
   },
   title: {
     fontSize: 24,
-    marginBottom: 20,
+    marginBottom: 24,
     textAlign: 'center',
+    fontFamily: 'Poppins-Regular',
+  },
+  input: {
+    marginBottom: 16,
+  },
+  signInText: {
+    marginTop: 16,
+    textAlign: 'center',
+    color: '#007bff',
+    fontFamily: 'Poppins-Regular',
   },
 });
 
