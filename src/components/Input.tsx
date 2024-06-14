@@ -27,6 +27,7 @@ const Input: React.FC<InputProps> = ({
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
+        autoCapitalize="none"
       />
     </View>
   );
