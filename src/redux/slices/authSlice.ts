@@ -31,6 +31,21 @@ const authSlice = createSlice({
     signUp: (state, action: PayloadAction<Omit<User, 'username' | 'pronouns' | 'phone' | 'birthday' | 'profilePhoto'>>) => {
       state.user = action.payload as User;
     },
+    signIn: (state, action: PayloadAction<{ email: string; password: string }>) => {
+      // Implement the sign-in logic here
+      // For simplicity, let's assume the sign-in is successful
+      state.user = {
+        firstName: '',
+        lastName: '',
+        email: action.payload.email,
+        password: action.payload.password,
+        username: '',
+        pronouns: '',
+        phone: '',
+        birthday: '',
+        profilePhoto: null,
+      };
+    },
     verifyEmail: (state, action: PayloadAction<string>) => {
       state.isVerified = true;
     },
@@ -46,6 +61,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { signUp, verifyEmail, setupProfile } = authSlice.actions;
+export const { signUp, signIn, verifyEmail, setupProfile } = authSlice.actions;
 
 export default authSlice.reducer;
