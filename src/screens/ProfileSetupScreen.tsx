@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
     color: '#45A6FF',
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'Poppins-Regular',
   },
   profilePhotoContainer: {
     alignSelf: 'center',
