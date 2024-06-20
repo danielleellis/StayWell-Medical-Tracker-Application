@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 16,
     textAlign: 'center',
-    color: '#45A6FF',
+    color: '#6BB7ED',
     fontFamily: 'JosefinSans-Regular',
   },
   logo: {
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   resendCodeText: {
     marginTop: 16,
     textAlign: 'center',
-    color: '#45A6FF',
+    color: '#6BB7ED',
     fontFamily: 'JosefinSans-Regular',
   },
 });

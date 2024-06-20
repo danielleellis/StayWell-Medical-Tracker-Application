@@ -23,7 +23,7 @@ const Button: React.FC<ButtonProps> = ({ title, onPress, disabled = false }) => 
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#45A6FF',
+    backgroundColor: '#6BB7ED',
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     fontFamily: 'JosefinSans-Bold',
   },
   disabledButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#eee',
   },
   disabledButtonText: {
     color: '#999',

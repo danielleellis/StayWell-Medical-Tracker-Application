@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 24,
     textAlign: 'center',
-    color: '#45A6FF',
+    color: '#6BB7ED',
     fontFamily: 'JosefinSans-Regular',
   },
   logo: {
@@ -81,13 +81,13 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     marginBottom: 16,
     textAlign: 'right',
-    color: '#45A6FF',
+    color: '#6BB7ED',
     fontFamily: 'JosefinSans-Regular',
   },
   signUpText: {
     marginTop: 16,
     textAlign: 'center',
-    color: '#45A6FF',
+    color: '#6BB7ED',
     fontFamily: 'JosefinSans-Regular',
   },
 });

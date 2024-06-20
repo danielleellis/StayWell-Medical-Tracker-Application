@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 24,
     textAlign: 'center',
-    color: '#45A6FF',
+    color: '#6BB7ED',
     fontFamily: 'JosefinSans-Regular',
   },
   profilePhotoContainer: {
