@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 10,
     padding: 10,
     fontFamily: 'JosefinSans-Regular',
   },

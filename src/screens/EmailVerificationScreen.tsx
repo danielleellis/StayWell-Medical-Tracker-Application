@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   codeInput: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 10,
     width: 60,
     height: 60,
     fontSize: 24,
