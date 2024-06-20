@@ -19,8 +19,8 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({ navigation }) 
   const code4Ref = useRef<TextInput>(null);
 
   const [loaded] = useFonts({
-    'Poppins-Regular': require('../../assets/fonts/Poppins/Poppins-Regular.ttf'),
-    'Poppins-Bold': require('../../assets/fonts/Poppins/Poppins-Bold.ttf'),
+    'JosefinSans-Regular': require('../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf'),
+    'JosefinSans-Bold': require('../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf'),
   });
 
   if (!loaded) {
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
     color: '#45A6FF',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'JosefinSans-Regular',
   },
   logo: {
     width: 240,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
     color: '#666',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'JosefinSans-Regular',
   },
   codeInputContainer: {
     flexDirection: 'row',
@@ -141,13 +141,13 @@ const styles = StyleSheet.create({
     height: 60,
     fontSize: 24,
     textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'JosefinSans-Regular',
   },
   resendCodeText: {
     marginTop: 16,
     textAlign: 'center',
     color: '#45A6FF',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'JosefinSans-Regular',
   },
 });
 

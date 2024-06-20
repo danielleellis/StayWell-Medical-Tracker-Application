@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'JosefinSans-Regular',
   },
 });
 

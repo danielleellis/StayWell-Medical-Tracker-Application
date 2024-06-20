@@ -4,8 +4,8 @@ import { useFonts } from 'expo-font';
 
 const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [loaded] = useFonts({
-    'Poppins-Regular': require('../../assets/fonts/Poppins/Poppins-Regular.ttf'),
-    'Poppins-Bold': require('../../assets/fonts/Poppins/Poppins-Bold.ttf'),
+    'JosefinSans-Regular': require('../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf'),
+    'JosefinSans-Bold': require('../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf'),
   });
 
   useEffect(() => {

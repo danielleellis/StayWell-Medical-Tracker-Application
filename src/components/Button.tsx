@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'JosefinSans-Bold',
   },
   disabledButton: {
     backgroundColor: '#ccc',

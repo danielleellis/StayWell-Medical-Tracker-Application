@@ -12,8 +12,8 @@ const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
   const dispatch = useDispatch<AppDispatch>();
 
   const [loaded] = useFonts({
-    'Poppins-Regular': require('../../assets/fonts/Poppins/Poppins-Regular.ttf'),
-    'Poppins-Bold': require('../../assets/fonts/Poppins/Poppins-Bold.ttf'),
+    'JosefinSans-Regular': require('../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf'),
+    'JosefinSans-Bold': require('../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf'),
   });
 
   if (!loaded) {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
     color: '#45A6FF',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'JosefinSans-Regular',
   },
   logo: {
     width: 240,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
     color: '#666',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'JosefinSans-Regular',
   },
   input: {
     marginBottom: 16,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     textAlign: 'center',
     color: '#45A6FF',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'JosefinSans-Regular',
   },
 });
 
