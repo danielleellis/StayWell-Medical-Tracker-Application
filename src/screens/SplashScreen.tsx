@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, Text, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 
 const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [loaded] = useFonts({
     'JosefinSans-Regular': require('../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf'),
-    'JosefinSans-Bold': require('../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf'),
   });
 
   useEffect(() => {
@@ -22,7 +21,14 @@ const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+      <View style={styles.content}>
+        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        <Text style={styles.tagline}>
+          PUTTING THE
+          {'\n'}
+          SELF-CARE in HEALTHCARE
+        </Text>
+      </View>
     </View>
   );
 };
@@ -34,9 +40,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
+  content: {
+    alignItems: 'center',
+  },
   logo: {
-    width: 240,
-    height: 240,
+    width: 350,
+    height: 350,
+  },
+  tagline: {
+    marginTop: -80,
+    textAlign: 'center',
+    fontSize: 18,
+    fontFamily: 'JosefinSans-Regular',
+    color: '#B1DAB6',
   },
 });
 
