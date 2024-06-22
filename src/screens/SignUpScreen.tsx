@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { signUp } from '../redux/slices/authSlice';
 import { useFonts } from 'expo-font';
+import configData from "../../config.json";
 
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -16,6 +17,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [password, setPassword] = useState('');
 
     const dispatch = useDispatch<AppDispatch>();
+    const serverEndpoint = configData.API_ENDPOINT;
 
     const [loaded] = useFonts({
         'Poppins-Regular': require('../../assets/fonts/Poppins/Poppins-Regular.ttf'),
@@ -36,7 +38,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
         try {
             // Send user data to your server   THIS NEEDS TO BE THE SERVER ADDRESS, AKA THE COMPUTER THAT'S HOSTING THE SERVER. localhost:3000 will use the phone
-            const response = await axios.post('http://192.168.1.5:3000/api/signup', userData);
+            const response = await axios.post(`${serverEndpoint}/signup`, userData);
 
             if (response.status === 200) {
                 dispatch(signUp(userData));
