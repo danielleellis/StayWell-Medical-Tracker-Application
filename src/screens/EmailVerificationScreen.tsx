@@ -18,12 +18,14 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({ navigation }) 
   const code3Ref = useRef<TextInput>(null);
   const code4Ref = useRef<TextInput>(null);
 
-  const [loaded] = useFonts({
+    const [fontsLoaded] = useFonts({
     'JosefinSans-Regular': require('../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf'),
     'JosefinSans-Bold': require('../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf'),
+    'Poppins-Regular': require('../../assets/fonts/Poppins/Poppins-Regular.ttf'),
+    'Poppins-Bold': require('../../assets/fonts/Poppins/Poppins-Bold.ttf'),
   });
 
-  if (!loaded) {
+    if (!fontsLoaded) {
     return null;
   }
 

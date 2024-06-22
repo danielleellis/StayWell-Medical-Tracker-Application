@@ -2,15 +2,46 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 const path = require('path');
+const cors = require('cors');
+const crypto = require('crypto');
 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
+app.use(cors());
+
+
+// ==============================================================================
+// Functions for managing status of database
+// ==============================================================================
+
+// Start the server
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
+
 
 // Connect to SQLite database
 const dbPath = path.resolve(__dirname, '../database/database.db');
 const db = new sqlite3.Database(dbPath);
+
+
+// Create users table if not exists
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    firstName TEXT,
+    lastName TEXT,
+    email TEXT UNIQUE,
+    password TEXT
+  )`);
+});
+
+
+// ==============================================================================
+// Functions for getting info from database
+// ==============================================================================
 
 // Endpoint to get all users
 app.get('/users', (req, res) => {
@@ -22,6 +53,7 @@ app.get('/users', (req, res) => {
         res.json({ users: rows });
     });
 });
+
 
 // Endpoint to get a specific user by ID
 app.get('/users/:id', (req, res) => {
@@ -35,23 +67,31 @@ app.get('/users/:id', (req, res) => {
     });
 });
 
-// Endpoint to add a new user
-app.post('/users', (req, res) => {
-    const { username, password, legalName, userID, pronouns, birthday, phoneNumber, emailAddress } = req.body;
-    db.run(
-        `INSERT INTO User (username, password, legalName, userID, pronouns, birthday, phoneNumber, emailAddress) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [username, password, legalName, userID, pronouns, birthday, phoneNumber, emailAddress],
-        function (err) {
-            if (err) {
-                res.status(500).json({ error: err.message });
-                return;
-            }
-            res.json({ message: 'User added successfully', id: this.lastID });
+
+// ==============================================================================
+// Functions for posting info to database
+// ==============================================================================
+
+// Function to hash email
+const hashEmail = (email) => {
+    return crypto.createHash('sha256').update(email).digest('hex');
+};
+
+
+// Endpoint to add new user
+app.post('/api/signup', (req, res) => {
+    const { firstName, lastName, email, password } = req.body;
+    const userID = hashEmail(email);
+
+    const stmt = db.prepare('INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)');
+
+    stmt.run([userID, firstName, lastName, email, password], function (err) {
+        if (err) {
+            return res.status(400).json({ error: err.message });
         }
-    );
+        res.json({ message: 'User added successfully!', userID });
+    });
+
+    stmt.finalize();
 });
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
