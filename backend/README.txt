@@ -44,5 +44,3 @@ const handleNext = async () => {
         // Handle request errors
         console.error('An error occurred during sign up:', error);
     }
-
-};
