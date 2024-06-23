@@ -6,11 +6,15 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { signIn } from '../redux/slices/authSlice';
 import { useFonts } from 'expo-font';
+import { Alert } from 'react-native';
+import axios from 'axios';
+import configData from "../../config.json";
 
 const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
+  const serverEndpoint = configData.API_ENDPOINT;
 
   const [loaded] = useFonts({
     'JosefinSans-Regular': require('../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf'),
@@ -21,10 +25,18 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return null;
   }
 
-  const handleSignIn = () => {
-    dispatch(signIn({ email, password }));
-    navigation.navigate('Dashboard');
-  };
+    const handleSignIn = async () => {
+        try {
+            const response = await axios.post(`${serverEndpoint}/signin`, { email, password });
+            if (response.status === 200) {
+                dispatch(signIn(response.data));
+                navigation.navigate('Dashboard');
+            }
+        } catch (error) {
+            Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
+        }
+    };
+
 
   return (
     <View style={styles.container}>

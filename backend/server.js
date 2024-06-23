@@ -7,6 +7,7 @@ const crypto = require('crypto');
 
 const app = express();
 const port = 3000;
+const bcrypt = require('bcrypt');   // for hashing passwords
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -87,6 +88,31 @@ app.get('/api/check-email/:email', (req, res) => {
 });
 
 
+// Endpoint to handle user login
+app.post('/api/signin', (req, res) => {
+    const { email, password } = req.body;
+
+    db.get('SELECT * FROM Users WHERE email = ?', [email], async (err, user) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (!user) {
+            res.status(401).json({ error: 'Invalid email or password' });
+            return;
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            res.status(401).json({ error: 'Invalid email or password' });
+            return;
+        }
+
+        res.status(200).json({ userId: user.userId, email: user.email, firstName: user.firstName, lastName: user.lastName });
+    });
+});
+
+
 // ==============================================================================
 // Functions for posting info to database
 // ==============================================================================
@@ -98,13 +124,15 @@ const hashEmail = (email) => {
 
 
 // Endpoint to add new user
-app.post('/api/signup', (req, res) => {
+app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
-    const userID = hashEmail(email);
+
+    const userID = hashEmail(email);                            // Hash email address to use as account's UserID
+    const hashedPassword = await bcrypt.hash(password, 10);     // Hash the password
 
     const stmt = db.prepare('INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)');
 
-    stmt.run([userID, firstName, lastName, email, password], function (err) {
+    stmt.run([userID, firstName, lastName, email, hashedPassword], function (err) {
         if (err) {
             return res.status(400).json({ error: err.message });
         }
