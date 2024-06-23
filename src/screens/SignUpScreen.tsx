@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import axios from 'axios';
@@ -8,7 +8,6 @@ import { AppDispatch } from '../redux/store';
 import { signUp } from '../redux/slices/authSlice';
 import { useFonts } from 'expo-font';
 import configData from "../../config.json";
-
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [firstName, setFirstName] = useState('');
@@ -28,7 +27,31 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         return null;
     }
 
+
+    const checkEmailAvailability = async (email: string) => {
+        try {
+            const response = await axios.get(`${serverEndpoint}/check-email/${email}`);
+
+            if (response.status === 200) {
+                return !response.data.taken; // Email availability depends on 'taken' field
+            } else {
+                return false; // Default to email taken if not 200
+            }
+        } catch (error) {
+            console.error('An error occurred while checking email availability:', error);
+            Alert.alert('Network Error', 'An error occurred while checking email availability. Please try again.');
+            return false; // Assume email is taken if an error occurs
+        }
+    };
+
+
     const handleNext = async () => {
+        const emailAvailable = await checkEmailAvailability(email);
+        if (!emailAvailable) {
+            Alert.alert('Email already taken', 'Please use a different email address.');
+            return;
+        }
+
         const userData = {
             firstName,
             lastName,
@@ -37,21 +60,17 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         };
 
         try {
-            // Send user data to your server   THIS NEEDS TO BE THE SERVER ADDRESS, AKA THE COMPUTER THAT'S HOSTING THE SERVER. localhost:3000 will use the phone
             const response = await axios.post(`${serverEndpoint}/signup`, userData);
 
             if (response.status === 200) {
                 dispatch(signUp(userData));
                 navigation.navigate('EmailVerification');
             } else {
-                // Handle server response errors
                 console.error('Failed to sign up:', response.data);
             }
         } catch (error) {
-            // Handle request errors
             console.error('An error occurred during sign up:', error);
         }
-
     };
 
     const isFormValid = () => {

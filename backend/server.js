@@ -68,6 +68,23 @@ app.get('/users/:id', (req, res) => {
 });
 
 
+// Endpoint to check if email is already taken
+app.get('/api/check-email/:email', (req, res) => {
+    const email = req.params.email;
+    db.get('SELECT * FROM Users WHERE email = ?', [email], (err, row) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (row) {
+            // Email is already taken
+            res.json({ taken: true });
+        } else {
+            // Email is available
+            res.json({ taken: false });
+        }
+    });
+});
 
 
 // ==============================================================================
