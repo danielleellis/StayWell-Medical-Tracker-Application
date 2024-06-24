@@ -1,14 +1,14 @@
 CREATE TABLE Users (
-    username TEXT,
-    password TEXT,
-    firstName TEXT,
-    lastName TEXT,
-    userID TEXT PRIMARY KEY,
-    pronouns TEXT,
-    birthday DATE,
-    phoneNumber TEXT,
-    email TEXT,
-    profilePicture TEXT
+    userID TEXT, 
+    firstName TEXT, 
+    lastName TEXT, 
+    email TEXT, 
+    password TEXT, 
+    username TEXT, 
+    pronouns TEXT, 
+    phoneNumber TEXT, 
+    birthday TEXT, 
+    profilePhoto TEXT
 );
 
 CREATE TABLE Calendar (

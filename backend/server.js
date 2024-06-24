@@ -87,34 +87,32 @@ app.get('/api/check-email/:email', (req, res) => {
 });
 
 
+// ==============================================================================
+// Functions for posting info to database
+// ==============================================================================
+
 // Endpoint to handle user login
-app.post('/api/signin', (req, res) => {
+app.post('/signin', (req, res) => {
     const { email, password } = req.body;
 
-    db.get('SELECT * FROM Users WHERE email = ?', [email], async (err, user) => {
+    db.get('SELECT * FROM User WHERE email = ?', [email], async (err, user) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
         }
-        if (!user) {
-            res.status(401).json({ error: 'Invalid email or password' });
-            return;
+        if (user) {
+            const match = await bcrypt.compare(password, user.password);
+            if (match) {
+                res.status(200).json({ userId: user.userID });
+            } else {
+                res.status(401).json({ message: 'Invalid email or password' });
+            }
+        } else {
+            res.status(401).json({ message: 'Invalid email or password' });
         }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            res.status(401).json({ error: 'Invalid email or password' });
-            return;
-        }
-
-        res.status(200).json({ userId: user.userId, email: user.email, firstName: user.firstName, lastName: user.lastName });
     });
 });
 
-
-// ==============================================================================
-// Functions for posting info to database
-// ==============================================================================
 
 // Endpoint to sign up a new user with first/last name, email, password, and generate a userID by hashing their email address
 app.post('/api/signup', async (req, res) => {
@@ -126,28 +124,26 @@ app.post('/api/signup', async (req, res) => {
         if (err) {
             return res.status(400).json({ error: err.message });
         }
-        res.json({ message: 'User added successfully!', userID });
+        res.status(200).json({ success: true, userID });
     });
 
     stmt.finalize();
 });
 
 
-// Endpoint to add profile setup info for username, pronouns, birthday, profile picture
-app.post('/api/profile-setup', (req, res) => {
-    const { email, username, pronouns, phone, birthday, profilePhoto } = req.body;
+// Endpoint to update user profile
+app.put('/api/profile-setup/:userID', async (req, res) => {
+    const userID = req.params.userID;
+    const { username, pronouns, phone, birthday, profilePhoto } = req.body;
 
-    const query = `
-        UPDATE Users
-        SET username = ?, pronouns = ?, phone = ?, birthday = ?, profilePhoto = ?
-        WHERE email = ?
-    `;
+    const stmt = db.prepare('UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?');
 
-    db.run(query, [username, pronouns, phone, birthday, profilePhoto, email], function (err) {
+    stmt.run([username, pronouns, phone, birthday, profilePhoto, userID], function (err) {
         if (err) {
-            res.status(500).json({ error: err.message });
-            return;
+            return res.status(400).json({ error: err.message });
         }
         res.status(200).json({ success: true });
     });
+
+    stmt.finalize();
 });

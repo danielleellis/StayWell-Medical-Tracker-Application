@@ -62,9 +62,15 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         try {
             const response = await axios.post(`${serverEndpoint}/signup`, userData);
 
-            if (response.status === 200) {
-                dispatch(signUp(userData));
+            if (response.status === 200 && response.data.success) {
+                const userID = response.data.userID; // Get userID from the server response
+
+                // Update userData to include userID
+                const updatedUserData = { ...userData, userID };
+
+                dispatch(signUp(updatedUserData));
                 navigation.navigate('EmailVerification');
+                console.log('Sign up successful. UserData:', updatedUserData);
             } else {
                 console.error('Failed to sign up:', response.data);
             }
