@@ -8,12 +8,11 @@ import SplashScreen from './src/screens/SplashScreen';
 import _layout from './src/(tabs)/_layout';
 
 
-//not sure if i can have <_layout/> here too
+//not sure if i can have <_layout/> here too, had error switched out navigation to test
 const App: React.FC = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <AppNavigator />
         <_layout />
       </NavigationContainer>
     </Provider>
