@@ -13,7 +13,7 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <_layout />
+      <AppNavigator />
       </NavigationContainer>
     </Provider>
   );
