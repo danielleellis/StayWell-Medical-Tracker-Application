@@ -3,7 +3,6 @@ const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
-const crypto = require('crypto');
 
 const app = express();
 const port = 3000;
@@ -117,18 +116,9 @@ app.post('/api/signin', (req, res) => {
 // Functions for posting info to database
 // ==============================================================================
 
-// Function to hash email
-const hashEmail = (email) => {
-    return crypto.createHash('sha256').update(email).digest('hex');
-};
-
-
-// Endpoint to add new user
+// Endpoint to sign up a new user with first/last name, email, password, and generate a userID by hashing their email address
 app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
-
-    const userID = hashEmail(email);                            // Hash email address to use as account's UserID
-    const hashedPassword = await bcrypt.hash(password, 10);     // Hash the password
 
     const stmt = db.prepare('INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)');
 
@@ -142,3 +132,22 @@ app.post('/api/signup', async (req, res) => {
     stmt.finalize();
 });
 
+
+// Endpoint to add profile setup info for username, pronouns, birthday, profile picture
+app.post('/api/profile-setup', (req, res) => {
+    const { email, username, pronouns, phone, birthday, profilePhoto } = req.body;
+
+    const query = `
+        UPDATE Users
+        SET username = ?, pronouns = ?, phone = ?, birthday = ?, profilePhoto = ?
+        WHERE email = ?
+    `;
+
+    db.run(query, [username, pronouns, phone, birthday, profilePhoto, email], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.status(200).json({ success: true });
+    });
+});
