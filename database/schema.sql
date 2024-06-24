@@ -7,7 +7,8 @@ CREATE TABLE Users (
     pronouns TEXT,
     birthday DATE,
     phoneNumber TEXT,
-    email TEXT
+    email TEXT,
+    profilePicture TEXT
 );
 
 CREATE TABLE Calendar (
