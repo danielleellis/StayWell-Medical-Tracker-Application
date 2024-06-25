@@ -1,19 +1,15 @@
-import React, { useEffect } from 'react';
-import { View, Image, Text, StyleSheet } from 'react-native';
-import { useFonts } from 'expo-font';
+import React, { useEffect } from "react";
+import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useFonts } from "expo-font";
 
 const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [loaded] = useFonts({
-    'JosefinSans-Regular': require('../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf'),
+    "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
   });
 
-  useEffect(() => {
-    if (loaded) {
-      setTimeout(() => {
-        navigation.replace('SignUp');
-      }, 3000); // Display the splash screen for 3 seconds
-    }
-  }, [loaded, navigation]);
+  const handleGetStarted = () => {
+    navigation.navigate("SignUp"); // Navigate to SignUp screen
+  };
 
   if (!loaded) {
     return null;
@@ -22,13 +18,22 @@ const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        <Image
+          source={require("../../assets/images/logo.png")}
+          style={styles.logo}
+        />
         <Text style={styles.tagline}>
           PUTTING THE
-          {'\n'}
+          {"\n"}
           SELF-CARE in HEALTHCARE
         </Text>
       </View>
+      <TouchableOpacity
+        style={styles.getStartedButton}
+        onPress={handleGetStarted}
+      >
+        <Text style={styles.buttonText}>Get Started</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -36,12 +41,12 @@ const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   content: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   logo: {
     width: 350,
@@ -49,10 +54,22 @@ const styles = StyleSheet.create({
   },
   tagline: {
     marginTop: -80,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
-    fontFamily: 'JosefinSans-Regular',
-    color: '#B1DAB6',
+    fontFamily: "JosefinSans-Regular",
+    color: "#B1DAB6",
+  },
+  getStartedButton: {
+    backgroundColor: "#45A6FF",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginTop: 200,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontFamily: "JosefinSans-Regular",
   },
 });
 
