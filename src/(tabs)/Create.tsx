@@ -19,6 +19,6 @@ const styles = StyleSheet.create({
     },
     heading:{
         fontSize:25,
-        color: 'blue'
+        color: '#45a6ff'
     }
 })
