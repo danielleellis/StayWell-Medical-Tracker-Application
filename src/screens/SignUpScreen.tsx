@@ -12,6 +12,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmed, confirmPassword] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -30,6 +31,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       lastName,
       email,
       password,
+      confirmPassword,
     };
     dispatch(signUp(userData));
     navigation.navigate("EmailVerification");
@@ -77,6 +79,13 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <Input
+        placeholder="Confirm Password"
+        value={passwordConfirmed}
+        onChangeText={confirmPassword}
         secureTextEntry
         style={styles.input}
       />
