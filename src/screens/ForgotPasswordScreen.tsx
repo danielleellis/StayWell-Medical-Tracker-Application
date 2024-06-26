@@ -34,7 +34,7 @@ const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({
         onPress={() => navigation.navigate("SignIn")}
         style={styles.backButton}
       >
-        <Text style={styles.backButtonText}>{"<"}</Text>
+        <Text style={styles.backButtonText}>{"BACK"}</Text>
       </TouchableOpacity>
       <Image
         source={require("../../assets/images/sun.png")}
@@ -42,7 +42,7 @@ const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({
       />
       <Text style={styles.title}>Forgot Password</Text>
       <Text style={styles.description}>
-        Enter your email address and we'll send you a link to reset your
+        Enter your email address and we'll send you a code to reset your
         password.
       </Text>
       <Input
@@ -53,7 +53,7 @@ const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({
         style={styles.input}
       />
       <Button
-        title="Send Reset Link"
+        title="Send Reset Code"
         onPress={handleForgotPassword}
         disabled={!email}
       />
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     left: 16,
   },
   backButtonText: {
-    fontSize: 24,
+    fontSize: 16,
     color: "#6BB7ED",
     fontFamily: "JosefinSans-Regular",
   },
