@@ -4,7 +4,7 @@ import React from 'react'
 const Create = () =>{
     return(
         <View style={styles.container}>
-            <Text style={styles.heading}>Create</Text>
+            <Text style={styles.heading}>S T A Y W E L L</Text>
         </View>
     )
 }
@@ -14,11 +14,15 @@ export default Create
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingTop: 50,
+        paddingLeft: 20
     },
     heading:{
-        fontSize:25,
-        color: '#45a6ff'
+        fontSize:30,
+        color: '#45a6ff',
+        fontFamily: "JosefinSans-Regular",
+
     }
 })
