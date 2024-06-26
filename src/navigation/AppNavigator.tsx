@@ -48,7 +48,7 @@ const TabNav = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar-clear-outline" color={color} size={size} />
           ),
-          tabBarActiveTintColor: "#45a6ff",
+          
         }}
       />
 
@@ -71,7 +71,6 @@ const TabNav = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="document-outline" color={color} size={size} />
           ),
-          tabBarActiveTintColor: "#45a6ff",
         }}
       />
 
@@ -83,7 +82,6 @@ const TabNav = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" color={color} size={size} />
           ),
-          tabBarActiveTintColor: "#45a6ff",
         }}
       />
     </Tab.Navigator>
