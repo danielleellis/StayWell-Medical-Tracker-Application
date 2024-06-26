@@ -53,7 +53,7 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
         onPress={() => navigation.navigate("SignUp")}
         style={styles.backButton}
       >
-        <Text style={styles.backButtonText}>{"<"}</Text>
+        <Text style={styles.backButtonText}>{"BACK"}</Text>
       </TouchableOpacity>
       <Image
         source={require("../../assets/images/sun.png")}
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     left: 16,
   },
   backButtonText: {
-    fontSize: 24,
+    fontSize: 16,
     color: "#6BB7ED",
     fontFamily: "JosefinSans-Regular",
   },
