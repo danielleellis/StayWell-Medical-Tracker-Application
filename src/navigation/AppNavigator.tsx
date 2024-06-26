@@ -14,19 +14,82 @@ import Calendar from '../(tabs)/Calendar';
 import Create from '../(tabs)/Create';
 import Documents from '../(tabs)/Documents';
 import Profile from '../(tabs)/Profile';
-import Ionicons from '@react-native-vector-icons/ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNav = () =>{
   return(
-      <Tab.Navigator initialRouteName='Calendar'>
-          <Tab.Screen name="Habits" component={Habits} options={{ headerShown: false}} />
-          <Tab.Screen name="Calendar" component={Calendar} options={{ headerShown: false }} />
-          <Tab.Screen name="Create" component={Create} options={{ headerShown: false }} />
-          <Tab.Screen name="Documents" component={Documents} options={{ headerShown: false }} />
-          <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+      <Tab.Navigator initialRouteName='Calendar' screenOptions={{ 
+        headerShown: false,
+        tabBarActiveTintColor: "#45a6ff",
+        tabBarInactiveTintColor: "#b0dab6"
+      }}>
+          <Tab.Screen 
+            name="Habits" 
+            component={Habits} 
+            options={{ 
+              tabBarLabel: "Habits",
+              tabBarIcon: ({color, size }) => 
+                (<Ionicons 
+                  name="stats-chart-outline" 
+                  color={color} 
+                  size={size} /> )
+          }} />
+
+          <Tab.Screen 
+            name="Calendar" 
+            component={Calendar} 
+            options={{ 
+              tabBarLabel: "Calendar",
+              tabBarIcon: ({color, size }) => 
+                (<Ionicons 
+                  name="calendar-clear-outline" 
+                  color={color} 
+                  size={size} /> ),
+              tabBarActiveTintColor: "#45a6ff"
+              
+          }} />
+
+          <Tab.Screen 
+            name="Create" 
+            component={Create} 
+            options={{ 
+              tabBarLabel: "Create",
+              tabBarIcon: ({color, size }) => 
+                (<Ionicons 
+                  name="add-circle-outline" 
+                  color={color} 
+                  size={size} />)
+          }} />
+
+          <Tab.Screen 
+            name="Documents" 
+            component={Documents} 
+            options={{ 
+              tabBarLabel: "Documents",
+              tabBarIcon: ({color, size }) => 
+                (<Ionicons 
+                  name="document-outline" 
+                  color={color} 
+                  size={size} /> ),
+              tabBarActiveTintColor: "#45a6ff"
+          }} />
+
+          <Tab.Screen 
+            name="Profile" 
+            component={Profile} 
+            options={{ 
+              tabBarLabel: "Profile",
+              tabBarIcon: ({color, size }) => 
+                (<Ionicons 
+                  name="person-outline" 
+                  color={color} 
+                  size={size} /> ),
+              tabBarActiveTintColor: "#45a6ff"
+          }} />
+
       </Tab.Navigator>
   )
 };
