@@ -5,3 +5,8 @@ export const colors = {
   black: "#000000",
   grey: "#ccc",
 };
+
+export const fonts = {
+  regular: "JosefinSans-Regular",
+  bold: "JosefinSans-Bold",
+};
