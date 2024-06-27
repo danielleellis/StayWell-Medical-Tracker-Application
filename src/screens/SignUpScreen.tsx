@@ -97,6 +97,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
         autoCorrect={false}
+        textContentType={"oneTimeCode"}
         style={styles.input}
       />
       <TextInput
@@ -105,6 +106,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         onChangeText={setConfirmedPassword}
         secureTextEntry
         autoCorrect={false}
+        textContentType={"oneTimeCode"}
         style={styles.input}
       />
       <Button title="Next" onPress={handleNext} disabled={!isFormValid()} />
