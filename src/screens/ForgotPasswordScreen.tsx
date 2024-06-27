@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { forgotPassword } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
+import { colors } from "../constants/colors";
 
 const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({
   navigation,
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.white,
   },
   backButton: {
     position: "absolute",
@@ -78,14 +79,14 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 16,
-    color: "#6BB7ED",
+    color: colors.blue,
     fontFamily: "JosefinSans-Regular",
   },
   title: {
     fontSize: 24,
     marginBottom: 16,
     textAlign: "center",
-    color: "#6BB7ED",
+    color: colors.blue,
     fontFamily: "JosefinSans-Regular",
   },
   logo: {
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
   backToSignInText: {
     marginTop: 16,
     textAlign: "center",
-    color: "#6BB7ED",
+    color: colors.blue,
     fontFamily: "JosefinSans-Regular",
   },
 });

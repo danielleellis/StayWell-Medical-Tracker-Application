@@ -1,18 +1,26 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+} from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { signUp } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
+import { colors } from "../constants/colors";
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirmed, confirmPassword] = useState("");
+  const [passwordConfirmed, setConfirmedPassword] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -26,12 +34,16 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   }
 
   const handleNext = () => {
+    if (password !== passwordConfirmed) {
+      alert("Passwords do not match. Please check and try again.");
+      return;
+    }
+
     const userData = {
       firstName,
       lastName,
       email,
       password,
-      confirmPassword,
     };
     dispatch(signUp(userData));
     navigation.navigate("EmailVerification");
@@ -39,7 +51,11 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const isFormValid = () => {
     return (
-      firstName !== "" && lastName !== "" && email !== "" && password !== ""
+      firstName !== "" &&
+      lastName !== "" &&
+      email !== "" &&
+      password !== "" &&
+      password === passwordConfirmed
     );
   };
 
@@ -56,37 +72,39 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         style={styles.logo}
       />
       <Text style={styles.title}>Create an Account</Text>
-      <Input
+      <TextInput
         placeholder="First Name"
         value={firstName}
         onChangeText={setFirstName}
         style={styles.input}
       />
-      <Input
+      <TextInput
         placeholder="Last Name"
         value={lastName}
         onChangeText={setLastName}
         style={styles.input}
       />
-      <Input
+      <TextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         style={styles.input}
       />
-      <Input
+      <TextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        autoCorrect={false}
         style={styles.input}
       />
-      <Input
+      <TextInput
         placeholder="Confirm Password"
         value={passwordConfirmed}
-        onChangeText={confirmPassword}
+        onChangeText={setConfirmedPassword}
         secureTextEntry
+        autoCorrect={false}
         style={styles.input}
       />
       <Button title="Next" onPress={handleNext} disabled={!isFormValid()} />
@@ -102,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.white,
   },
   logo: {
     width: 240,
@@ -117,23 +135,29 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 16,
-    color: "#6BB7ED",
+    color: colors.blue,
     fontFamily: "JosefinSans-Regular",
   },
   title: {
     fontSize: 24,
     marginBottom: 24,
     textAlign: "center",
-    color: "#6BB7ED",
+    color: colors.blue,
     fontFamily: "JosefinSans-Regular",
   },
   input: {
     marginBottom: 16,
+    height: 40,
+    borderColor: colors.grey,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    fontFamily: "JosefinSans-Regular",
+    borderRadius: 10,
   },
   signInText: {
     marginTop: 16,
     textAlign: "center",
-    color: "#6BB7ED",
+    color: colors.blue,
     fontFamily: "JosefinSans-Regular",
   },
 });
