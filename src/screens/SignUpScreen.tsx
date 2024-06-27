@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  TextInput,
 } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -21,6 +20,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmed, setConfirmedPassword] = useState("");
+  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -59,6 +59,10 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     );
   };
 
+  const togglePasswordVisibility = () => {
+    setIsPasswordHidden(!isPasswordHidden);
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -72,42 +76,49 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         style={styles.logo}
       />
       <Text style={styles.title}>Create an Account</Text>
-      <TextInput
+      <Input
         placeholder="First Name"
         value={firstName}
         onChangeText={setFirstName}
+        autoCapitalize="words"
         style={styles.input}
       />
-      <TextInput
+      <Input
         placeholder="Last Name"
         value={lastName}
         onChangeText={setLastName}
+        autoCapitalize="words"
         style={styles.input}
       />
-      <TextInput
+      <Input
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
+        autoCapitalize="none"
         style={styles.input}
       />
-      <TextInput
+      <Input
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        secureTextEntry={isPasswordHidden}
         autoCorrect={false}
-        textContentType={"oneTimeCode"}
+        textContentType="oneTimeCode"
         style={styles.input}
+        isPassword={true}
+        togglePasswordVisibility={togglePasswordVisibility}
       />
-      <TextInput
+      <Input
         placeholder="Confirm Password"
         value={passwordConfirmed}
         onChangeText={setConfirmedPassword}
-        secureTextEntry
+        secureTextEntry={isPasswordHidden}
         autoCorrect={false}
-        textContentType={"oneTimeCode"}
+        textContentType="oneTimeCode"
         style={styles.input}
+        isPassword={true}
+        togglePasswordVisibility={togglePasswordVisibility}
       />
       <Button title="Next" onPress={handleNext} disabled={!isFormValid()} />
       <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
@@ -149,12 +160,6 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
-    height: 40,
-    borderColor: colors.grey,
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    fontFamily: fonts.regular,
-    borderRadius: 10,
   },
   signInText: {
     marginTop: 16,

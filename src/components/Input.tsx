@@ -11,6 +11,8 @@ type InputProps = {
   isPassword?: boolean;
   togglePasswordVisibility?: () => void;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  autoCorrect?: boolean;
+  textContentType?: 'none' | 'URL' | 'addressCity' | 'addressCityAndState' | 'addressState' | 'countryName' | 'creditCardNumber' | 'emailAddress' | 'familyName' | 'fullStreetAddress' | 'givenName' | 'jobTitle' | 'location' | 'middleName' | 'name' | 'namePrefix' | 'nameSuffix' | 'nickname' | 'organizationName' | 'postalCode' | 'streetAddressLine1' | 'streetAddressLine2' | 'sublocality' | 'telephoneNumber' | 'username' | 'password' | 'newPassword' | 'oneTimeCode';
 };
 
 const Input: React.FC<InputProps> = ({
@@ -23,6 +25,8 @@ const Input: React.FC<InputProps> = ({
   isPassword = false,
   togglePasswordVisibility,
   autoCapitalize = 'none',
+  autoCorrect,
+  textContentType,
 }) => {
   return (
     <View style={[styles.container, style]}>
@@ -34,6 +38,8 @@ const Input: React.FC<InputProps> = ({
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
+        autoCorrect={autoCorrect}
+        textContentType={textContentType}
       />
       {isPassword && (
         <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
