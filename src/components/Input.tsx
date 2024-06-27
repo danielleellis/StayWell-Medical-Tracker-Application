@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, View, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { TextInput, View, StyleSheet, TextStyle, ViewStyle, TouchableOpacity, Image } from 'react-native';
 
 type InputProps = {
   placeholder: string;
@@ -8,6 +8,8 @@ type InputProps = {
   secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   style?: ViewStyle | TextStyle;
+  isPassword?: boolean;
+  togglePasswordVisibility?: () => void;
 };
 
 const Input: React.FC<InputProps> = ({
@@ -17,6 +19,8 @@ const Input: React.FC<InputProps> = ({
   secureTextEntry = false,
   keyboardType = 'default',
   style,
+  isPassword = false,
+  togglePasswordVisibility,
 }) => {
   return (
     <View style={[styles.container, style]}>
@@ -29,6 +33,14 @@ const Input: React.FC<InputProps> = ({
         keyboardType={keyboardType}
         autoCapitalize="none"
       />
+      {isPassword && (
+        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+          <Image
+            source={secureTextEntry ? require('../../assets/images/eye-off.png') : require('../../assets/images/eye.png')}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -36,13 +48,23 @@ const Input: React.FC<InputProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 12,
-  },
-  input: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 10,
+  },
+  input: {
+    flex: 1,
     padding: 10,
     fontFamily: 'JosefinSans-Regular',
+  },
+  eyeIcon: {
+    padding: 10,
+  },
+  icon: {
+    width: 24,
+    height: 24,
   },
 });
 

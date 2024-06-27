@@ -13,6 +13,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmed, confirmPassword] = useState("");
+  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -31,7 +32,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       lastName,
       email,
       password,
-      confirmPassword,
+      confirmPassword: passwordConfirmed,
     };
     dispatch(signUp(userData));
     navigation.navigate("EmailVerification");
@@ -39,8 +40,16 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const isFormValid = () => {
     return (
-      firstName !== "" && lastName !== "" && email !== "" && password !== ""
+      firstName !== "" &&
+      lastName !== "" &&
+      email !== "" &&
+      password !== "" &&
+      passwordConfirmed !== ""
     );
+  };
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordHidden(!isPasswordHidden);
   };
 
   return (
@@ -79,15 +88,19 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        secureTextEntry={isPasswordHidden}
         style={styles.input}
+        isPassword={true}
+        togglePasswordVisibility={togglePasswordVisibility}
       />
       <Input
         placeholder="Confirm Password"
         value={passwordConfirmed}
         onChangeText={confirmPassword}
-        secureTextEntry
+        secureTextEntry={isPasswordHidden}
         style={styles.input}
+        isPassword={true}
+        togglePasswordVisibility={togglePasswordVisibility}
       />
       <Button title="Next" onPress={handleNext} disabled={!isFormValid()} />
       <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>

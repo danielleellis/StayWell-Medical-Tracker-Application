@@ -10,6 +10,7 @@ import { useFonts } from "expo-font";
 const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
 
   const [loaded] = useFonts({
@@ -24,6 +25,10 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const handleSignIn = () => {
     dispatch(signIn({ email, password }));
     navigation.navigate("Dashboard");
+  };
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordHidden(!isPasswordHidden);
   };
 
   return (
@@ -44,8 +49,10 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        secureTextEntry={isPasswordHidden}
         style={styles.input}
+        isPassword={true}
+        togglePasswordVisibility={togglePasswordVisibility}
       />
       <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
