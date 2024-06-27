@@ -1,18 +1,26 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+} from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { signUp } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
+import { colors, fonts } from "../constants/constants";
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirmed, confirmPassword] = useState("");
+  const [passwordConfirmed, setConfirmedPassword] = useState("");
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -27,6 +35,11 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   }
 
   const handleNext = () => {
+    if (password !== passwordConfirmed) {
+      alert("Passwords do not match. Please check and try again.");
+      return;
+    }
+
     const userData = {
       firstName,
       lastName,
@@ -44,8 +57,12 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       lastName !== "" &&
       email !== "" &&
       password !== "" &&
-      passwordConfirmed !== ""
+      password === passwordConfirmed
     );
+  };
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordHidden(!isPasswordHidden);
   };
 
   const togglePasswordVisibility = () => {
@@ -65,39 +82,41 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         style={styles.logo}
       />
       <Text style={styles.title}>Create an Account</Text>
-      <Input
+      <TextInput
         placeholder="First Name"
         value={firstName}
         onChangeText={setFirstName}
         style={styles.input}
       />
-      <Input
+      <TextInput
         placeholder="Last Name"
         value={lastName}
         onChangeText={setLastName}
         style={styles.input}
       />
-      <Input
+      <TextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         style={styles.input}
       />
-      <Input
+      <TextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry={isPasswordHidden}
+        autoCorrect={false}
         style={styles.input}
         isPassword={true}
         togglePasswordVisibility={togglePasswordVisibility}
       />
-      <Input
+      <TextInput
         placeholder="Confirm Password"
         value={passwordConfirmed}
-        onChangeText={confirmPassword}
+        onChangeText={setConfirmedPassword}
         secureTextEntry={isPasswordHidden}
+        autoCorrect={false}
         style={styles.input}
         isPassword={true}
         togglePasswordVisibility={togglePasswordVisibility}
@@ -115,7 +134,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.white,
   },
   logo: {
     width: 240,
@@ -130,24 +149,30 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 16,
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
   title: {
     fontSize: 24,
     marginBottom: 24,
     textAlign: "center",
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
   input: {
     marginBottom: 16,
+    height: 40,
+    borderColor: colors.grey,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    fontFamily: fonts.regular,
+    borderRadius: 10,
   },
   signInText: {
     marginTop: 16,
     textAlign: "center",
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
 });
 

@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { signIn } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
+import { colors, fonts } from "../constants/constants";
 
 const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -74,14 +75,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.white,
   },
   title: {
     fontSize: 24,
     marginBottom: 24,
     textAlign: "center",
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
   logo: {
     width: 240,
@@ -95,14 +96,14 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     marginBottom: 16,
     textAlign: "right",
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
   signUpText: {
     marginTop: 16,
     textAlign: "center",
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
 });
 
