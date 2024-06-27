@@ -10,6 +10,7 @@ type InputProps = {
   style?: ViewStyle | TextStyle;
   isPassword?: boolean;
   togglePasswordVisibility?: () => void;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 };
 
 const Input: React.FC<InputProps> = ({
@@ -21,6 +22,7 @@ const Input: React.FC<InputProps> = ({
   style,
   isPassword = false,
   togglePasswordVisibility,
+  autoCapitalize = 'none',
 }) => {
   return (
     <View style={[styles.container, style]}>
@@ -31,7 +33,7 @@ const Input: React.FC<InputProps> = ({
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
-        autoCapitalize="none"
+        autoCapitalize={autoCapitalize}
       />
       {isPassword && (
         <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
