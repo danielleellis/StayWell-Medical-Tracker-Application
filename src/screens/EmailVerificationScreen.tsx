@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { verifyEmail } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
-import { colors } from "../constants/colors";
+import { colors } from "../constants/constants";
 
 const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
   navigation,

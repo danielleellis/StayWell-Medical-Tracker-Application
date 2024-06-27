@@ -7,7 +7,7 @@ import { AppDispatch } from "../redux/store";
 import { setupProfile } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import * as ImagePicker from "expo-image-picker";
-import { colors } from "../constants/colors";
+import { colors, fonts } from "../constants/constants";
 
 const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: "center",
     color: colors.blue,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
   profilePhotoContainer: {
     alignSelf: "center",
@@ -129,14 +129,14 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: "#eee",
+    backgroundColor: colors.grey,
     justifyContent: "center",
     alignItems: "center",
   },
   profilePhotoPlaceholderText: {
     fontSize: 16,
     color: colors.black,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
   input: {
     marginBottom: 16,

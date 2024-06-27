@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { signUp } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
-import { colors } from "../constants/colors";
+import { colors, fonts } from "../constants/constants";
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -136,14 +136,14 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: 16,
     color: colors.blue,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
   title: {
     fontSize: 24,
     marginBottom: 24,
     textAlign: "center",
     color: colors.blue,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
   input: {
     marginBottom: 16,
@@ -151,14 +151,14 @@ const styles = StyleSheet.create({
     borderColor: colors.grey,
     borderWidth: 1,
     paddingHorizontal: 10,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
     borderRadius: 10,
   },
   signInText: {
     marginTop: 16,
     textAlign: "center",
     color: colors.blue,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
 });
 

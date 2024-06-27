@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from "react-native";
 import React from "react";
-import { colors } from "../constants/colors";
+import { colors, fonts } from "../constants/constants";
 
 const Habits = () => {
   return (
@@ -23,6 +23,6 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 30,
     color: colors.blue,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
 });

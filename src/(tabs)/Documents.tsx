@@ -1,5 +1,6 @@
 import { Text, View, StyleSheet } from "react-native";
 import React from "react";
+import { colors, fonts } from "../constants/constants";
 
 const Documents = () => {
   return (
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 30,
-    color: "#45a6ff",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
 });

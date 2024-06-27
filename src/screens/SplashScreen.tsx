@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useFonts } from "expo-font";
-import { colors } from "../constants/colors";
+import { colors, fonts } from "../constants/constants";
 
 const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [loaded] = useFonts({
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     marginTop: -80,
     textAlign: "center",
     fontSize: 18,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
     color: colors.green,
   },
   getStartedButton: {
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: colors.white,
     fontSize: 18,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
 });
 
