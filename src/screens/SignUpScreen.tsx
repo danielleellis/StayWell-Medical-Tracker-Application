@@ -7,7 +7,6 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import Input from "../components/Input";
 import Button from "../components/Button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
@@ -65,10 +64,6 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     setIsPasswordHidden(!isPasswordHidden);
   };
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordHidden(!isPasswordHidden);
-  };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -101,28 +96,40 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         keyboardType="email-address"
         style={styles.input}
       />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={isPasswordHidden}
-        autoCorrect={false}
-        textContentType={"oneTimeCode"}
-        style={styles.input}
-        isPassword={true}
-        togglePasswordVisibility={togglePasswordVisibility}
-      />
-      <TextInput
-        placeholder="Confirm Password"
-        value={passwordConfirmed}
-        onChangeText={setConfirmedPassword}
-        secureTextEntry={isPasswordHidden}
-        autoCorrect={false}
-        textContentType={"oneTimeCode"}
-        style={styles.input}
-        isPassword={true}
-        togglePasswordVisibility={togglePasswordVisibility}
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={isPasswordHidden}
+          autoCorrect={false}
+          textContentType={"oneTimeCode"}
+          style={[styles.input, styles.passwordInput]}
+        />
+        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+          <Image
+            source={isPasswordHidden ? require('../../assets/images/eye-off.png') : require('../../assets/images/eye.png')}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.passwordContainer}>
+        <TextInput
+          placeholder="Confirm Password"
+          value={passwordConfirmed}
+          onChangeText={setConfirmedPassword}
+          secureTextEntry={isPasswordHidden}
+          autoCorrect={false}
+          textContentType={"oneTimeCode"}
+          style={[styles.input, styles.passwordInput]}
+        />
+        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+          <Image
+            source={isPasswordHidden ? require('../../assets/images/eye-off.png') : require('../../assets/images/eye.png')}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
       <Button title="Next" onPress={handleNext} disabled={!isFormValid()} />
       <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
         <Text style={styles.signInText}>Already have an account? Sign In</Text>
@@ -169,6 +176,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontFamily: fonts.regular,
     borderRadius: 10,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  passwordInput: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  eyeIcon: {
+    padding: 10,
+    position: 'absolute',
+    right: 0,
+  },
+  icon: {
+    width: 24,
+    height: 24,
   },
   signInText: {
     marginTop: 16,
