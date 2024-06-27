@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { verifyEmail } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
-import { colors } from "../constants/constants";
+import { colors, fonts } from "../constants/constants";
 
 const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
   navigation,
@@ -135,14 +135,14 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: 16,
     color: colors.blue,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
   title: {
     fontSize: 24,
     marginBottom: 16,
     textAlign: "center",
     color: colors.blue,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
   logo: {
     width: 240,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: "center",
     color: "#666",
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
   codeInputContainer: {
     flexDirection: "row",
@@ -170,13 +170,13 @@ const styles = StyleSheet.create({
     height: 60,
     fontSize: 24,
     textAlign: "center",
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
   resendCodeText: {
     marginTop: 16,
     textAlign: "center",
     color: colors.blue,
-    fontFamily: "JosefinSans-Regular",
+    fontFamily: fonts.regular,
   },
 });
 

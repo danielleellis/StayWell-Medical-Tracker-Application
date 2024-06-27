@@ -107,6 +107,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry={isPasswordHidden}
         autoCorrect={false}
+        textContentType={"oneTimeCode"}
         style={styles.input}
         isPassword={true}
         togglePasswordVisibility={togglePasswordVisibility}
@@ -117,6 +118,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         onChangeText={setConfirmedPassword}
         secureTextEntry={isPasswordHidden}
         autoCorrect={false}
+        textContentType={"oneTimeCode"}
         style={styles.input}
         isPassword={true}
         togglePasswordVisibility={togglePasswordVisibility}
