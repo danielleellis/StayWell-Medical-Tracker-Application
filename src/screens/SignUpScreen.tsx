@@ -17,9 +17,11 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [passwordConfirmed, setConfirmedPassword] = useState("");
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const [verificationCodeSent, setVerificationCodeSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
 
-    const dispatch = useDispatch<AppDispatch>();
-    const serverEndpoint = configData.API_ENDPOINT;
+  const dispatch = useDispatch<AppDispatch>();
+  const serverEndpoint = configData.API_ENDPOINT;
 
   const [loaded] = useFonts({
     "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
@@ -71,10 +73,14 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             const response = await axios.post(`${serverEndpoint}/signup`, userData);
 
             if (response.status === 200 && response.data.success) {
-                const userID = response.data.userID; // Get userID from the server response
+                // Assume server returns userID and sets verificationCode in the database
+                const userID = response.data.userID;
 
                 // Update userData to include userID
                 const updatedUserData = { ...userData, userID };
+
+                // Send verification code after successful signup
+                await sendVerificationCode(email);
 
                 dispatch(signUp(updatedUserData));
                 navigation.navigate('EmailVerification');
@@ -84,6 +90,25 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             }
         } catch (error) {
             console.error('An error occurred during sign up:', error);
+        }
+
+    };
+
+    const sendVerificationCode = async (email: string) => {
+        try {
+            const response = await axios.put(`${serverEndpoint}/api/verify-code/${email}`);
+
+            if (response.status === 200) {
+                setVerificationCodeSent(true);
+                setVerificationCode(response.data.verificationCode); // Assuming backend sends back the generated code
+                Alert.alert('Verification Code Sent', 'Please check your email for the verification code.');
+            } else {
+                console.error('Failed to send verification code:', response.data);
+                Alert.alert('Error', 'Failed to send verification code. Please try again later.');
+            }
+        } catch (error) {
+            console.error('An error occurred while sending verification code:', error);
+            Alert.alert('Network Error', 'An error occurred while sending verification code. Please try again.');
         }
     };
 
