@@ -1,3 +1,12 @@
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../redux/store";
+import { signIn } from "../redux/slices/authSlice";
+import { useFonts } from "expo-font";
+import { colors, fonts } from "../constants/constants";
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Input from '../components/Input';
@@ -11,15 +20,16 @@ import axios from 'axios';
 import configData from "../../config.json";
 
 const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const dispatch = useDispatch<AppDispatch>();
-    const serverEndpoint = configData.API_ENDPOINT;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const serverEndpoint = configData.API_ENDPOINT;
 
-    const [loaded] = useFonts({
-    'JosefinSans-Regular': require('../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf'),
-    'JosefinSans-Bold': require('../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf'),
-    });
+  const [loaded] = useFonts({
+    "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
+    "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
+  });
 
     if (!loaded) {
         return null;
@@ -62,12 +72,18 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         }
     };
 
+  const togglePasswordVisibility = () => {
+    setIsPasswordHidden(!isPasswordHidden);
+  };
 
-    return (
+  return (
     <View style={styles.container}>
-        <Image source={require('../../assets/images/sun.png')} style={styles.logo} />
-        <Text style={styles.title}>Sign In</Text>
-        <Input
+      <Image
+        source={require("../../assets/images/sun.png")}
+        style={styles.logo}
+      />
+      <Text style={styles.title}>Sign In</Text>
+      <Input
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
@@ -78,14 +94,20 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        secureTextEntry={isPasswordHidden}
         style={styles.input}
-        />
-        <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        isPassword={true}
+        togglePasswordVisibility={togglePasswordVisibility}
+      />
+      <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
-        <Button title="Sign In" onPress={handleSignIn} disabled={!email || !password} />
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+      </TouchableOpacity>
+      <Button
+        title="Sign In"
+        onPress={handleSignIn}
+        disabled={!email || !password}
+      />
+      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
         <Text style={styles.signUpText}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
     </View>
@@ -95,21 +117,21 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 16,
-    backgroundColor: '#fff',
-    },
-    title: {
+    backgroundColor: colors.white,
+  },
+  title: {
     fontSize: 24,
     marginBottom: 24,
-    textAlign: 'center',
-    color: '#6BB7ED',
-    fontFamily: 'JosefinSans-Regular',
-    },
-    logo: {
+    textAlign: "center",
+    color: colors.blue,
+    fontFamily: fonts.regular,
+  },
+  logo: {
     width: 240,
     height: 75,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 24,
     },
     input: {
@@ -117,16 +139,16 @@ const styles = StyleSheet.create({
     },
     forgotPasswordText: {
     marginBottom: 16,
-    textAlign: 'right',
-    color: '#6BB7ED',
-    fontFamily: 'JosefinSans-Regular',
-    },
-    signUpText: {
+    textAlign: "right",
+    color: colors.blue,
+    fontFamily: fonts.regular,
+  },
+  signUpText: {
     marginTop: 16,
-    textAlign: 'center',
-    color: '#6BB7ED',
-    fontFamily: 'JosefinSans-Regular',
-    },
+    textAlign: "center",
+    color: colors.blue,
+    fontFamily: fonts.regular,
+  },
 });
 
 export default SignInScreen;

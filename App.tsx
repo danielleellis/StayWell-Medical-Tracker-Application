@@ -6,11 +6,13 @@ import store from './src/redux/store';
 import AppNavigator from './src/navigation/AppNavigator';
 import SplashScreen from './src/screens/SplashScreen';
 
+
+//not sure if i can have <_layout/> here too, had error switched out navigation to test
 const App: React.FC = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <AppNavigator />
+      <AppNavigator />
       </NavigationContainer>
     </Provider>
   );
