@@ -8,7 +8,8 @@ CREATE TABLE Users (
     pronouns TEXT, 
     phoneNumber TEXT, 
     birthday TEXT, 
-    profilePhoto TEXT
+    profilePhoto TEXT,
+    verificationCode TEXT
 );
 
 CREATE TABLE Calendar (

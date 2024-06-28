@@ -158,19 +158,44 @@ app.put('/api/profile-setup/:userID', async (req, res) => {
 });
 
 
+// ==============================================================================
+// Functions for email verification and forgot password codes
+// ==============================================================================
 
-// Endpoint to generate a 4-digit code on the account for either forgot password or email verification
-app.put('/api/profile-setup/:userID', async (req, res) => {
-    const userID = req.params.userID;
-    const { username, pronouns, phone, birthday, profilePhoto } = req.body;
+// Endpoint to retrieve verification code for a specific email
+app.get('/api/verify-code/:email', (req, res) => {
+    const email = req.params.email;
 
-    const stmt = db.prepare('UPDATE Users SET verificationCode = ? WHERE userID = ?');
-
-    stmt.run([username, pronouns, phone, birthday, profilePhoto, userID], function (err) {
+    const sql = 'SELECT verificationCode FROM Users WHERE email = ?';
+    db.get(sql, [email], (err, row) => {
         if (err) {
             return res.status(400).json({ error: err.message });
         }
-        res.status(200).json({ success: true });
+        if (!row) {
+            return res.status(404).json({ error: 'Verification code not found for the email.' });
+        }
+        res.status(200).json({ verificationCode: row.verificationCode });
+    });
+});
+
+
+// Endpoint to generate a 4-digit code for email verification or forgot password
+app.put('/api/verify-code/:email', async (req, res) => {
+    const email = req.params.email;
+
+    // Function to generate a random 4-digit code
+    function generateVerificationCode() {
+        return Math.floor(1000 + Math.random() * 9000); // Generates a number between 1000 and 9999
+    }
+
+    const verificationCode = generateVerificationCode();
+
+    const stmt = db.prepare('UPDATE Users SET verificationCode = ? WHERE email = ?');
+    stmt.run(verificationCode, email, function (err) {
+        if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+        res.status(200).json({ success: true, verificationCode: verificationCode });
     });
 
     stmt.finalize();
