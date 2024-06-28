@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useDispatch } from "react-redux";
@@ -13,6 +7,8 @@ import { AppDispatch } from "../redux/store";
 import { signUp } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import { colors, fonts } from "../constants/constants";
+import axios from 'axios';
+import configData from "../../config.json";
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -22,32 +18,74 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [passwordConfirmed, setConfirmedPassword] = useState("");
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
-  const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useDispatch<AppDispatch>();
+    const serverEndpoint = configData.API_ENDPOINT;
 
   const [loaded] = useFonts({
     "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
     "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
   });
 
-  if (!loaded) {
-    return null;
-  }
-
-  const handleNext = () => {
-    if (password !== passwordConfirmed) {
-      alert("Passwords do not match. Please check and try again.");
-      return;
+    if (!loaded) {
+        return null;
     }
 
-    const userData = {
-      firstName,
-      lastName,
-      email,
-      password,
+
+    const checkEmailAvailability = async (email: string) => {
+        try {
+            const response = await axios.get(`${serverEndpoint}/check-email/${email}`);
+
+            if (response.status === 200) {
+                return !response.data.taken; // Email availability depends on 'taken' field
+            } else {
+                return false; // Default to email taken if not 200
+            }
+        } catch (error) {
+            console.error('An error occurred while checking email availability:', error);
+            Alert.alert('Network Error', 'An error occurred while checking email availability. Please try again.');
+            return false;
+        }
     };
-    dispatch(signUp(userData));
-    navigation.navigate("EmailVerification");
-  };
+
+
+    const handleNext = async () => {
+        const emailAvailable = await checkEmailAvailability(email);
+        if (!emailAvailable) {
+            Alert.alert('Email already taken', 'Please use a different email address.');
+            return;
+        }
+
+        if (password !== passwordConfirmed) {
+            alert("Passwords do not match. Please check and try again.");
+            return;
+        }
+
+        const userData = {
+            firstName,
+            lastName,
+            email,
+            password,
+        };
+
+        try {
+            const response = await axios.post(`${serverEndpoint}/signup`, userData);
+
+            if (response.status === 200 && response.data.success) {
+                const userID = response.data.userID; // Get userID from the server response
+
+                // Update userData to include userID
+                const updatedUserData = { ...userData, userID };
+
+                dispatch(signUp(updatedUserData));
+                navigation.navigate('EmailVerification');
+                console.log('Sign up successful. UserData:', updatedUserData);
+            } else {
+                console.error('Failed to sign up:', response.data);
+            }
+        } catch (error) {
+            console.error('An error occurred during sign up:', error);
+        }
+    };
 
   const isFormValid = () => {
     return (

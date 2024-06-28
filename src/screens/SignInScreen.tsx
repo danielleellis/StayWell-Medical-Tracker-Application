@@ -7,26 +7,62 @@ import { AppDispatch } from "../redux/store";
 import { signIn } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import { colors, fonts } from "../constants/constants";
+import { Alert } from 'react-native';
+import axios from 'axios';
+import configData from "../../config.json";
 
 const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
+  const serverEndpoint = configData.API_ENDPOINT;
 
   const [loaded] = useFonts({
     "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
     "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
   });
 
-  if (!loaded) {
-    return null;
-  }
+    if (!loaded) {
+        return null;
+    }
 
-  const handleSignIn = () => {
-    dispatch(signIn({ email, password }));
-    navigation.navigate("Dashboard");
-  };
+    const fetchUserData = async (userId: string) => {
+        try {
+            const response = await axios.get(`${serverEndpoint}/users/${userId}`);
+            if (response.status === 200 && response.data.user) {
+                return response.data.user;
+            } else {
+                console.error('Failed to fetch user data:', response.data);
+                return null;
+            }
+        } catch (error) {
+            console.error('An error occurred while fetching user data:', error);
+            return null;
+        }
+    };
+
+    const handleSignIn = async () => {
+        try {
+            const response = await axios.post(`${serverEndpoint}/signin`, { email, password });
+            if (response.status === 200 && response.data.userId) {
+                const userId = response.data.userId;
+                const userData = await fetchUserData(userId);
+                if (userData) {
+                    dispatch(signIn(userData)); // Assuming your signIn action takes the full user data
+                    navigation.navigate('Dashboard');
+                    console.log('Login successful. UserData:', userData);
+                } else {
+                    Alert.alert('Login Failed', 'Failed to retrieve user data. Please try again.');
+                }
+            } else {
+                Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
+            }
+        } catch (error) {
+            console.error('An error occurred during sign in:', error);
+            Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
+        }
+    };
 
   const togglePasswordVisibility = () => {
     setIsPasswordHidden(!isPasswordHidden);
@@ -45,8 +81,8 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         onChangeText={setEmail}
         keyboardType="email-address"
         style={styles.input}
-      />
-      <Input
+        />
+        <Input
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
@@ -65,13 +101,13 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       />
       <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
         <Text style={styles.signUpText}>Don't have an account? Sign Up</Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
     </View>
-  );
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
+    container: {
     flex: 1,
     justifyContent: "center",
     padding: 16,
@@ -89,11 +125,11 @@ const styles = StyleSheet.create({
     height: 75,
     alignSelf: "center",
     marginBottom: 24,
-  },
-  input: {
+    },
+    input: {
     marginBottom: 16,
-  },
-  forgotPasswordText: {
+    },
+    forgotPasswordText: {
     marginBottom: 16,
     textAlign: "right",
     color: colors.blue,

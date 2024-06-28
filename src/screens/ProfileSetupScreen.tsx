@@ -3,11 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
+import { AppDispatch, RootState } from "../redux/store";
 import { setupProfile } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import * as ImagePicker from "expo-image-picker";
 import { colors, fonts } from "../constants/constants";
+import axios from 'axios';
+import configData from "../../config.json";
+import { useSelector } from 'react-redux';
 
 const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -17,26 +20,42 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
 
+  const serverEndpoint = configData.API_ENDPOINT;
+
   const [loaded] = useFonts({
     "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
     "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
   });
 
-  if (!loaded) {
-    return null;
-  }
+    if (!loaded) {
+        return null;
+    }
 
-  const handleProfileSetup = () => {
-    const userData = {
-      username,
-      pronouns,
-      phone,
-      birthday,
-      profilePhoto,
+    // Get userID from Redux state
+    const userID = useSelector((state: RootState) => state.auth.user);
+
+    const handleProfileSetup = async () => {
+        const userData = {
+            username,
+            pronouns,
+            phone,
+            birthday,
+            profilePhoto,
+        };
+
+        try {
+            const response = await axios.put(`${serverEndpoint}/profile-setup/${userID}`, userData);
+            if (response.status === 200) {
+                dispatch(setupProfile(userData));
+                navigation.navigate('Dashboard');
+                console.log('Profile setup successful. UserData:', userData);
+            } else {
+                console.error('Failed to update profile:', response.data);
+            }
+        } catch (error) {
+            console.error('An error occurred during profile setup:', error);
+        }
     };
-    dispatch(setupProfile(userData));
-    navigation.navigate("Dashboard");
-  };
 
   const handleProfilePhotoUpload = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -45,17 +64,18 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
 
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setProfilePhoto(result.assets[0].uri);
-    }
-  }; // Added the missing closing brace here
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            setProfilePhoto(result.assets[0].uri);
+        }
+    };
+
 
   return (
     <View style={styles.container}>

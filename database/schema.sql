@@ -1,17 +1,20 @@
-CREATE TABLE User (
-    username TEXT,
-    password TEXT,
-    legalName TEXT,
-    userID TEXT PRIMARY KEY,
-    pronouns TEXT,
-    birthday DATE,
-    phoneNumber TEXT,
-    emailAddress TEXT
+CREATE TABLE Users (
+    userID TEXT, 
+    firstName TEXT, 
+    lastName TEXT, 
+    email TEXT, 
+    password TEXT, 
+    username TEXT, 
+    pronouns TEXT, 
+    phoneNumber TEXT, 
+    birthday TEXT, 
+    profilePhoto TEXT,
+    verificationCode TEXT
 );
 
 CREATE TABLE Calendar (
     userID TEXT,
-    FOREIGN KEY (userID) REFERENCES User(userID)
+    FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
 CREATE TABLE Event (
