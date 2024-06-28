@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useDispatch } from "react-redux";
@@ -13,15 +7,7 @@ import { AppDispatch } from "../redux/store";
 import { signUp } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import { colors, fonts } from "../constants/constants";
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
-import Input from '../components/Input';
-import Button from '../components/Button';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../redux/store';
-import { signUp } from '../redux/slices/authSlice';
-import { useFonts } from 'expo-font';
 import configData from "../../config.json";
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -57,7 +43,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         } catch (error) {
             console.error('An error occurred while checking email availability:', error);
             Alert.alert('Network Error', 'An error occurred while checking email availability. Please try again.');
-            return false; // Assume email is taken if an error occurs
+            return false;
         }
     };
 

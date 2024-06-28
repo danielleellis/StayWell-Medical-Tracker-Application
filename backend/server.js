@@ -118,16 +118,25 @@ app.post('/signin', (req, res) => {
 app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
 
-    const stmt = db.prepare('INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)');
+    try {
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
-    stmt.run([userID, firstName, lastName, email, hashedPassword], function (err) {
-        if (err) {
-            return res.status(400).json({ error: err.message });
-        }
-        res.status(200).json({ success: true, userID });
-    });
+        // Generate userID (example: using email for simplicity)
+        const userID = await bcrypt.hash(email, 10); // Hashing email to generate userID
 
-    stmt.finalize();
+        const stmt = db.prepare('INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)');
+        stmt.run([userID, firstName, lastName, email, hashedPassword], function (err) {
+            if (err) {
+                return res.status(400).json({ error: err.message });
+            }
+            res.status(200).json({ success: true, userID });
+        });
+
+        stmt.finalize();
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 
@@ -137,6 +146,25 @@ app.put('/api/profile-setup/:userID', async (req, res) => {
     const { username, pronouns, phone, birthday, profilePhoto } = req.body;
 
     const stmt = db.prepare('UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?');
+
+    stmt.run([username, pronouns, phone, birthday, profilePhoto, userID], function (err) {
+        if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+        res.status(200).json({ success: true });
+    });
+
+    stmt.finalize();
+});
+
+
+
+// Endpoint to generate a 4-digit code on the account for either forgot password or email verification
+app.put('/api/profile-setup/:userID', async (req, res) => {
+    const userID = req.params.userID;
+    const { username, pronouns, phone, birthday, profilePhoto } = req.body;
+
+    const stmt = db.prepare('UPDATE Users SET verificationCode = ? WHERE userID = ?');
 
     stmt.run([username, pronouns, phone, birthday, profilePhoto, userID], function (err) {
         if (err) {
