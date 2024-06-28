@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     paddingTop: 50,
-    paddingLeft: 20,
   },
   heading: {
     fontSize: 30,
