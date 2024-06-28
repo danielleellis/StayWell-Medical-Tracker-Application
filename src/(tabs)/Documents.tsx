@@ -6,6 +6,8 @@ const Documents = () =>{
         <View style={styles.container}>
             <Text style={styles.heading}>S T A Y W E L L</Text>
         </View>
+
+        
     )
 }
 
@@ -23,5 +25,10 @@ const styles = StyleSheet.create({
         color: '#45a6ff',
         fontFamily: "JosefinSans-Regular",
 
+    },
+    title:{
+        flex: 1,
+        justifyContent: 'flex-start',
+        color:'#000000',
     }
 })
