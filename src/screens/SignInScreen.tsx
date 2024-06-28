@@ -6,10 +6,12 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { signIn } from "../redux/slices/authSlice";
 import { useFonts } from "expo-font";
+import { colors, fonts } from "../constants/constants";
 
 const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
 
   const [loaded] = useFonts({
@@ -24,6 +26,10 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const handleSignIn = () => {
     dispatch(signIn({ email, password }));
     navigation.navigate("Dashboard");
+  };
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordHidden(!isPasswordHidden);
   };
 
   return (
@@ -44,8 +50,10 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        secureTextEntry={isPasswordHidden}
         style={styles.input}
+        isPassword={true}
+        togglePasswordVisibility={togglePasswordVisibility}
       />
       <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
@@ -67,14 +75,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.white,
   },
   title: {
     fontSize: 24,
     marginBottom: 24,
     textAlign: "center",
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
   logo: {
     width: 240,
@@ -88,14 +96,14 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     marginBottom: 16,
     textAlign: "right",
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
   signUpText: {
     marginTop: 16,
     textAlign: "center",
-    color: "#6BB7ED",
-    fontFamily: "JosefinSans-Regular",
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
 });
 
