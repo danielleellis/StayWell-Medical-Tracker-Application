@@ -11,27 +11,26 @@ import axios from 'axios';
 import configData from "../../config.json";
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirmed, setConfirmedPassword] = useState("");
-  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
-  const [verificationCodeSent, setVerificationCodeSent] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordConfirmed, setConfirmedPassword] = useState("");
+    const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+    const [verificationCodeSent, setVerificationCodeSent] = useState(false);
+    const [verificationCode, setVerificationCode] = useState("");
 
-  const dispatch = useDispatch<AppDispatch>();
-  const serverEndpoint = configData.API_ENDPOINT;
+    const dispatch = useDispatch<AppDispatch>();
+    const serverEndpoint = configData.API_ENDPOINT;
 
-  const [loaded] = useFonts({
-    "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
-    "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
-  });
+    const [loaded] = useFonts({
+        "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
+        "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
+    });
 
     if (!loaded) {
         return null;
     }
-
 
     const checkEmailAvailability = async (email: string) => {
         try {
@@ -48,7 +47,6 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             return false;
         }
     };
-
 
     const handleNext = async () => {
         const emailAvailable = await checkEmailAvailability(email);
@@ -73,14 +71,10 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             const response = await axios.post(`${serverEndpoint}/signup`, userData);
 
             if (response.status === 200 && response.data.success) {
-                // Assume server returns userID and sets verificationCode in the database
-                const userID = response.data.userID;
+                const { userID, hashedPassword } = response.data;
 
-                // Update userData to include userID
-                const updatedUserData = { ...userData, userID };
-
-                // Send verification code after successful signup
-                await sendVerificationCode(email);
+                // Update userData to include userID and hashedPassword
+                const updatedUserData = { ...userData, userID: userID, password: hashedPassword };
 
                 dispatch(signUp(updatedUserData));
                 navigation.navigate('EmailVerification');
@@ -91,8 +85,9 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         } catch (error) {
             console.error('An error occurred during sign up:', error);
         }
-
     };
+
+
 
     const sendVerificationCode = async (email: string) => {
         try {

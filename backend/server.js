@@ -44,7 +44,7 @@ db.serialize(() => {
 // ==============================================================================
 
 // Endpoint to get all users
-app.get('/users', (req, res) => {
+app.get('/api/users', (req, res) => {
     db.all('SELECT * FROM User', [], (err, rows) => {
         if (err) {
             res.status(500).json({ error: err.message });
@@ -56,11 +56,12 @@ app.get('/users', (req, res) => {
 
 
 // Endpoint to get a specific user by ID
-app.get('/users/:id', (req, res) => {
+app.get('/api/users/:id', (req, res) => {
     const userID = req.params.id;
-    db.get('SELECT * FROM User WHERE userID = ?', [userID], (err, row) => {
+    db.get('SELECT * FROM Users WHERE userID = ?', [userID], (err, row) => {
         if (err) {
             res.status(500).json({ error: err.message });
+            console.error("get api/users/:id error");
             return;
         }
         res.json({ user: row });
@@ -74,6 +75,7 @@ app.get('/api/check-email/:email', (req, res) => {
     db.get('SELECT * FROM Users WHERE email = ?', [email], (err, row) => {
         if (err) {
             res.status(500).json({ error: err.message });
+            console.error("get api/check-email/:email error");
             return;
         }
         if (row) {
@@ -92,18 +94,19 @@ app.get('/api/check-email/:email', (req, res) => {
 // ==============================================================================
 
 // Endpoint to handle user login
-app.post('/signin', (req, res) => {
+app.post('/api/signin', async (req, res) => {
     const { email, password } = req.body;
 
-    db.get('SELECT * FROM User WHERE email = ?', [email], async (err, user) => {
+    db.get('SELECT * FROM Users WHERE email = ?', [email], async (err, user) => {
         if (err) {
             res.status(500).json({ error: err.message });
+            console.error("post api/signin");
             return;
         }
         if (user) {
             const match = await bcrypt.compare(password, user.password);
             if (match) {
-                res.status(200).json({ userId: user.userID });
+                res.status(200).json({ userID: user.userID });
             } else {
                 res.status(401).json({ message: 'Invalid email or password' });
             }
@@ -114,7 +117,7 @@ app.post('/signin', (req, res) => {
 });
 
 
-// Endpoint to sign up a new user with first/last name, email, password, and generate a userID by hashing their email address
+// Endpoint to sign up a new user with first/last name, email, password, and generate a userID
 app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
 
@@ -122,15 +125,16 @@ app.post('/api/signup', async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
-        // Generate userID (example: using email for simplicity)
-        const userID = await bcrypt.hash(email, 10); // Hashing email to generate userID
+        // Generate userID
+        const userID = generateRandomID(10); // Generate a random 10-character userID
+        console.log('Generated userID:', userID);
 
         const stmt = db.prepare('INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)');
         stmt.run([userID, firstName, lastName, email, hashedPassword], function (err) {
             if (err) {
                 return res.status(400).json({ error: err.message });
             }
-            res.status(200).json({ success: true, userID });
+            res.status(200).json({ success: true, userID, hashedPassword });
         });
 
         stmt.finalize();
@@ -139,23 +143,45 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
+// userID generation function
+const generateRandomID = (length = 10) => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    console.log('Generated ID:', result);
+    return result;
+};
+
 
 // Endpoint to update user profile
-app.put('/api/profile-setup/:userID', async (req, res) => {
-    const userID = req.params.userID;
-    const { username, pronouns, phone, birthday, profilePhoto } = req.body;
+app.put('/api/profile-setup', async (req, res) => {
+    const { userID, username, pronouns, phone, birthday, profilePhoto } = req.body;
+
+    console.log('Received userID:', userID);
+    console.log('Received data:', { username, pronouns, phone, birthday, profilePhoto });
+
+    if (!userID || !username || !pronouns || !phone || !birthday || !profilePhoto) {
+        console.error('Missing fields in profile setup data');
+        return res.status(400).json({ error: 'Missing fields in profile setup data' });
+    }
 
     const stmt = db.prepare('UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?');
 
     stmt.run([username, pronouns, phone, birthday, profilePhoto, userID], function (err) {
         if (err) {
+            console.error('Error updating user:', err.message);
             return res.status(400).json({ error: err.message });
         }
+        console.log('Database update successful');
         res.status(200).json({ success: true });
     });
 
     stmt.finalize();
 });
+
 
 
 // ==============================================================================

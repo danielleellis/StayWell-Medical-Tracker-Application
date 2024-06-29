@@ -35,7 +35,10 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const userID = useSelector((state: RootState) => state.auth.user);
 
     const handleProfileSetup = async () => {
+        const profilePhoto = "photopath";  // Example path for testing
+
         const userData = {
+            userID,
             username,
             pronouns,
             phone,
@@ -44,8 +47,10 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         };
 
         try {
-            const response = await axios.put(`${serverEndpoint}/profile-setup/${userID}`, userData);
-            if (response.status === 200) {
+            const response = await axios.put(`${serverEndpoint}/profile-setup`, userData);
+            console.log('Profile setup response:', response.data);
+
+            if (response.status === 200 && response.data.success) {
                 dispatch(setupProfile(userData));
                 navigation.navigate('Dashboard');
                 console.log('Profile setup successful. UserData:', userData);
@@ -56,6 +61,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             console.error('An error occurred during profile setup:', error);
         }
     };
+
 
   const handleProfilePhotoUpload = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

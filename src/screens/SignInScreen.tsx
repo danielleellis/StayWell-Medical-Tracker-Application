@@ -27,13 +27,13 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         return null;
     }
 
-    const fetchUserData = async (userId: string) => {
+    const fetchUserData = async (userID: string) => {
         try {
-            const response = await axios.get(`${serverEndpoint}/users/${userId}`);
+            const response = await axios.get(`${serverEndpoint}/users/${userID}`);
             if (response.status === 200 && response.data.user) {
                 return response.data.user;
             } else {
-                console.error('Failed to fetch user data:', response.data);
+                console.error('User not found. ', response.data);
                 return null;
             }
         } catch (error) {
@@ -45,15 +45,17 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const handleSignIn = async () => {
         try {
             const response = await axios.post(`${serverEndpoint}/signin`, { email, password });
-            if (response.status === 200 && response.data.userId) {
-                const userId = response.data.userId;
-                const userData = await fetchUserData(userId);
+            if (response.status === 200 && response.data.userID) {
+                const userID = response.data.userID;
+                console.log("userID: ", userID);
+                const userData = await fetchUserData(userID);
+                console.log("fetched user data: ", userData);
                 if (userData) {
-                    dispatch(signIn(userData)); // Assuming your signIn action takes the full user data
+                    dispatch(signIn(userData));
                     navigation.navigate('Dashboard');
                     console.log('Login successful. UserData:', userData);
                 } else {
-                    Alert.alert('Login Failed', 'Failed to retrieve user data. Please try again.');
+                    Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
                 }
             } else {
                 Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
