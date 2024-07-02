@@ -79,14 +79,14 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <Input
         placeholder="First Name"
         value={firstName}
-        onChangeText={setFirstName}
+        onChangeText={(text) => setFirstName(text.replace(/[^a-zA-Z]/g, ''))}
         autoCapitalize="words"
         style={styles.input}
       />
       <Input
         placeholder="Last Name"
         value={lastName}
-        onChangeText={setLastName}
+        onChangeText={(text) => setLastName(text.replace(/[^a-zA-Z]/g, ''))}
         autoCapitalize="words"
         style={styles.input}
       />
