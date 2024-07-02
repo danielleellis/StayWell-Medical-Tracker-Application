@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -21,6 +22,8 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [passwordConfirmed, setConfirmedPassword] = useState("");
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -33,30 +36,40 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return null;
   }
 
-  const handleNext = () => {
-    if (password !== passwordConfirmed) {
-      alert("Passwords do not match. Please check and try again.");
-      return;
-    }
-
-    const userData = {
-      firstName,
-      lastName,
-      email,
-      password,
-    };
-    dispatch(signUp(userData));
-    navigation.navigate("EmailVerification");
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
-  const isFormValid = () => {
-    return (
-      firstName !== "" &&
-      lastName !== "" &&
-      email !== "" &&
-      password !== "" &&
-      password === passwordConfirmed
-    );
+  const validateForm = () => {
+    let newErrors: {[key: string]: string} = {};
+    if (!firstName) newErrors.firstName = "First name is required";
+    if (!lastName) newErrors.lastName = "Last name is required";
+    if (!email) newErrors.email = "Email is required";
+    else if (!isValidEmail(email)) newErrors.email = "Please enter a valid email address";
+    if (!password) newErrors.password = "Password is required";
+    if (password !== passwordConfirmed) newErrors.password = "Passwords do not match";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    setHasAttemptedSubmit(true);
+    if (validateForm()) {
+      const userData = {
+        firstName,
+        lastName,
+        email,
+        password,
+      };
+      dispatch(signUp(userData));
+      navigation.navigate("EmailVerification");
+    }
+  };
+
+  const isFormFilled = () => {
+    return firstName !== "" && lastName !== "" && email !== "" && password !== "" && passwordConfirmed !== "";
   };
 
   const togglePasswordVisibility = () => {
@@ -64,7 +77,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity
         onPress={() => navigation.navigate("Splash")}
         style={styles.backButton}
@@ -79,17 +92,19 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <Input
         placeholder="First Name"
         value={firstName}
-        onChangeText={(text) => setFirstName(text.replace(/[^a-zA-Z]/g, ''))}
+        onChangeText={setFirstName}
         autoCapitalize="words"
         style={styles.input}
       />
+      {hasAttemptedSubmit && errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
       <Input
         placeholder="Last Name"
         value={lastName}
-        onChangeText={(text) => setLastName(text.replace(/[^a-zA-Z]/g, ''))}
+        onChangeText={setLastName}
         autoCapitalize="words"
         style={styles.input}
       />
+      {hasAttemptedSubmit && errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
       <Input
         placeholder="Email"
         value={email}
@@ -98,6 +113,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         autoCapitalize="none"
         style={styles.input}
       />
+      {hasAttemptedSubmit && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
       <Input
         placeholder="Password"
         value={password}
@@ -120,17 +136,18 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         isPassword={true}
         togglePasswordVisibility={togglePasswordVisibility}
       />
-      <Button title="Next" onPress={handleNext} disabled={!isFormValid()} />
+      {hasAttemptedSubmit && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+      <Button title="Next" onPress={handleNext} disabled={!isFormFilled()} />
       <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
         <Text style={styles.signInText}>Already have an account? Sign In</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     padding: 16,
     backgroundColor: colors.white,
@@ -165,6 +182,13 @@ const styles = StyleSheet.create({
     marginTop: 16,
     textAlign: "center",
     color: colors.blue,
+    fontFamily: fonts.regular,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: -12,
+    marginBottom: 16,
     fontFamily: fonts.regular,
   },
 });
