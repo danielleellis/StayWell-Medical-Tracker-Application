@@ -15,7 +15,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [phone, setPhone] = useState("");
   const [birthday, setBirthday] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const dispatch = useDispatch<AppDispatch>();
 
   const [loaded] = useFonts({
@@ -61,12 +61,15 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const formatPhoneNumber = (input: string) => {
-    const cleanedInput = input.replace(/\D/g, '');
+    const cleanedInput = input.replace(/\D/g, "");
     let formattedInput = cleanedInput;
     if (cleanedInput.length > 3) {
       formattedInput = `(${cleanedInput.slice(0, 3)})`;
       if (cleanedInput.length > 6) {
-        formattedInput += `-${cleanedInput.slice(3, 6)}-${cleanedInput.slice(6, 10)}`;
+        formattedInput += `-${cleanedInput.slice(3, 6)}-${cleanedInput.slice(
+          6,
+          10
+        )}`;
       } else {
         formattedInput += `-${cleanedInput.slice(3)}`;
       }
@@ -75,12 +78,15 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const formatBirthday = (input: string) => {
-    const cleanedInput = input.replace(/\D/g, '');
+    const cleanedInput = input.replace(/\D/g, "");
     let formattedInput = cleanedInput;
     if (cleanedInput.length > 2) {
       formattedInput = `${cleanedInput.slice(0, 2)}/`;
       if (cleanedInput.length > 4) {
-        formattedInput += `${cleanedInput.slice(2, 4)}/${cleanedInput.slice(4, 8)}`;
+        formattedInput += `${cleanedInput.slice(2, 4)}/${cleanedInput.slice(
+          4,
+          8
+        )}`;
       } else {
         formattedInput += cleanedInput.slice(2);
       }
@@ -89,10 +95,16 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const validateForm = () => {
-    let newErrors: {[key: string]: string} = {};
-    if (username.length < 3) newErrors.username = "Username must be at least 3 characters long";
-    if (phone.replace(/\D/g, '').length !== 10) newErrors.phone = "Please enter a valid 10-digit phone number";
-    if (birthday.length !== 10) newErrors.birthday = "Please enter a valid date in MM/DD/YYYY format";
+    let newErrors: { [key: string]: string } = {};
+    if (!username.match(/^[a-zA-Z0-9]+$/)) {
+      newErrors.username = "Username must contain only letters and numbers";
+    } else if (username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters long";
+    }
+    if (phone.replace(/\D/g, "").length !== 10)
+      newErrors.phone = "Please enter a valid 10-digit phone number";
+    if (birthday.length !== 10)
+      newErrors.birthday = "Please enter a valid date in MM/DD/YYYY format";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -119,7 +131,9 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         onChangeText={setUsername}
         style={styles.input}
       />
-      {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+      {errors.username && (
+        <Text style={styles.errorText}>{errors.username}</Text>
+      )}
       <Input
         placeholder="Pronouns"
         value={pronouns}
@@ -141,7 +155,9 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         keyboardType="numeric"
         style={styles.input}
       />
-      {errors.birthday && <Text style={styles.errorText}>{errors.birthday}</Text>}
+      {errors.birthday && (
+        <Text style={styles.errorText}>{errors.birthday}</Text>
+      )}
       <Button title="Save" onPress={handleProfileSetup} />
     </View>
   );
@@ -187,7 +203,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginTop: -12,
     marginBottom: 16,
