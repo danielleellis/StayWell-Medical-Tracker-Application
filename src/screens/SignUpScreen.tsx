@@ -22,7 +22,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [passwordConfirmed, setConfirmedPassword] = useState("");
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -41,14 +41,29 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return emailRegex.test(email);
   };
 
+  const isValidName = (name: string) => {
+    const nameRegex = /^[a-zA-Z]+$/;
+    return nameRegex.test(name);
+  };
+
   const validateForm = () => {
-    let newErrors: {[key: string]: string} = {};
-    if (!firstName) newErrors.firstName = "First name is required";
-    if (!lastName) newErrors.lastName = "Last name is required";
+    let newErrors: { [key: string]: string } = {};
+    if (!firstName) {
+      newErrors.firstName = "First name is required";
+    } else if (!isValidName(firstName)) {
+      newErrors.firstName = "First name should contain only letters";
+    }
+    if (!lastName) {
+      newErrors.lastName = "Last name is required";
+    } else if (!isValidName(lastName)) {
+      newErrors.lastName = "Last name should contain only letters";
+    }
     if (!email) newErrors.email = "Email is required";
-    else if (!isValidEmail(email)) newErrors.email = "Please enter a valid email address";
+    else if (!isValidEmail(email))
+      newErrors.email = "Please enter a valid email address";
     if (!password) newErrors.password = "Password is required";
-    if (password !== passwordConfirmed) newErrors.password = "Passwords do not match";
+    if (password !== passwordConfirmed)
+      newErrors.password = "Passwords do not match";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -69,7 +84,13 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const isFormFilled = () => {
-    return firstName !== "" && lastName !== "" && email !== "" && password !== "" && passwordConfirmed !== "";
+    return (
+      firstName !== "" &&
+      lastName !== "" &&
+      email !== "" &&
+      password !== "" &&
+      passwordConfirmed !== ""
+    );
   };
 
   const togglePasswordVisibility = () => {
@@ -96,7 +117,9 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         autoCapitalize="words"
         style={styles.input}
       />
-      {hasAttemptedSubmit && errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+      {hasAttemptedSubmit && errors.firstName && (
+        <Text style={styles.errorText}>{errors.firstName}</Text>
+      )}
       <Input
         placeholder="Last Name"
         value={lastName}
@@ -104,7 +127,9 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         autoCapitalize="words"
         style={styles.input}
       />
-      {hasAttemptedSubmit && errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+      {hasAttemptedSubmit && errors.lastName && (
+        <Text style={styles.errorText}>{errors.lastName}</Text>
+      )}
       <Input
         placeholder="Email"
         value={email}
@@ -113,7 +138,9 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         autoCapitalize="none"
         style={styles.input}
       />
-      {hasAttemptedSubmit && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+      {hasAttemptedSubmit && errors.email && (
+        <Text style={styles.errorText}>{errors.email}</Text>
+      )}
       <Input
         placeholder="Password"
         value={password}
@@ -136,7 +163,9 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         isPassword={true}
         togglePasswordVisibility={togglePasswordVisibility}
       />
-      {hasAttemptedSubmit && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+      {hasAttemptedSubmit && errors.password && (
+        <Text style={styles.errorText}>{errors.password}</Text>
+      )}
       <Button title="Next" onPress={handleNext} disabled={!isFormFilled()} />
       <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
         <Text style={styles.signInText}>Already have an account? Sign In</Text>
@@ -185,7 +214,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginTop: -12,
     marginBottom: 16,
