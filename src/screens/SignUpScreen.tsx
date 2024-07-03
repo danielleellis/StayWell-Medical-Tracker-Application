@@ -46,6 +46,19 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     return nameRegex.test(name);
   };
 
+  const isValidPassword = (password: string) => {
+    if (password.length < 8 || password.length > 32) {
+      return false;
+    }
+    if (!/[A-Z]/.test(password)) {
+      return false;
+    }
+    if (!/[!@#$%^&*]/.test(password)) {
+      return false;
+    }
+    return true;
+  };
+
   const validateForm = () => {
     let newErrors: { [key: string]: string } = {};
     if (!firstName) {
@@ -61,9 +74,15 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     if (!email) newErrors.email = "Email is required";
     else if (!isValidEmail(email))
       newErrors.email = "Please enter a valid email address";
-    if (!password) newErrors.password = "Password is required";
-    if (password !== passwordConfirmed)
-      newErrors.password = "Passwords do not match";
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (!isValidPassword(password)) {
+      newErrors.password =
+        "Password must be between 8 and 32 characters, contain at least one uppercase letter, and one of these symbols: !@#$%^&*";
+    }
+    if (password !== passwordConfirmed) {
+      newErrors.passwordConfirmed = "Passwords do not match";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -165,6 +184,9 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       />
       {hasAttemptedSubmit && errors.password && (
         <Text style={styles.errorText}>{errors.password}</Text>
+      )}
+      {hasAttemptedSubmit && errors.passwordConfirmed && (
+        <Text style={styles.errorText}>{errors.passwordConfirmed}</Text>
       )}
       <Button title="Next" onPress={handleNext} disabled={!isFormFilled()} />
       <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
