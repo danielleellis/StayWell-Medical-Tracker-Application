@@ -98,8 +98,10 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     let newErrors: { [key: string]: string } = {};
     if (!username.match(/^[a-zA-Z0-9]+$/)) {
       newErrors.username = "Username must contain only letters and numbers";
-    } else if (username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters long";
+    } else if (username.length < 6) {
+      newErrors.username = "Username must be at least 6 characters long";
+    } else if (username.length > 30) {
+      newErrors.username = "Username must be less than 30 characters long";
     }
     if (phone.replace(/\D/g, "").length !== 10)
       newErrors.phone = "Please enter a valid 10-digit phone number";
