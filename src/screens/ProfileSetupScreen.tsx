@@ -128,7 +128,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         )}
       </TouchableOpacity>
       <Input
-        placeholder="Username (visible to others for account lookup)"
+        placeholder="Display Name"
         value={username}
         onChangeText={setUsername}
         style={styles.input}
