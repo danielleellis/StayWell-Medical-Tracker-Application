@@ -137,7 +137,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.errorText}>{errors.username}</Text>
       )}
       <Input
-        placeholder="Pronouns"
+        placeholder="Pronouns (optional)"
         value={pronouns}
         onChangeText={setPronouns}
         style={styles.input}
