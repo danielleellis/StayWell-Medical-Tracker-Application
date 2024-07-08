@@ -4,6 +4,8 @@ import {useState} from "react";
 import { colors, fonts } from "../constants/constants";
 import {Ionicons} from '@expo/vector-icons'
 
+const gap = 15;
+
 const habit = <Ionicons name='repeat-outline' color={colors.blue} size={25}/>
 const task = <Ionicons name='checkmark-circle-outline' color={colors.blue} size={25}/>
 const document = <Ionicons name='document-outline' color={colors.blue} size={25}/>
@@ -16,6 +18,13 @@ const menuData = [
 
 const Create = () => {
   const [menuVisible, setMenuVisible] = useState(true);
+
+  const seperator = () => {
+    return(
+      <View style={styles.seperator} />
+    )
+  }
+
 
   return (
     <View style={styles.container}>
@@ -37,15 +46,19 @@ const Create = () => {
         }}>
 
           <View style={styles.popup}>
-          
-            <FlatList 
-              style={styles.item}
-              keyExtractor={(item) => item.id} 
-              data={menuData}
-              renderItem={({item}) =>(
-                <Text style={styles.title}>{item.icon}{'  '}{item.title}</Text>
-              )}  
-            />
+            
+            <View>
+              <FlatList 
+                style={styles.item}
+                keyExtractor={(item) => item.id} 
+                data={menuData}
+                renderItem={({item}) =>(
+                  <Text style={styles.title}>{item.icon}{'  '}{item.title}</Text>
+                )}  
+                ItemSeparatorComponent={seperator}
+                contentContainerStyle={{gap}}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -70,18 +83,25 @@ const styles = StyleSheet.create({
   },
   item:{
     padding: 10,
-    marginVertical: 20, 
+    marginVertical: 10, 
+    
   },
   title:{
     fontSize: 30,
     color: colors.blue,
+    fontFamily: fonts.regular,
   },
   popup:{
     backgroundColor: 'white',
-    padding: 20,
+    padding: 15,
     width: '100%',
-    height: '30%',
+    height: '33%',
     borderTopLeftRadius:20,
     borderTopRightRadius:20,
-  }
+  },
+  seperator:{
+    height:2,
+    backgroundColor: '#f2f2f2',
+    
+  },
 });
