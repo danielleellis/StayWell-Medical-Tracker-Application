@@ -38,14 +38,13 @@ const CalendarScreen = () => {
   // dayContainer dynamically fits 7 items per row
   const screenWidth = Dimensions.get("window").width;
   const containerPaddingHorizontal = 10;
-  const dayContainerWidth =
-    (screenWidth - 2 * containerPaddingHorizontal) / 7 - 2; // subtracting 2 for margin
+  const dayContainerWidth = (screenWidth - 2 * containerPaddingHorizontal) / 7;
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>S T A Y W E L L</Text>
       <Text style={styles.currentDate}>
-        {currentMonth} {currentDate}
+        {currentMonth} {new Date().getFullYear()}
       </Text>
       <View style={styles.calendarContainer}>
         <View style={styles.daysOfWeekContainer}>
@@ -105,13 +104,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.white,
     fontFamily: fonts.regular,
-    marginBottom: 20,
+    marginBottom: 25,
   },
   currentDate: {
     fontSize: 20,
     color: colors.white,
     fontFamily: fonts.regular,
-    textAlign: "left",
   },
   calendarContainer: {
     marginTop: 20,
@@ -119,11 +117,10 @@ const styles = StyleSheet.create({
   },
   daysOfWeekContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginLeft: 5,
+    justifyContent: "space-evenly",
+    marginLeft: 8,
     marginRight: 8,
   },
-
   dayOfWeek: {
     fontFamily: fonts.regular,
     fontSize: 14,
