@@ -4,12 +4,15 @@ import {useState} from "react";
 import { colors, fonts } from "../constants/constants";
 import {Ionicons} from '@expo/vector-icons'
 
+//to separate items in menu
 const gap = 15;
 
+//icons for menu
 const habit = <Ionicons name='repeat-outline' color={colors.blue} size={25}/>
 const task = <Ionicons name='checkmark-circle-outline' color={colors.blue} size={25}/>
 const document = <Ionicons name='document-outline' color={colors.blue} size={25}/>
 
+//menu items
 const menuData = [
   {id:'1', title:'Habit', icon:habit},
   {id:'2', title:'Task', icon:task},
@@ -17,6 +20,7 @@ const menuData = [
 ]
 
 const Create = () => {
+  //set state of modal popup. set to true while i figure out how to connect it to button in app navigator
   const [menuVisible, setMenuVisible] = useState(true);
 
   const seperator = () => {
@@ -83,8 +87,7 @@ const styles = StyleSheet.create({
   },
   item:{
     padding: 10,
-    marginVertical: 10, 
-    
+    marginVertical: 10,   
   },
   title:{
     fontSize: 30,
@@ -101,7 +104,6 @@ const styles = StyleSheet.create({
   },
   seperator:{
     height:2,
-    backgroundColor: '#f2f2f2',
-    
+    backgroundColor: '#f2f2f2', 
   },
 });
