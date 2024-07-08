@@ -112,20 +112,17 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
   },
   calendarContainer: {
-    marginTop: 20,
-    paddingHorizontal: 10,
+    marginTop: 5,
   },
   daysOfWeekContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    marginLeft: 8,
-    marginRight: 8,
+    margin: 10,
   },
   dayOfWeek: {
     fontFamily: fonts.regular,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.white,
-    width: 40,
     textAlign: "center",
   },
   daysContainer: {
@@ -133,16 +130,16 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   dayContainer: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    width: 42,
+    height: 45,
+    marginTop: 5,
   },
   day: {
     fontFamily: fonts.regular,
     fontSize: 16,
     color: colors.white,
     textAlign: "center",
+    marginLeft: 8,
   },
 });
 
