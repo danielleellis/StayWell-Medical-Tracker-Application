@@ -111,39 +111,39 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             return;
         }
 
-  const handleNext = () => {
-    if (password !== passwordConfirmed) {
-      alert("Passwords do not match. Please check and try again.");
-      return;
-    }
+        const handleNext = async () => {
+            if (password !== passwordConfirmed) {
+                alert("Passwords do not match. Please check and try again.");
+                return;
+            }
 
-      setHasAttemptedSubmit(true);
-      const userData = {
-      firstName,
-      lastName,
-      email,
-      password,
-      };
+            setHasAttemptedSubmit(true);
+            const userData = {
+                firstName,
+                lastName,
+                email,
+                password,
+            };
 
-      try {
-          const response = await axios.post(`${serverEndpoint}/signup`, userData);
+            try {
+                const response = await axios.post(`${serverEndpoint}/signup`, userData);
 
-          if (response.status === 200 && response.data.success) {
-              const { userID, hashedPassword } = response.data;
+                if (response.status === 200 && response.data.success) {
+                    const { userID, hashedPassword } = response.data;
 
-              // Update userData to include userID and hashedPassword
-              const updatedUserData = { ...userData, userID: userID, password: hashedPassword };
+                    // Update userData to include userID and hashedPassword
+                    const updatedUserData = { ...userData, userID: userID, password: hashedPassword };
 
-              dispatch(signUp(updatedUserData));
-              navigation.navigate('EmailVerification');
-              console.log('Sign up successful. UserData:', updatedUserData);
-          } else {
-              console.error('Failed to sign up:', response.data);
-          }
-      } catch (error) {
-          console.error('An error occurred during sign up:', error);
-      }
-  };
+                    dispatch(signUp(updatedUserData));
+                    navigation.navigate('EmailVerification');
+                    console.log('Sign up successful. UserData:', updatedUserData);
+                } else {
+                    console.error('Failed to sign up:', response.data);
+                }
+            } catch (error) {
+                console.error('An error occurred during sign up:', error);
+            }
+        };
 
         const sendVerificationCode = async (email: string) => {
             try {
@@ -163,146 +163,148 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             }
         };
 
-  const isFormFilled = () => {
-    return (
-      firstName !== "" &&
-      lastName !== "" &&
-      email !== "" &&
-      password !== "" &&
-      passwordConfirmed !== ""
-    );
-  };
+        const isFormFilled = () => {
+            return (
+                firstName !== "" &&
+                lastName !== "" &&
+                email !== "" &&
+                password !== "" &&
+                passwordConfirmed !== ""
+            );
+        };
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordHidden(!isPasswordHidden);
-  };
+        const togglePasswordVisibility = () => {
+            setIsPasswordHidden(!isPasswordHidden);
+        };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Splash")}
-        style={styles.backButton}
-      >
-        <Text style={styles.backButtonText}>{"BACK"}</Text>
-      </TouchableOpacity>
-      <Image
-        source={require("../../assets/images/sun.png")}
-        style={styles.logo}
-      />
-      <Text style={styles.title}>Create an Account</Text>
-      <Input
-        placeholder="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-        autoCapitalize="words"
-        style={styles.input}
-      />
-      {hasAttemptedSubmit && errors.firstName && (
-        <Text style={styles.errorText}>{errors.firstName}</Text>
-      )}
-      <Input
-        placeholder="Last Name"
-        value={lastName}
-        onChangeText={setLastName}
-        autoCapitalize="words"
-        style={styles.input}
-      />
-      {hasAttemptedSubmit && errors.lastName && (
-        <Text style={styles.errorText}>{errors.lastName}</Text>
-      )}
-      <Input
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        style={styles.input}
-      />
-      {hasAttemptedSubmit && errors.email && (
-        <Text style={styles.errorText}>{errors.email}</Text>
-      )}
-      <Input
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={isPasswordHidden}
-        autoCorrect={false}
-        textContentType="oneTimeCode"
-        style={styles.input}
-        isPassword={true}
-        togglePasswordVisibility={togglePasswordVisibility}
-      />
-      <Input
-        placeholder="Confirm Password"
-        value={passwordConfirmed}
-        onChangeText={setConfirmedPassword}
-        secureTextEntry={isPasswordHidden}
-        autoCorrect={false}
-        textContentType="oneTimeCode"
-        style={styles.input}
-        isPassword={true}
-        togglePasswordVisibility={togglePasswordVisibility}
-      />
-      {hasAttemptedSubmit && errors.password && (
-        <Text style={styles.errorText}>{errors.password}</Text>
-      )}
-      {hasAttemptedSubmit && errors.passwordConfirmed && (
-        <Text style={styles.errorText}>{errors.passwordConfirmed}</Text>
-      )}
-      <Button title="Next" onPress={handleNext} disabled={!isFormFilled()} />
-      <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
-        <Text style={styles.signInText}>Already have an account? Sign In</Text>
-      </TouchableOpacity>
-    </ScrollView>
-  );
-};
+        return (
+            <ScrollView contentContainerStyle={styles.container}>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("Splash")}
+                    style={styles.backButton}
+                >
+                    <Text style={styles.backButtonText}>{"BACK"}</Text>
+                </TouchableOpacity>
+                <Image
+                    source={require("../../assets/images/sun.png")}
+                    style={styles.logo}
+                />
+                <Text style={styles.title}>Create an Account</Text>
+                <Input
+                    placeholder="First Name"
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    autoCapitalize="words"
+                    style={styles.input}
+                />
+                {hasAttemptedSubmit && errors.firstName && (
+                    <Text style={styles.errorText}>{errors.firstName}</Text>
+                )}
+                <Input
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChangeText={setLastName}
+                    autoCapitalize="words"
+                    style={styles.input}
+                />
+                {hasAttemptedSubmit && errors.lastName && (
+                    <Text style={styles.errorText}>{errors.lastName}</Text>
+                )}
+                <Input
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    style={styles.input}
+                />
+                {hasAttemptedSubmit && errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                )}
+                <Input
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={isPasswordHidden}
+                    autoCorrect={false}
+                    textContentType="oneTimeCode"
+                    style={styles.input}
+                    isPassword={true}
+                    togglePasswordVisibility={togglePasswordVisibility}
+                />
+                <Input
+                    placeholder="Confirm Password"
+                    value={passwordConfirmed}
+                    onChangeText={setConfirmedPassword}
+                    secureTextEntry={isPasswordHidden}
+                    autoCorrect={false}
+                    textContentType="oneTimeCode"
+                    style={styles.input}
+                    isPassword={true}
+                    togglePasswordVisibility={togglePasswordVisibility}
+                />
+                {hasAttemptedSubmit && errors.password && (
+                    <Text style={styles.errorText}>{errors.password}</Text>
+                )}
+                {hasAttemptedSubmit && errors.passwordConfirmed && (
+                    <Text style={styles.errorText}>{errors.passwordConfirmed}</Text>
+                )}
+                <Button title="Next" onPress={handleNext} disabled={!isFormFilled()} />
+                <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
+                    <Text style={styles.signInText}>Already have an account? Sign In</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        );
+    };
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 16,
-    backgroundColor: colors.white,
-  },
-  logo: {
-    width: 240,
-    height: 75,
-    alignSelf: "center",
-    marginBottom: 24,
-  },
-  backButton: {
-    position: "absolute",
-    top: 40,
-    left: 16,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: colors.blue,
-    fontFamily: fonts.regular,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 24,
-    textAlign: "center",
-    color: colors.blue,
-    fontFamily: fonts.regular,
-  },
-  input: {
-    marginBottom: 16,
-  },
-  signInText: {
-    marginTop: 16,
-    textAlign: "center",
-    color: colors.blue,
-    fontFamily: fonts.regular,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: -12,
-    marginBottom: 16,
-    fontFamily: fonts.regular,
-  },
-});
+    const styles = StyleSheet.create({
+        container: {
+            flexGrow: 1,
+            justifyContent: "center",
+            padding: 16,
+            backgroundColor: colors.white,
+        },
+        logo: {
+            width: 240,
+            height: 75,
+            alignSelf: "center",
+            marginBottom: 24,
+        },
+        backButton: {
+            position: "absolute",
+            top: 40,
+            left: 16,
+        },
+        backButtonText: {
+            fontSize: 16,
+            color: colors.blue,
+            fontFamily: fonts.regular,
+        },
+        title: {
+            fontSize: 24,
+            marginBottom: 24,
+            textAlign: "center",
+            color: colors.blue,
+            fontFamily: fonts.regular,
+        },
+        input: {
+            marginBottom: 16,
+        },
+        signInText: {
+            marginTop: 16,
+            textAlign: "center",
+            color: colors.blue,
+            fontFamily: fonts.regular,
+        },
+        errorText: {
+            color: "red",
+            fontSize: 12,
+            marginTop: -12,
+            marginBottom: 16,
+            fontFamily: fonts.regular,
+        },
+    });
+}
 
 export default SignUpScreen;
+
