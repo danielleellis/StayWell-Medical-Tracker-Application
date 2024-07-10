@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.white,
     fontFamily: fonts.regular,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   currentDate: {
     fontSize: 20,
