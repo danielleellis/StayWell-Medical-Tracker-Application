@@ -22,7 +22,6 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
-
     const dispatch = useDispatch<AppDispatch>();
     const serverEndpoint = configData.API_ENDPOINT;
 
@@ -105,19 +104,23 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     };
 
     const handleNext = async () => {
-        const emailAvailable = await checkEmailAvailability(email);
-        if (!emailAvailable) {
-            Alert.alert('Email already taken', 'Please use a different email address.');
-            return;
-        }
+        setHasAttemptedSubmit(true);
 
-        const handleNext = async () => {
+        if (validateForm()) {
+
             if (password !== passwordConfirmed) {
                 alert("Passwords do not match. Please check and try again.");
                 return;
             }
 
             setHasAttemptedSubmit(true);
+
+            const emailAvailable = await checkEmailAvailability(email);
+            if (!emailAvailable) {
+                Alert.alert('Email already taken', 'Please use a different email address.');
+                return;
+            }
+
             const userData = {
                 firstName,
                 lastName,
@@ -143,168 +146,167 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             } catch (error) {
                 console.error('An error occurred during sign up:', error);
             }
-        };
+        }
+    };
 
-        const sendVerificationCode = async (email: string) => {
-            try {
-                const response = await axios.put(`${serverEndpoint}/api/verify-code/${email}`);
+    const sendVerificationCode = async (email: string) => {
+        try {
+            const response = await axios.put(`${serverEndpoint}/api/verify-code/${email}`);
 
-                if (response.status === 200) {
-                    setVerificationCodeSent(true);
-                    setVerificationCode(response.data.verificationCode); // Assuming backend sends back the generated code
-                    Alert.alert('Verification Code Sent', 'Please check your email for the verification code.');
-                } else {
-                    console.error('Failed to send verification code:', response.data);
-                    Alert.alert('Error', 'Failed to send verification code. Please try again later.');
-                }
-            } catch (error) {
-                console.error('An error occurred while sending verification code:', error);
-                Alert.alert('Network Error', 'An error occurred while sending verification code. Please try again.');
+            if (response.status === 200) {
+                setVerificationCodeSent(true);
+                setVerificationCode(response.data.verificationCode); // Assuming backend sends back the generated code
+                Alert.alert('Verification Code Sent', 'Please check your email for the verification code.');
+            } else {
+                console.error('Failed to send verification code:', response.data);
+                Alert.alert('Error', 'Failed to send verification code. Please try again later.');
             }
-        };
+        } catch (error) {
+            console.error('An error occurred while sending verification code:', error);
+            Alert.alert('Network Error', 'An error occurred while sending verification code. Please try again.');
+        }
+    };
 
-        const isFormFilled = () => {
-            return (
-                firstName !== "" &&
-                lastName !== "" &&
-                email !== "" &&
-                password !== "" &&
-                passwordConfirmed !== ""
-            );
-        };
-
-        const togglePasswordVisibility = () => {
-            setIsPasswordHidden(!isPasswordHidden);
-        };
-
+    const isFormFilled = () => {
         return (
-            <ScrollView contentContainerStyle={styles.container}>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate("Splash")}
-                    style={styles.backButton}
-                >
-                    <Text style={styles.backButtonText}>{"BACK"}</Text>
-                </TouchableOpacity>
-                <Image
-                    source={require("../../assets/images/sun.png")}
-                    style={styles.logo}
-                />
-                <Text style={styles.title}>Create an Account</Text>
-                <Input
-                    placeholder="First Name"
-                    value={firstName}
-                    onChangeText={setFirstName}
-                    autoCapitalize="words"
-                    style={styles.input}
-                />
-                {hasAttemptedSubmit && errors.firstName && (
-                    <Text style={styles.errorText}>{errors.firstName}</Text>
-                )}
-                <Input
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChangeText={setLastName}
-                    autoCapitalize="words"
-                    style={styles.input}
-                />
-                {hasAttemptedSubmit && errors.lastName && (
-                    <Text style={styles.errorText}>{errors.lastName}</Text>
-                )}
-                <Input
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    style={styles.input}
-                />
-                {hasAttemptedSubmit && errors.email && (
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                )}
-                <Input
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={isPasswordHidden}
-                    autoCorrect={false}
-                    textContentType="oneTimeCode"
-                    style={styles.input}
-                    isPassword={true}
-                    togglePasswordVisibility={togglePasswordVisibility}
-                />
-                <Input
-                    placeholder="Confirm Password"
-                    value={passwordConfirmed}
-                    onChangeText={setConfirmedPassword}
-                    secureTextEntry={isPasswordHidden}
-                    autoCorrect={false}
-                    textContentType="oneTimeCode"
-                    style={styles.input}
-                    isPassword={true}
-                    togglePasswordVisibility={togglePasswordVisibility}
-                />
-                {hasAttemptedSubmit && errors.password && (
-                    <Text style={styles.errorText}>{errors.password}</Text>
-                )}
-                {hasAttemptedSubmit && errors.passwordConfirmed && (
-                    <Text style={styles.errorText}>{errors.passwordConfirmed}</Text>
-                )}
-                <Button title="Next" onPress={handleNext} disabled={!isFormFilled()} />
-                <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
-                    <Text style={styles.signInText}>Already have an account? Sign In</Text>
-                </TouchableOpacity>
-            </ScrollView>
+            firstName !== "" &&
+            lastName !== "" &&
+            email !== "" &&
+            password !== "" &&
+            passwordConfirmed !== ""
         );
     };
 
-    const styles = StyleSheet.create({
-        container: {
-            flexGrow: 1,
-            justifyContent: "center",
-            padding: 16,
-            backgroundColor: colors.white,
-        },
-        logo: {
-            width: 240,
-            height: 75,
-            alignSelf: "center",
-            marginBottom: 24,
-        },
-        backButton: {
-            position: "absolute",
-            top: 40,
-            left: 16,
-        },
-        backButtonText: {
-            fontSize: 16,
-            color: colors.blue,
-            fontFamily: fonts.regular,
-        },
-        title: {
-            fontSize: 24,
-            marginBottom: 24,
-            textAlign: "center",
-            color: colors.blue,
-            fontFamily: fonts.regular,
-        },
-        input: {
-            marginBottom: 16,
-        },
-        signInText: {
-            marginTop: 16,
-            textAlign: "center",
-            color: colors.blue,
-            fontFamily: fonts.regular,
-        },
-        errorText: {
-            color: "red",
-            fontSize: 12,
-            marginTop: -12,
-            marginBottom: 16,
-            fontFamily: fonts.regular,
-        },
-    });
-}
+    const togglePasswordVisibility = () => {
+        setIsPasswordHidden(!isPasswordHidden);
+    };
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <TouchableOpacity
+                onPress={() => navigation.navigate("Splash")}
+                style={styles.backButton}
+            >
+                <Text style={styles.backButtonText}>{"BACK"}</Text>
+            </TouchableOpacity>
+            <Image
+                source={require("../../assets/images/sun.png")}
+                style={styles.logo}
+            />
+            <Text style={styles.title}>Create an Account</Text>
+            <Input
+                placeholder="First Name"
+                value={firstName}
+                onChangeText={setFirstName}
+                autoCapitalize="words"
+                style={styles.input}
+            />
+            {hasAttemptedSubmit && errors.firstName && (
+                <Text style={styles.errorText}>{errors.firstName}</Text>
+            )}
+            <Input
+                placeholder="Last Name"
+                value={lastName}
+                onChangeText={setLastName}
+                autoCapitalize="words"
+                style={styles.input}
+            />
+            {hasAttemptedSubmit && errors.lastName && (
+                <Text style={styles.errorText}>{errors.lastName}</Text>
+            )}
+            <Input
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                style={styles.input}
+            />
+            {hasAttemptedSubmit && errors.email && (
+                <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+            <Input
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={isPasswordHidden}
+                autoCorrect={false}
+                textContentType="oneTimeCode"
+                style={styles.input}
+                isPassword={true}
+                togglePasswordVisibility={togglePasswordVisibility}
+            />
+            <Input
+                placeholder="Confirm Password"
+                value={passwordConfirmed}
+                onChangeText={setConfirmedPassword}
+                secureTextEntry={isPasswordHidden}
+                autoCorrect={false}
+                textContentType="oneTimeCode"
+                style={styles.input}
+                isPassword={true}
+                togglePasswordVisibility={togglePasswordVisibility}
+            />
+            {hasAttemptedSubmit && errors.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+            )}
+            {hasAttemptedSubmit && errors.passwordConfirmed && (
+                <Text style={styles.errorText}>{errors.passwordConfirmed}</Text>
+            )}
+            <Button title="Next" onPress={handleNext} disabled={!isFormFilled()} />
+            <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
+                <Text style={styles.signInText}>Already have an account? Sign In</Text>
+            </TouchableOpacity>
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flexGrow: 1,
+        justifyContent: "center",
+        padding: 16,
+        backgroundColor: colors.white,
+    },
+    logo: {
+        width: 240,
+        height: 75,
+        alignSelf: "center",
+        marginBottom: 24,
+    },
+    backButton: {
+        position: "absolute",
+        top: 40,
+        left: 16,
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: colors.blue,
+        fontFamily: fonts.regular,
+    },
+    title: {
+        fontSize: 24,
+        marginBottom: 24,
+        textAlign: "center",
+        color: colors.blue,
+        fontFamily: fonts.regular,
+    },
+    input: {
+        marginBottom: 16,
+    },
+    signInText: {
+        marginTop: 16,
+        textAlign: "center",
+        color: colors.blue,
+        fontFamily: fonts.regular,
+    },
+    errorText: {
+        color: "red",
+        fontSize: 12,
+        marginTop: -12,
+        marginBottom: 16,
+        fontFamily: fonts.regular,
+    },
+});
 
 export default SignUpScreen;
-
