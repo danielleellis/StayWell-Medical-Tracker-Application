@@ -37,8 +37,10 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             const response = await axios.get(`${serverEndpoint}/check-email/${email}`);
 
             if (response.status === 200) {
-                return !response.data.taken; // Email availability depends on 'taken' field
+                return !response.data.taken;
             } else {
+                console.error('Email is not available.');
+                Alert.alert('Email is not available.');
                 return false; // Default to email taken if not 200
             }
         } catch (error) {

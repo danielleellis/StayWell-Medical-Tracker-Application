@@ -163,23 +163,60 @@ app.put('/api/profile-setup', async (req, res) => {
     console.log('Received userID:', userID);
     console.log('Received data:', { username, pronouns, phone, birthday, profilePhoto });
 
+    // Check if all required fields are present
     if (!userID || !username || !pronouns || !phone || !birthday || !profilePhoto) {
         console.error('Missing fields in profile setup data');
         return res.status(400).json({ error: 'Missing fields in profile setup data' });
     }
 
-    const stmt = db.prepare('UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?');
+    try {
+        // Update user profile in the database
+        const stmt = db.prepare('UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?');
+        stmt.run([username, pronouns, phone, birthday, profilePhoto, userID], function (err) {
+            if (err) {
+                console.error('Error updating user:', err.message);
+                return res.status(400).json({ error: err.message });
+            }
+            console.log('Database update successful');
+            res.status(200).json({ success: true });
+        });
+        stmt.finalize(); // Optional in SQLite with node-sqlite3
 
-    stmt.run([username, pronouns, phone, birthday, profilePhoto, userID], function (err) {
-        if (err) {
-            console.error('Error updating user:', err.message);
-            return res.status(400).json({ error: err.message });
-        }
-        console.log('Database update successful');
-        res.status(200).json({ success: true });
-    });
+    } catch (error) {
+        console.error('Exception while updating user profile:', error);
+        res.status(500).json({ error: 'Server error while updating user profile' });
+    }
+});
 
-    stmt.finalize();
+
+// Endpoint to fetch user profile data
+app.get('/api/profile/:userID', async (req, res) => {
+    const { userID } = req.params;
+
+    console.log('Received userID:', userID);
+
+    try {
+        // Query the database to get user profile data
+        const stmt = db.prepare('SELECT username, pronouns, phoneNumber, birthday, profilePhoto FROM Users WHERE userID = ?');
+        stmt.get([userID], (err, row) => {
+            if (err) {
+                console.error('Error fetching user data:', err.message);
+                return res.status(500).json({ error: err.message });
+            }
+
+            if (!row) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            console.log('User data fetched successfully:', row);
+            res.status(200).json(row);
+        });
+        stmt.finalize(); // Optional in SQLite with node-sqlite3
+
+    } catch (error) {
+        console.error('Exception while fetching user profile:', error);
+        res.status(500).json({ error: 'Server error while fetching user profile' });
+    }
 });
 
 

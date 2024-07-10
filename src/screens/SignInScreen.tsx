@@ -62,7 +62,7 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             }
         } catch (error) {
             console.error('An error occurred during sign in:', error);
-            Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
+            Alert.alert('Network Error', 'An error  occurred verifying email and password.');
         }
     };
 

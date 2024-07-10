@@ -31,11 +31,11 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         return null;
     }
 
-    // Get userID from Redux state
-    const userID = useSelector((state: RootState) => state.auth.user);
+    const user = useSelector((state: RootState) => state.auth.user);
+    const userID = user ? user.userID : null;
 
     const handleProfileSetup = async () => {
-        const profilePhoto = "photopath";  // Example path for testing
+        const profilePhoto = "photopath"; 
 
         const userData = {
             userID,
@@ -46,8 +46,16 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             profilePhoto,
         };
 
+        if (userID === null) {
+            console.error('userID is null. Not able to query.');
+            return;
+        } else {
+            console.log('userID: ' + userID);
+        }
+
         try {
             const response = await axios.put(`${serverEndpoint}/profile-setup`, userData);
+
             console.log('Profile setup response:', response.data);
 
             if (response.status === 200 && response.data.success) {
