@@ -2,15 +2,22 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
+import { signOut } from "../redux/slices/authSlice";
 import axios from 'axios';
 import configData from "../../config.json";
 import { colors, fonts } from "../constants/constants";
 
-const ProfileScreen: React.FC = () => {
+const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const user = useSelector((state: RootState) => state.auth.user);
     const [profileData, setProfileData] = useState<any>(null);
     const dispatch = useDispatch();
     const serverEndpoint = configData.API_ENDPOINT;
+
+    const handleSignOut = () => {
+        // Clear user state in Redux then redirect to login screen
+        dispatch(signOut());
+        navigation.navigate("SignIn");
+    };
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -71,7 +78,7 @@ const ProfileScreen: React.FC = () => {
             <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Settings</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.signOutButton]}>
+            <TouchableOpacity style={[styles.button, styles.signOutButton]} onPress={handleSignOut}>
                 <Text style={[styles.buttonText, styles.signOutButtonText]}>Sign Out</Text>
             </TouchableOpacity>
         </ScrollView>

@@ -36,6 +36,12 @@ const authSlice = createSlice({
             state.user = action.payload;
             state.user.userID = action.payload.userID; // Ensure userID is updated
         },
+        signOut: (state) => {
+            state.user = null;
+            state.isVerified = false;
+            state.profileComplete = false;
+            console.log('User signed out');
+        },
         forgotPassword: (state, action: PayloadAction<string>) => {
             console.log('Reset password email sent to:', action.payload);
         },
@@ -54,6 +60,6 @@ const authSlice = createSlice({
     },
 });
 
-export const { signUp, signIn, verifyEmail, setupProfile, forgotPassword } = authSlice.actions;
+export const { signUp, signIn, signOut, verifyEmail, setupProfile, forgotPassword } = authSlice.actions;
 
 export default authSlice.reducer;
