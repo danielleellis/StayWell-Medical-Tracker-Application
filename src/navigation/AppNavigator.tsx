@@ -8,6 +8,7 @@ import SplashScreen from "../screens/SplashScreen";
 import SignInScreen from "../screens/SignInScreen";
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
 import FriendsListScreen from "../screens/FriendsListScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Habits from "../(tabs)/Habits";
 import Calendar from "../(tabs)/Calendar";
@@ -20,7 +21,6 @@ import NewDocument from "../createmenu/NewDocument";
 import NewHabit from "../createmenu/NewHabit";
 import NewTask from "../createmenu/NewTask";
 import { TouchableOpacity } from "react-native";
-import FriendsList from "../screens/FriendsListScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -125,6 +125,11 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
                 name="Friends"
                 component={FriendsListScreen}
+                options={{ headerShown: true }}
+            />
+            <Stack.Screen
+                name="Settings"
+                component={SettingsScreen}
                 options={{ headerShown: true }}
             />
             <Stack.Screen

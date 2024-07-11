@@ -23,6 +23,10 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate("Friends");
     };
 
+    const handleSettings = () => {
+        navigation.navigate("Settings");
+    };
+
     useEffect(() => {
         const fetchProfileData = async () => {
             if (!user?.userID) {
@@ -79,7 +83,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             <TouchableOpacity style={styles.button} onPress={handleViewFriends}>
                 <Text style={styles.buttonText}>View Friends List</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handleSettings}>
                 <Text style={styles.buttonText}>Settings</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button, styles.signOutButton]} onPress={handleSignOut}>
