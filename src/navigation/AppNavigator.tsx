@@ -7,7 +7,6 @@ import DashboardScreen from "../screens/DashboardScreen";
 import SplashScreen from "../screens/SplashScreen";
 import SignInScreen from "../screens/SignInScreen";
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
-
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Habits from "../(tabs)/Habits";
 import Calendar from "../(tabs)/Calendar";
