@@ -131,6 +131,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     const validateForm = () => {
         let newErrors: { [key: string]: string } = {};
+
         if (!username.match(/^[a-zA-Z0-9]+$/)) {
             newErrors.username = "Username must contain only letters and numbers";
         } else if (username.length < 6) {
@@ -138,14 +139,35 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         } else if (username.length > 30) {
             newErrors.username = "Username must be less than 30 characters long";
         }
-        if (phone.replace(/\D/g, "").length !== 10)
+
+        if (phone.replace(/\D/g, "").length !== 10) {
             newErrors.phone = "Please enter a valid 10-digit phone number";
-        if (birthday.length !== 10)
+        }
+
+        if (birthday.length !== 10 || !birthday.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
             newErrors.birthday = "Please enter a valid date in MM/DD/YYYY format";
+        } else {
+            // Validate month, day, and year
+            const [monthStr, dayStr, yearStr] = birthday.split("/");
+            const month = parseInt(monthStr, 10);
+            const day = parseInt(dayStr, 10);
+            const year = parseInt(yearStr, 10);
+
+            if (month === 0 || day === 0 || year === 0) {
+                newErrors.birthday = "Date cannot contain zeros in month, day, or year";
+            } else if (month > 12) {
+                newErrors.birthday = "Month must be between 1 and 12";
+            } else if (day > 31) {
+                newErrors.birthday = "Day must be between 1 and 31";
+            } else if (year < 1900) {
+                newErrors.birthday = "Year must be after 1900";
+            }
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+
 
     return (
         <View style={styles.container}>

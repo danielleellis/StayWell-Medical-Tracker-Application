@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../redux/store"; // Adjust the import according to your store setup
+import { RootState } from "../redux/store";
 import axios from 'axios';
 import configData from "../../config.json";
 import { colors, fonts } from "../constants/constants";
