@@ -19,6 +19,10 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate("SignIn");
     };
 
+    const handleViewFriends = () => {
+        navigation.navigate("Friends");
+    };
+
     useEffect(() => {
         const fetchProfileData = async () => {
             if (!user?.userID) {
@@ -72,7 +76,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handleViewFriends}>
                 <Text style={styles.buttonText}>View Friends List</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button}>
@@ -85,18 +89,21 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     );
 };
 
+export default ProfileScreen;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 16,
         backgroundColor: "white",
+        paddingTop: 50,
     },
     heading: {
         fontSize: 30,
         color: colors.blue,
         fontFamily: fonts.regular,
         textAlign: "center",
-        marginVertical: 20,
+
     },
     profileImage: {
         width: 100,
@@ -128,6 +135,9 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 3,
         marginTop: 20,
+        marginLeft: 5,
+        marginRight: 5,
+        marginBottom: 5,
     },
     infoLabel: {
         fontSize: 12,
@@ -164,5 +174,3 @@ const styles = StyleSheet.create({
         color: "red",
     },
 });
-
-export default ProfileScreen;

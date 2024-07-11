@@ -7,6 +7,7 @@ import DashboardScreen from "../screens/DashboardScreen";
 import SplashScreen from "../screens/SplashScreen";
 import SignInScreen from "../screens/SignInScreen";
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
+import FriendsListScreen from "../screens/FriendsListScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Habits from "../(tabs)/Habits";
 import Calendar from "../(tabs)/Calendar";
@@ -15,140 +16,139 @@ import Documents from "../(tabs)/Documents";
 import Profile from "../(tabs)/Profile";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts } from "../constants/constants";
-
 import NewDocument from "../createmenu/NewDocument";
 import NewHabit from "../createmenu/NewHabit";
 import NewTask from "../createmenu/NewTask";
-
 import { TouchableOpacity } from "react-native";
-
+import FriendsList from "../screens/FriendsListScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNav = () => {
-  return (
-    <Tab.Navigator
-      initialRouteName="Calendar"
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.blue,
-        tabBarInactiveTintColor: colors.black,
-      }}
-    >
-      <Tab.Screen
-        name="Habits"
-        component={Habits}
-        options={{
-          tabBarLabel: "Habits",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="stats-chart-outline" color={color} size={size} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="Calendar"
-        component={Calendar}
-        options={{
-          tabBarLabel: "Calendar",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-clear-outline" color={color} size={size} />
-          ),    
-        }}
-      />
-
-      <Tab.Screen
-        name="Create"
-        component={Create}
-        options={{
-          tabBarLabel: "Create",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" color={color} size={size} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="Documents"
-        component={Documents}
-        options={{
-          tabBarLabel: "Documents",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-outline" color={color} size={size} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          tabBarLabel: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" color={color} size={size} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
+    return (
+        <Tab.Navigator
+            initialRouteName="Dashboard"
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveTintColor: colors.blue,
+                tabBarInactiveTintColor: colors.black,
+            }}
+        >
+            <Tab.Screen
+                name="Habits"
+                component={Habits}
+                options={{
+                    tabBarLabel: "Habits",
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="stats-chart-outline" color={color} size={size} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Calendar"
+                component={Calendar}
+                options={{
+                    tabBarLabel: "Calendar",
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="calendar-clear-outline" color={color} size={size} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Create"
+                component={Create}
+                options={{
+                    tabBarLabel: "Create",
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="add-circle-outline" color={color} size={size} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Documents"
+                component={Documents}
+                options={{
+                    tabBarLabel: "Documents",
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="document-outline" color={color} size={size} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Profile"
+                component={Profile}
+                options={{
+                    tabBarLabel: "Profile",
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="person-outline" color={color} size={size} />
+                    ),
+                }}
+            />
+        </Tab.Navigator>
+    );
 };
 
 const AppNavigator: React.FC = () => {
-  return (
-    <Stack.Navigator initialRouteName="Splash">
-      <Stack.Screen
-        name="Splash"
-        component={SplashScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="SignIn"
-        component={SignInScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ForgotPassword"
-        component={ForgotPasswordScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="SignUp"
-        component={SignUpScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="EmailVerification"
-        component={EmailVerificationScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ProfileSetup"
-        component={ProfileSetupScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Dashboard"
-        component={TabNav}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="NewHabit"
-        component={NewHabit}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="NewTask"
-        component={NewTask}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="NewDocument"
-        component={NewDocument}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
+    return (
+        <Stack.Navigator initialRouteName="Splash">
+            <Stack.Screen
+                name="Splash"
+                component={SplashScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="SignIn"
+                component={SignInScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="ForgotPassword"
+                component={ForgotPasswordScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="SignUp"
+                component={SignUpScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="EmailVerification"
+                component={EmailVerificationScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="ProfileSetup"
+                component={ProfileSetupScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Friends"
+                component={FriendsListScreen}
+                options={{ headerShown: true }}
+            />
+            <Stack.Screen
+                name="Dashboard"
+                component={TabNav}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="NewHabit"
+                component={NewHabit}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="NewTask"
+                component={NewTask}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="NewDocument"
+                component={NewDocument}
+                options={{ headerShown: false }}
+            />
+        </Stack.Navigator>
+    );
 };
 
 export default AppNavigator;
