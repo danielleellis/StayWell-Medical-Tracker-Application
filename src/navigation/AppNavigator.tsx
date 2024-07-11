@@ -14,6 +14,14 @@ import Create from "../(tabs)/Create";
 import Documents from "../(tabs)/Documents";
 import Profile from "../(tabs)/Profile";
 import { Ionicons } from "@expo/vector-icons";
+import { colors, fonts } from "../constants/constants";
+
+import NewDocument from "../createmenu/NewDocument";
+import NewHabit from "../createmenu/NewHabit";
+import NewTask from "../createmenu/NewTask";
+
+import { TouchableOpacity } from "react-native";
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -24,8 +32,8 @@ const TabNav = () => {
       initialRouteName="Calendar"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#45a6ff",
-        tabBarInactiveTintColor: "#000000",
+        tabBarActiveTintColor: colors.blue,
+        tabBarInactiveTintColor: colors.black,
       }}
     >
       <Tab.Screen
@@ -46,8 +54,7 @@ const TabNav = () => {
           tabBarLabel: "Calendar",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar-clear-outline" color={color} size={size} />
-          ),
-          
+          ),    
         }}
       />
 
@@ -123,6 +130,21 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="Dashboard"
         component={TabNav}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NewHabit"
+        component={NewHabit}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NewTask"
+        component={NewTask}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NewDocument"
+        component={NewDocument}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
