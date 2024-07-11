@@ -35,9 +35,9 @@ const CalendarScreen = () => {
     return daysOfWeek[dayIndex];
   };
 
-  // dayContainer dynamically fits 7 items per row
+  // calculate width for day containers based on screen width
   const screenWidth = Dimensions.get("window").width;
-  const containerPaddingHorizontal = 10;
+  const containerPaddingHorizontal = 0;
   const dayContainerWidth = (screenWidth - 2 * containerPaddingHorizontal) / 7;
 
   return (
@@ -51,24 +51,25 @@ const CalendarScreen = () => {
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <Text
               key={day}
-              style={[styles.dayOfWeek, { width: dayContainerWidth }]}
+              style={[
+                styles.dayOfWeek,
+                { width: dayContainerWidth, textAlign: "center" },
+              ]}
             >
               {day}
             </Text>
           ))}
         </View>
-        <View style={styles.daysContainer}>
+        <View style={[styles.daysContainer, { flex: 1 }]}>
           {daysInMonth.map((day) => (
             <View
               key={day}
               style={[
                 styles.dayContainer,
-                {
-                  marginLeft:
-                    getDayOfWeek(day) === "Sun"
-                      ? 0
-                      : containerPaddingHorizontal,
-                },
+                { width: dayContainerWidth, marginBottom: 10 },
+                getDayOfWeek(day) === "Sun"
+                  ? { marginLeft: 0 }
+                  : { marginLeft: containerPaddingHorizontal },
               ]}
             >
               <Text style={styles.day}>{day}</Text>
@@ -99,12 +100,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
+    paddingHorizontal: 10,
+    paddingTop: 25,
   },
   heading: {
     fontSize: 24,
     color: colors.white,
     fontFamily: fonts.regular,
-    marginBottom: 25,
+    marginBottom: 30,
   },
   currentDate: {
     fontSize: 20,
@@ -112,12 +115,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
   },
   calendarContainer: {
-    marginTop: 5,
+    marginTop: 10,
   },
   daysOfWeekContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    margin: 10,
+    margin: 5,
   },
   dayOfWeek: {
     fontFamily: fonts.regular,
@@ -130,16 +133,17 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   dayContainer: {
-    width: 42,
-    height: 45,
-    marginTop: 5,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 7,
+    marginHorizontal: -3,
   },
   day: {
     fontFamily: fonts.regular,
     fontSize: 16,
     color: colors.white,
     textAlign: "center",
-    marginLeft: 8,
   },
 });
 

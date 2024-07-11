@@ -18,7 +18,6 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [phone, setPhone] = useState("");
   const [birthday, setBirthday] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const dispatch = useDispatch<AppDispatch>();
 
   const serverEndpoint = configData.API_ENDPOINT;
@@ -94,22 +93,6 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  const formatPhoneNumber = (input: string) => {
-    const cleanedInput = input.replace(/\D/g, "");
-    let formattedInput = cleanedInput;
-    if (cleanedInput.length > 3) {
-      formattedInput = `(${cleanedInput.slice(0, 3)})`;
-      if (cleanedInput.length > 6) {
-        formattedInput += `-${cleanedInput.slice(3, 6)}-${cleanedInput.slice(
-          6,
-          10
-        )}`;
-      } else {
-        formattedInput += `-${cleanedInput.slice(3)}`;
-      }
-    }
-    return formattedInput;
-  };
 
   const formatBirthday = (input: string) => {
     const cleanedInput = input.replace(/\D/g, "");
@@ -162,38 +145,30 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         )}
       </TouchableOpacity>
       <Input
-        placeholder="Display Name"
+        placeholder="Username"
         value={username}
         onChangeText={setUsername}
         style={styles.input}
       />
-      {errors.username && (
-        <Text style={styles.errorText}>{errors.username}</Text>
-      )}
       <Input
-        placeholder="Pronouns (optional)"
+        placeholder="Pronouns"
         value={pronouns}
         onChangeText={setPronouns}
         style={styles.input}
       />
       <Input
-        placeholder="Phone (xxx)-xxx-xxxx"
+        placeholder="Phone"
         value={phone}
-        onChangeText={(text) => setPhone(formatPhoneNumber(text))}
+        onChangeText={setPhone}
         keyboardType="phone-pad"
         style={styles.input}
       />
-      {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
       <Input
-        placeholder="Birthday MM/DD/YYYY"
+        placeholder="Birthday"
         value={birthday}
-        onChangeText={(text) => setBirthday(formatBirthday(text))}
-        keyboardType="numeric"
+        onChangeText={setBirthday}
         style={styles.input}
       />
-      {errors.birthday && (
-        <Text style={styles.errorText}>{errors.birthday}</Text>
-      )}
       <Button title="Save" onPress={handleProfileSetup} />
     </View>
   );
@@ -237,13 +212,6 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: -12,
-    marginBottom: 16,
-    fontFamily: fonts.regular,
   },
 });
 
