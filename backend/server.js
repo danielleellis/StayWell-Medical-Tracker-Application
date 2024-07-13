@@ -51,6 +51,7 @@ app.get('/api/users', (req, res) => {
             return;
         }
         res.json({ users: rows });
+        console.log(`Returning all users data`);
     });
 });
 
@@ -64,6 +65,7 @@ app.get('/api/users/:id', (req, res) => {
             console.error("get api/users/:id error");
             return;
         }
+        console.log(`Returning data for user ${user.firstName} ${user.lastName}`);
         res.json({ user: row });
     });
 });
@@ -71,6 +73,7 @@ app.get('/api/users/:id', (req, res) => {
 
 // Endpoint to check if email is already taken
 app.get('/api/check-email/:email', (req, res) => {
+    console.log(`Checking email on sign up ${email}`);
     const email = req.params.email;
     db.get('SELECT * FROM Users WHERE email = ?', [email], (err, row) => {
         if (err) {
@@ -81,6 +84,7 @@ app.get('/api/check-email/:email', (req, res) => {
         if (row) {
             // Email is already taken
             res.json({ taken: true });
+            console.log(`Email ${email} is already taken`);
         } else {
             // Email is available
             res.json({ taken: false });
@@ -107,11 +111,14 @@ app.post('/api/signin', async (req, res) => {
             const match = await bcrypt.compare(password, user.password);
             if (match) {
                 res.status(200).json({ userID: user.userID });
+                console.log(`Found password match for ${email}`);
             } else {
                 res.status(401).json({ message: 'Invalid email or password' });
+                console.log(`No password match found for ${email}`);
             }
         } else {
-            res.status(401).json({ message: 'Invalid email or password' });
+            res.status(401).error({ message: 'User not found' });
+            console.log(`User not found`);
         }
     });
 });
@@ -120,10 +127,12 @@ app.post('/api/signin', async (req, res) => {
 // Endpoint to sign up a new user with first/last name, email, password, and generate a userID
 app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
+    console.log(`Signup Attempted: ${firstName} ${lastName} ${email}`);
 
     try {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+        console.log('Hashed password:', hashedPassword);
 
         // Generate userID
         const userID = generateRandomID(10); // Generate a random 10-character userID
@@ -132,13 +141,16 @@ app.post('/api/signup', async (req, res) => {
         const stmt = db.prepare('INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)');
         stmt.run([userID, firstName, lastName, email, hashedPassword], function (err) {
             if (err) {
+                console.log(`Error encountered running signup statement: ${error.message}`);
                 return res.status(400).json({ error: err.message });
             }
+            console.log(`Signup successful for ${userID}: ${firstName} ${lastName} ${email}`);
             res.status(200).json({ success: true, userID, hashedPassword });
         });
 
         stmt.finalize();
     } catch (error) {
+        console.log(`Error caught during signup: ${error.message}` );
         res.status(500).json({ error: error.message });
     }
 });
@@ -192,10 +204,10 @@ app.put('/api/profile-setup', async (req, res) => {
 // Endpoint to fetch user profile data
 app.get('/api/profile/:userID', async (req, res) => {
     const { userID } = req.params;
-
     console.log('Received userID:', userID);
 
     try {
+        console.log(`Fetching profile data for userID ${userID}`);
         // Query the database to get user profile data
         const stmt = db.prepare('SELECT username, pronouns, phoneNumber, birthday, profilePhoto FROM Users WHERE userID = ?');
         stmt.get([userID], (err, row) => {
@@ -205,6 +217,7 @@ app.get('/api/profile/:userID', async (req, res) => {
             }
 
             if (!row) {
+                console.log(`User not found`);
                 return res.status(404).json({ error: 'User not found' });
             }
 
