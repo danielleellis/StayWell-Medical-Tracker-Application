@@ -92,9 +92,9 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             if (response.status === 200) {
                 return !response.data.taken;
             } else {
-                console.error('Email is not available.');
-                Alert.alert('Email is not available.');
-                return false; // Default to email taken if not 200
+                console.error('Error checking email availability.');
+                console.error('Email not available.');
+                return false;
             }
         } catch (error) {
             console.error('An error occurred while checking email availability:', error);
