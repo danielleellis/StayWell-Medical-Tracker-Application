@@ -20,12 +20,18 @@ import { colors, fonts } from "../constants/constants";
 import NewDocument from "../createmenu/NewDocument";
 import NewHabit from "../createmenu/NewHabit";
 import NewTask from "../createmenu/NewTask";
+import ProfileSettings from "../settings/Profile";
+import Account from "../settings/Account";
+import Privacy from "../settings/Privacy";
+import Notification from "../settings/Notification";
+import RequestInfo from "../settings/RequestInfo";
+import Deactivate from "../settings/Deactivate";
 import { TouchableOpacity } from "react-native";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNav = () => {
+const TabNav: React.FC<{navigation:any}> = ({navigation}) => {
     return (
         <Tab.Navigator
             initialRouteName="Dashboard"
@@ -63,6 +69,7 @@ const TabNav = () => {
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="add-circle-outline" color={color} size={size} />
                     ),
+                    //tabBarButton:
                 }}
             />
             <Tab.Screen
@@ -150,6 +157,36 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
                 name="NewDocument"
                 component={NewDocument}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Profile"
+                component={ProfileSettings}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Account"
+                component={Account}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Privacy"
+                component={Privacy}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Notification"
+                component={Notification}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="RequestInfo"
+                component={RequestInfo}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Deactivate"
+                component={Deactivate}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>

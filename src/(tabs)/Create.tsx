@@ -60,7 +60,6 @@ const Create: React.FC<{navigation:any}> = ({navigation}) => {
                   
                 )}  
                 ItemSeparatorComponent={seperator}
-                //contentContainerStyle={{gap}
               />
             </View>
           </View>
