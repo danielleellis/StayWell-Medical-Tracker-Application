@@ -13,7 +13,8 @@ import { colors, fonts } from "../constants/constants";
 const { width, height } = Dimensions.get("window");
 
 const App: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<string>("2024-07-16");
+  const currentDate = new Date().toISOString().split("T")[0];
+  const [selectedDate, setSelectedDate] = useState<string>(currentDate);
 
   const onDayPress = (day: any) => {
     setSelectedDate(day.dateString);
