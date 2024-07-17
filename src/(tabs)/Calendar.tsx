@@ -36,7 +36,7 @@ const App: React.FC = () => {
               current={selectedDate}
               hideArrows={false}
               onDayPress={onDayPress}
-              monthFormat={"MMMM"}
+              monthFormat={"MMMM yyyy"}
               markedDates={{
                 [selectedDate]: { selected: true, selectedColor: colors.blue },
               }}
