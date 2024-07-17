@@ -36,3 +36,6 @@ yarn-error.*
 
 # temporary visual studio files
 .vs/
+
+# IP security
+config.json
