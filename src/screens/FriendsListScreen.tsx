@@ -1,31 +1,57 @@
-import { Text, View, StyleSheet } from "react-native";
-import React from "react";
-import { colors, fonts } from "../constants/constants";
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFriend } from '../redux/slices/friendsSlice';
+import { RootState } from '../redux/store';
 
-const FriendsList: React.FC = () => {
+const FriendsListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+    const dispatch = useDispatch();
+    const friends = useSelector((state: RootState) => state.friends.friends);
+
+    useEffect(() => {
+        if (!friends.some(friend => friend.id === '1')) {
+            dispatch(addFriend({
+                id: '1',
+                name: 'testFriend',
+                birthday: '02/21/2000',
+                phone: '888-888-8888',
+                email: 'yulinglo@asu.edu',
+                pronouns: 'She/Her',
+                imageUrl: 'https://placeimg.com/140/140/people'
+            }));
+        }
+    }, [dispatch, friends]);
+    
+
     return (
         <View style={styles.container}>
-            {/* <Text style={styles.heading}>S T A Y W E L L</Text> */}
-            <Text>Friends List Screen</Text>
+            {friends.map((friend, index) => (
+                <TouchableOpacity
+                    key={friend.id + index}  // Combining id and index for uniqueness
+                    style={styles.friendContainer}
+                    onPress={() => navigation.navigate('FriendProfile', { friend })}
+                >
+                    <Text style={styles.friendName}>{friend.name}</Text>
+                </TouchableOpacity>
+            ))}
         </View>
     );
-
 };
-
-export default FriendsList;
-
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "flex-start",
-        alignItems: "center",
-        paddingTop: 15,
-
+        alignItems: 'center',
+        justifyContent: 'center'
     },
-    heading: {
-        fontSize: 30,
-        color: colors.blue,
-        fontFamily: fonts.regular,
+    friendContainer: {
+        padding: 10,
+        marginVertical: 8,
+        backgroundColor: '#f0f0f0'
     },
+    friendName: {
+        fontSize: 18
+    }
 });
+
+export default FriendsListScreen;

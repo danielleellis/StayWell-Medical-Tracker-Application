@@ -8,6 +8,7 @@ import SplashScreen from "../screens/SplashScreen";
 import SignInScreen from "../screens/SignInScreen";
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
 import FriendsListScreen from "../screens/FriendsListScreen";
+import FriendProfileScreen from "../viewfriendslist/FriendProfileScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Habits from "../(tabs)/Habits";
@@ -132,6 +133,11 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
                 name="Friends"
                 component={FriendsListScreen}
+                options={{ headerShown: true }}
+            />
+            <Stack.Screen
+                name="FriendProfile"
+                component={FriendProfileScreen}
                 options={{ headerShown: true }}
             />
             <Stack.Screen
