@@ -62,17 +62,6 @@ const TabNav: React.FC<{navigation:any}> = ({navigation}) => {
                 }}
             />
             <Tab.Screen
-                name="Create"
-                component={Create}
-                options={{
-                    tabBarLabel: "Create",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="add-circle-outline" color={color} size={size} />
-                    ),
-                    //tabBarButton:
-                }}
-            />
-            <Tab.Screen
                 name="Documents"
                 component={Documents}
                 options={{

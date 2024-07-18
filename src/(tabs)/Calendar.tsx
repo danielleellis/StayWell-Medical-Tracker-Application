@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: colors.blue,
     fontFamily: fonts.regular,
-    marginTop: 20,
+    marginTop: 50,
   },
   container: {
     flex: 1,
