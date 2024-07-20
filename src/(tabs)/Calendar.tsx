@@ -133,20 +133,20 @@ const App: React.FC = () => {
         </View>
 
         <View style={styles.dateContainer}>
-          <Text style={styles.currentDate}>{currentDateDisplay}</Text>
+          <Text style={styles.currentDate}>
+            Events for {currentDateDisplay}
+          </Text>
         </View>
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.eventContainer}>
-            {filteredEvents.map((event, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleEventPress(event)}
-                style={styles.eventItem}
-              >
-                <Text style={styles.titleText}>{event.title}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+        <ScrollView style={styles.eventContainer}>
+          {filteredEvents.map((event, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleEventPress(event)}
+              style={styles.eventItem}
+            >
+              <Text style={styles.titleText}>{event.title}</Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
       </View>
       {renderModal()}
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   scrollView: {
-    //flex: 1,
+    flex: 1,
   },
   container: {
     flex: 1,
@@ -176,30 +176,39 @@ const styles = StyleSheet.create({
   },
   calendarContainer: {
     marginTop: 10,
+    marginBottom: -130,
   },
 
   // BOTTOM CONTAINER
   dateContainer: {
     alignSelf: "flex-start",
-    marginLeft: 20,
-    marginBottom: 20,
+    width: "100%",
+    backgroundColor: colors.white,
+    borderTopWidth: 2,
+    borderTopColor: colors.green,
+    paddingTop: 30,
+    paddingBottom: 5,
   },
   currentDate: {
     fontFamily: fonts.regular,
-    fontSize: 20,
+    fontSize: 24,
     color: colors.blue,
+    marginLeft: 20,
   },
   eventContainer: {
+    flex: 1,
     width: "100%",
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    backgroundColor: colors.white,
   },
   eventItem: {
     marginBottom: 10,
   },
   titleText: {
     fontFamily: fonts.regular,
-    fontSize: 16,
+    fontSize: 18,
     color: colors.black,
-    textAlign: "center",
   },
 
   // MODAL
