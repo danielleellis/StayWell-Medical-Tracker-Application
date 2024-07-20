@@ -161,18 +161,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   scrollView: {
-    flex: 1,
+    //flex: 1,
   },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 20,
   },
   heading: {
     fontSize: 30,
     color: colors.blue,
-    marginTop: 20,
+    marginTop: 11,
     fontFamily: fonts.regular,
   },
   calendarContainer: {

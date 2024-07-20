@@ -18,10 +18,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     paddingTop: 50,
+    backgroundColor: colors.white,
   },
   heading: {
     fontSize: 30,
     color: colors.blue,
+    marginTop: 20,
     fontFamily: fonts.regular,
   },
 });
