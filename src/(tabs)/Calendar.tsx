@@ -10,7 +10,7 @@ import {
   Modal,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
-import { format } from "date-fns"; // Import format function from date-fns
+import { format, parseISO, isSameDay } from "date-fns";
 import { colors, fonts } from "../constants/constants";
 
 const { width, height } = Dimensions.get("window");
@@ -24,7 +24,7 @@ type Event = {
 };
 
 const formatDate = (dateString: string) => {
-  return format(new Date(dateString), "MMMM dd, yyyy");
+  return format(parseISO(dateString), "MMMM dd, yyyy");
 };
 
 const App: React.FC = () => {
@@ -37,32 +37,38 @@ const App: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
+  // Hard-coded mock events for demo
+  // Replace with actual data fetching logic
+  const mockEvents: Event[] = [
+    {
+      title: "Refill Adderall",
+      date: "2024-07-18",
+      formattedDate: "July 18, 2024",
+    },
+    {
+      title: "Cardiologist Appointment",
+      date: "2024-07-19",
+      formattedDate: "July 19, 2024",
+      location: "1234 W Bell Rd.",
+    },
+    {
+      title: "Blood Work",
+      date: "2024-07-20",
+      formattedDate: "July 20, 2024",
+    },
+  ];
+
   const onDayPress = (day: any) => {
     const selectedDateString = day.dateString; // ISO date string
     setSelectedDate(selectedDateString);
     setCurrentDateDisplay(formatDate(selectedDateString));
 
-    // Hard-coded mock events for demo
-    // Replace with actual data fetching logic
-    const mockEvents: Event[] = [
-      {
-        title: "Refill Adderall",
-        date: "2024-07-18",
-        formattedDate: "July 18, 2024",
-      },
-      {
-        title: "Cardiologist Appointment",
-        date: "2024-07-19",
-        formattedDate: "July 19, 2024",
-        location: "1234 W Bell Rd.",
-      },
-      {
-        title: "Blood Work",
-        date: "2024-07-20",
-        formattedDate: "July 20, 2024",
-      },
-    ];
-    setEvents(mockEvents.filter((event) => event.date === selectedDateString));
+    // filter events based on selected date
+    const filteredEvents = mockEvents.filter((event) =>
+      isSameDay(parseISO(event.date), parseISO(selectedDateString))
+    );
+
+    setEvents(filteredEvents);
   };
 
   const handleEventPress = (event: Event) => {
@@ -105,7 +111,9 @@ const App: React.FC = () => {
 
   const calendarHeight = height * 0.5; // 50% of the screen height
 
-  const filteredEvents = events.filter((event) => event.date === selectedDate);
+  const filteredEvents = events.filter((event) =>
+    isSameDay(parseISO(event.date), parseISO(selectedDate))
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -125,9 +133,7 @@ const App: React.FC = () => {
         </View>
 
         <View style={styles.dateContainer}>
-          <Text style={styles.currentDate}>
-            {currentDateDisplay} - ignore this lol i will fix it later
-          </Text>
+          <Text style={styles.currentDate}>{currentDateDisplay}</Text>
         </View>
         <ScrollView style={styles.scrollView}>
           <View style={styles.eventContainer}>
