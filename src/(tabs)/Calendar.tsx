@@ -42,7 +42,7 @@ const App: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [forceUpdate, setForceUpdate] = useState(false);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]); // State for filtered events
 
   // Hard-coded mock events for demo
   const mockEvents: Event[] = [
@@ -74,21 +74,18 @@ const App: React.FC = () => {
     },
   ];
 
+  // Function to filter events based on selected date
   const filterEvents = (selectedDate: string) => {
     const filtered = mockEvents.filter((event) => {
       if (event.recurring) {
-        const isRecurringIncluded =
-          event.startDate <= selectedDate &&
-          (event.endDate === undefined || event.endDate >= selectedDate);
-        console.log(`${event.title}: recurring=${isRecurringIncluded}`);
-        return isRecurringIncluded;
+        const eventStartDate = parseISO(event.startDate);
+        const selectedDateObj = parseISO(selectedDate);
+
+        // Example logic for recurring events
+        return selectedDateObj >= eventStartDate;
       } else {
-        const isNonRecurringIncluded = isSameDayEvent(
-          event.startDate,
-          selectedDate
-        );
-        console.log(`${event.title}: non-recurring=${isNonRecurringIncluded}`);
-        return isNonRecurringIncluded;
+        // Non-recurring event logic
+        return isSameDayEvent(event.startDate, selectedDate);
       }
     });
 
@@ -96,11 +93,11 @@ const App: React.FC = () => {
     return filtered;
   };
 
-  // useEffect to monitor forceUpdate and trigger re-renders
+  // Update filteredEvents state when selectedDate changes
   useEffect(() => {
-    // Logic to execute on forceUpdate change, if needed
-    // This effect runs after every render if forceUpdate changes
-  }, [forceUpdate]);
+    const filtered = filterEvents(selectedDate);
+    setFilteredEvents(filtered);
+  }, [selectedDate]);
 
   const onDayPress = (day: any) => {
     const selectedDateString = day.dateString;
@@ -108,13 +105,6 @@ const App: React.FC = () => {
 
     setSelectedDate(selectedDateString);
     setCurrentDateDisplay(formatDate(selectedDateString));
-
-    const filtered = filterEvents(selectedDateString);
-    console.log("Filtered events:", filtered);
-
-    setEvents(filtered);
-
-    setForceUpdate((prev) => !prev); // force re-render for recurring
   };
 
   const handleEventPress = (event: Event) => {
@@ -157,10 +147,6 @@ const App: React.FC = () => {
 
   const calendarHeight = height * 0.5; // 50% of the screen height
 
-  const filteredEvents = events.filter((event) =>
-    isSameDay(parseISO(event.startDate), parseISO(selectedDate))
-  );
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -183,7 +169,10 @@ const App: React.FC = () => {
             Events for {currentDateDisplay}
           </Text>
         </View>
-        <ScrollView style={styles.eventContainer}>
+        <ScrollView
+          style={styles.eventContainer}
+          key={selectedDate} // key to force rerender on date change
+        >
           {filteredEvents.map((event, index) => (
             <TouchableOpacity
               key={index}
