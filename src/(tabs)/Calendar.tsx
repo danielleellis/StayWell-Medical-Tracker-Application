@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -17,14 +17,20 @@ const { width, height } = Dimensions.get("window");
 
 type Event = {
   title: string;
-  date: string; // ISO string format
+  startDate: string; // ISO string format
+  endDate?: string; // Optional ISO string format for end date
   formattedDate: string; // formatted for display purposes
   location?: string;
   time?: string;
+  recurring?: boolean;
 };
 
 const formatDate = (dateString: string) => {
   return format(parseISO(dateString), "MMMM dd, yyyy");
+};
+
+const isSameDayEvent = (eventDate: string, selectedDate: string) => {
+  return isSameDay(parseISO(eventDate), parseISO(selectedDate));
 };
 
 const App: React.FC = () => {
@@ -36,39 +42,79 @@ const App: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [forceUpdate, setForceUpdate] = useState(false);
 
   // Hard-coded mock events for demo
-  // Replace with actual data fetching logic
   const mockEvents: Event[] = [
     {
+      title: "Daily Medication",
+      startDate: currentDate,
+      endDate: undefined, // Indefinite end date
+      formattedDate: formatDate(currentDate),
+      recurring: true,
+    },
+    {
       title: "Refill Adderall",
-      date: "2024-07-18",
+      startDate: "2024-07-18",
       formattedDate: "July 18, 2024",
+      recurring: false,
     },
     {
       title: "Cardiologist Appointment",
-      date: "2024-07-19",
+      startDate: "2024-07-19",
       formattedDate: "July 19, 2024",
       location: "1234 W Bell Rd.",
+      recurring: false,
     },
     {
       title: "Blood Work",
-      date: "2024-07-20",
+      startDate: "2024-07-20",
       formattedDate: "July 20, 2024",
+      recurring: false,
     },
   ];
 
+  const filterEvents = (selectedDate: string) => {
+    const filtered = mockEvents.filter((event) => {
+      if (event.recurring) {
+        const isRecurringIncluded =
+          event.startDate <= selectedDate &&
+          (event.endDate === undefined || event.endDate >= selectedDate);
+        console.log(`${event.title}: recurring=${isRecurringIncluded}`);
+        return isRecurringIncluded;
+      } else {
+        const isNonRecurringIncluded = isSameDayEvent(
+          event.startDate,
+          selectedDate
+        );
+        console.log(`${event.title}: non-recurring=${isNonRecurringIncluded}`);
+        return isNonRecurringIncluded;
+      }
+    });
+
+    console.log("Filtered events:", filtered);
+    return filtered;
+  };
+
+  // useEffect to monitor forceUpdate and trigger re-renders
+  useEffect(() => {
+    // Logic to execute on forceUpdate change, if needed
+    // This effect runs after every render if forceUpdate changes
+  }, [forceUpdate]);
+
   const onDayPress = (day: any) => {
-    const selectedDateString = day.dateString; // ISO date string
+    const selectedDateString = day.dateString;
+    console.log("Selected date:", selectedDateString);
+
     setSelectedDate(selectedDateString);
     setCurrentDateDisplay(formatDate(selectedDateString));
 
-    // filter events based on selected date
-    const filteredEvents = mockEvents.filter((event) =>
-      isSameDay(parseISO(event.date), parseISO(selectedDateString))
-    );
+    const filtered = filterEvents(selectedDateString);
+    console.log("Filtered events:", filtered);
 
-    setEvents(filteredEvents);
+    setEvents(filtered);
+
+    setForceUpdate((prev) => !prev); // force re-render for recurring
   };
 
   const handleEventPress = (event: Event) => {
@@ -112,7 +158,7 @@ const App: React.FC = () => {
   const calendarHeight = height * 0.5; // 50% of the screen height
 
   const filteredEvents = events.filter((event) =>
-    isSameDay(parseISO(event.date), parseISO(selectedDate))
+    isSameDay(parseISO(event.startDate), parseISO(selectedDate))
   );
 
   return (
