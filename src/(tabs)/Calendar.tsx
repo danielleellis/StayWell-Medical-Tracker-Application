@@ -1,3 +1,21 @@
+/**
+ * StayWell Medical Tracker Application
+ *
+ * This file contains the main component for the StayWell Medical Tracker Application,
+ * integrating a calendar view to display and manage medical events and appointments.
+ *
+ * Features:
+ * - Calendar component using react-native-calendars for date selection.
+ * - Display of medical events filtered by selected date.
+ * - Modal for detailed view of selected event.
+ * - Integration with mock data for demonstration purposes.
+ *
+ * Developed by: Team 21 Member:
+ *    - Danielle Ellis
+ * Date: July 21, 2024
+ * Version: Initial development
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -18,7 +36,7 @@ const { width, height } = Dimensions.get("window");
 type Event = {
   title: string;
   startDate: string; // ISO string format
-  endDate?: string; // Optional ISO string format for end date
+  endDate?: string;
   formattedDate: string; // formatted for display purposes
   location?: string;
   time?: string;
@@ -42,14 +60,14 @@ const App: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]); // State for filtered events
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
 
-  // Hard-coded mock events for demo
+  // hard-coded mock events for demo
   const mockEvents: Event[] = [
     {
       title: "Daily Medication",
       startDate: currentDate,
-      endDate: undefined, // Indefinite end date
+      endDate: undefined, // indefinite end date
       formattedDate: formatDate(currentDate),
       recurring: true,
     },
@@ -74,17 +92,17 @@ const App: React.FC = () => {
     },
   ];
 
-  // Function to filter events based on selected date
+  // filter events based on selected date
   const filterEvents = (selectedDate: string) => {
     const filtered = mockEvents.filter((event) => {
       if (event.recurring) {
         const eventStartDate = parseISO(event.startDate);
         const selectedDateObj = parseISO(selectedDate);
 
-        // Example logic for recurring events
+        // recurring events
         return selectedDateObj >= eventStartDate;
       } else {
-        // Non-recurring event logic
+        // non-recurring event
         return isSameDayEvent(event.startDate, selectedDate);
       }
     });
@@ -93,7 +111,7 @@ const App: React.FC = () => {
     return filtered;
   };
 
-  // Update filteredEvents state when selectedDate changes
+  // update filteredEvents state when selectedDate changes
   useEffect(() => {
     const filtered = filterEvents(selectedDate);
     setFilteredEvents(filtered);
