@@ -38,8 +38,8 @@ const TabNav: React.FC<{navigation:any}> = ({navigation}) => {
             initialRouteName="Dashboard"
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: colors.blue,
-                tabBarInactiveTintColor: colors.black,
+                tabBarActiveTintColor: colors.green,
+                tabBarInactiveTintColor: colors.blue,
             }}
         >
             <Tab.Screen
