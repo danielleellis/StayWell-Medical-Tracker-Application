@@ -73,21 +73,21 @@ const App: React.FC = () => {
     },
     {
       title: "Refill Adderall",
-      startDate: "2024-07-18",
-      formattedDate: "July 18, 2024",
+      startDate: "2024-07-25",
+      formattedDate: "July 25, 2024",
       recurring: false,
     },
     {
       title: "Cardiologist Appointment",
-      startDate: "2024-07-19",
-      formattedDate: "July 19, 2024",
+      startDate: "2024-07-26",
+      formattedDate: "July 26, 2024",
       location: "1234 W Bell Rd.",
       recurring: false,
     },
     {
       title: "Blood Work",
-      startDate: "2024-07-20",
-      formattedDate: "July 20, 2024",
+      startDate: "2024-07-27",
+      formattedDate: "July 27, 2024",
       recurring: false,
     },
   ];
