@@ -43,8 +43,8 @@ const styles = StyleSheet.create({
     },
     item:{
         backgroundColor: 'white',
-        padding: 26,
-        margin: 12, 
+        padding: '6%',
+        margin: '4%', 
         borderRadius: 20,
     },
     title:{

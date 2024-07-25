@@ -20,7 +20,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts } from "../constants/constants";
 import NewDocument from "../(createnew)/NewDocument";
 import NewTask from "../(createnew)/NewTask";
-import ProfileSettings from "../settings/Profile";
 import Account from "../settings/Account";
 import Privacy from "../settings/Privacy";
 import Notification from "../settings/Notification";
@@ -146,11 +145,6 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
                 name="NewDocument"
                 component={NewDocument}
-                options={{ headerShown: false }}
-            />
-            <Stack.Screen
-                name="Profile"
-                component={ProfileSettings}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

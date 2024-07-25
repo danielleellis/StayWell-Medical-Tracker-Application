@@ -220,16 +220,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingTop: '10%',
   },
   heading: {
     fontSize: 30,
     color: colors.blue,
-    marginTop: 11,
+    marginTop: '5%',
     fontFamily: fonts.regular,
   },
   calendarContainer: {
-    marginTop: 10,
-    marginBottom: -130,
+    marginTop: '4%',
+    marginBottom: '-10%',
   },
 
   // BOTTOM CONTAINER
@@ -239,8 +240,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderTopWidth: 2,
     borderTopColor: colors.green,
-    paddingTop: 30,
-    paddingBottom: 5,
+    paddingTop: '5%',
+    paddingBottom: '5%',
   },
   currentDate: {
     fontFamily: fonts.regular,
@@ -251,12 +252,12 @@ const styles = StyleSheet.create({
   eventContainer: {
     flex: 1,
     width: "100%",
-    paddingTop: 20,
-    paddingHorizontal: 20,
+    paddingTop: '5%',
+    paddingHorizontal: '5%',
     backgroundColor: colors.white,
   },
   eventItem: {
-    marginBottom: 10,
+    marginBottom: '5%',
   },
   titleText: {
     fontFamily: fonts.regular,

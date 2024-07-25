@@ -118,14 +118,14 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: '5%',
     backgroundColor: colors.white,
-    paddingTop: 50,
+    paddingTop: '10%',
   },
   heading: {
     fontSize: 30,
     color: colors.blue,
-    marginTop: 20,
+    marginTop: '5%',
     fontFamily: fonts.regular,
     textAlign: "center",
   },

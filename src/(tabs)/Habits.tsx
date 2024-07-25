@@ -17,13 +17,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: 50,
+    paddingTop: '10%',
     backgroundColor: colors.white,
   },
   heading: {
     fontSize: 30,
     color: colors.blue,
-    marginTop: 20,
+    marginTop: '5%',
     fontFamily: fonts.regular,
   },
 });
