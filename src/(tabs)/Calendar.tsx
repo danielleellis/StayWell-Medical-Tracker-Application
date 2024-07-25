@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   dateContainer: {
     alignSelf: "flex-start",
     width: "100%",
-    backgroundColor: "rgba(176, 218, 182, 0.7)",
+    backgroundColor: "rgba(69, 166, 255, 0.6)",
     paddingTop: "8%",
     paddingBottom: "10%",
     borderTopStartRadius: 15,
@@ -245,14 +245,14 @@ const styles = StyleSheet.create({
   currentDate: {
     fontFamily: fonts.bold,
     fontSize: 24,
-    color: colors.blue,
+    color: colors.black,
     textAlign: "center",
   },
   eventContainer: {
     flex: 1,
     width: "100%",
     paddingHorizontal: "5%",
-    backgroundColor: "rgba(176, 218, 182, 0.7)",
+    backgroundColor: "rgba(69, 166, 255, 0.6)",
   },
   eventItem: {
     marginBottom: "10%",
