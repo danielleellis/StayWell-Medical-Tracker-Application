@@ -3,7 +3,6 @@ import React from "react";
 import { colors, fonts } from "../constants/constants";
 
 const settingsData = [
-    {id:'1', title:'Profile', page:'Profile'},
     {id:'2', title:'Account', page:'Account'},
     {id:'3', title:'Privacy', page:'Privacy'},
     {id:'4', title:'Notification', page:'Notification'},
