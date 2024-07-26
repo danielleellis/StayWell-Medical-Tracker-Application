@@ -52,7 +52,7 @@ const isSameDayEvent = (eventDate: string, selectedDate: string) => {
   return isSameDay(parseISO(eventDate), parseISO(selectedDate));
 };
 
-// Define mock events before using them
+// hard-coded mock events for demo
 const mockEvents: Event[] = [
   {
     title: "Daily Medication",
@@ -130,6 +130,30 @@ const App: React.FC = () => {
     setModalVisible(true);
   };
 
+  // Mark the event as completed
+  const markEventAsComplete = () => {
+    if (selectedEvent) {
+      setEvents((prevEvents) =>
+        prevEvents.map((e) =>
+          e.title === selectedEvent.title ? { ...e, completed: true } : e
+        )
+      );
+      setSelectedEvent((prevEvent) =>
+        prevEvent ? { ...prevEvent, completed: true } : null
+      );
+      setModalVisible(false);
+    }
+  };
+
+  // Toggle event completion
+  const toggleEventCompletion = (eventTitle: string) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((e) =>
+        e.title === eventTitle ? { ...e, completed: !e.completed } : e
+      )
+    );
+  };
+
   const renderModal = () => {
     if (!selectedEvent) return null;
 
@@ -152,6 +176,18 @@ const App: React.FC = () => {
               </Text>
             )}
             <TouchableOpacity
+              style={[
+                styles.completeButton,
+                selectedEvent.completed && styles.completedButton,
+              ]}
+              onPress={markEventAsComplete}
+              disabled={selectedEvent.completed}
+            >
+              <Text style={styles.completeButtonText}>
+                {selectedEvent.completed ? "Completed" : "Mark as Complete"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}
             >
@@ -164,15 +200,6 @@ const App: React.FC = () => {
   };
 
   const calendarHeight = height * 0.5; // 50% of the screen height
-
-  // toggle event completion
-  const toggleEventCompletion = (eventTitle: string) => {
-    setEvents((prevEvents) =>
-      prevEvents.map((e) =>
-        e.title === eventTitle ? { ...e, completed: !e.completed } : e
-      )
-    );
-  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -216,7 +243,7 @@ const App: React.FC = () => {
               <Text
                 style={[
                   styles.titleText,
-                  event.completed && styles.completedTitleText, // Apply line-through if completed
+                  event.completed && styles.completedTitleText,
                 ]}
               >
                 {event.title}
@@ -343,6 +370,19 @@ const styles = StyleSheet.create({
   },
   modalLocation: {
     fontFamily: fonts.regular,
+  },
+  completeButton: {
+    marginTop: "5%",
+    padding: "3%",
+    backgroundColor: colors.green,
+    borderRadius: 5,
+  },
+  completedButton: {
+    backgroundColor: colors.grey,
+  },
+  completeButtonText: {
+    color: colors.white,
+    textAlign: "center",
   },
 });
 
