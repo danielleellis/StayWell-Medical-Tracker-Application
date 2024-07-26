@@ -41,6 +41,7 @@ type Event = {
   location?: string;
   time?: string;
   recurring?: boolean;
+  completed?: boolean;
 };
 
 const formatDate = (dateString: string) => {
@@ -51,50 +52,49 @@ const isSameDayEvent = (eventDate: string, selectedDate: string) => {
   return isSameDay(parseISO(eventDate), parseISO(selectedDate));
 };
 
+// Define mock events before using them
+const mockEvents: Event[] = [
+  {
+    title: "Daily Medication",
+    startDate: new Date().toISOString().split("T")[0], // current date for demo purposes
+    formattedDate: formatDate(new Date().toISOString().split("T")[0]),
+    recurring: true,
+  },
+  {
+    title: "Refill Adderall",
+    startDate: "2024-07-25",
+    formattedDate: "July 25, 2024",
+    recurring: false,
+  },
+  {
+    title: "Cardiologist Appointment",
+    startDate: "2024-07-26",
+    formattedDate: "July 26, 2024",
+    location: "1234 W Bell Rd.",
+    recurring: false,
+  },
+  {
+    title: "Blood Work",
+    startDate: "2024-07-27",
+    formattedDate: "July 27, 2024",
+    recurring: false,
+  },
+];
+
 const App: React.FC = () => {
   const currentDate = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState<string>(currentDate);
   const [currentDateDisplay, setCurrentDateDisplay] = useState<string>(
     formatDate(currentDate)
   );
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>(mockEvents); // initialize events using mock events
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
 
-  // hard-coded mock events for demo
-  const mockEvents: Event[] = [
-    {
-      title: "Daily Medication",
-      startDate: currentDate,
-      endDate: undefined, // indefinite end date
-      formattedDate: formatDate(currentDate),
-      recurring: true,
-    },
-    {
-      title: "Refill Adderall",
-      startDate: "2024-07-25",
-      formattedDate: "July 25, 2024",
-      recurring: false,
-    },
-    {
-      title: "Cardiologist Appointment",
-      startDate: "2024-07-26",
-      formattedDate: "July 26, 2024",
-      location: "1234 W Bell Rd.",
-      recurring: false,
-    },
-    {
-      title: "Blood Work",
-      startDate: "2024-07-27",
-      formattedDate: "July 27, 2024",
-      recurring: false,
-    },
-  ];
-
   // filter events based on selected date
   const filterEvents = (selectedDate: string) => {
-    const filtered = mockEvents.filter((event) => {
+    const filtered = events.filter((event) => {
       if (event.recurring) {
         const eventStartDate = parseISO(event.startDate);
         const selectedDateObj = parseISO(selectedDate);
@@ -115,7 +115,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const filtered = filterEvents(selectedDate);
     setFilteredEvents(filtered);
-  }, [selectedDate]);
+  }, [selectedDate, events]);
 
   const onDayPress = (day: any) => {
     const selectedDateString = day.dateString;
@@ -165,6 +165,15 @@ const App: React.FC = () => {
 
   const calendarHeight = height * 0.5; // 50% of the screen height
 
+  // toggle event completion
+  const toggleEventCompletion = (eventTitle: string) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((e) =>
+        e.title === eventTitle ? { ...e, completed: !e.completed } : e
+      )
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -197,7 +206,21 @@ const App: React.FC = () => {
               onPress={() => handleEventPress(event)}
               style={styles.eventItem}
             >
-              <Text style={styles.titleText}>{event.title}</Text>
+              <TouchableOpacity
+                onPress={() => toggleEventCompletion(event.title)}
+                style={[
+                  styles.indicator,
+                  event.completed && styles.completedIndicator,
+                ]}
+              />
+              <Text
+                style={[
+                  styles.titleText,
+                  event.completed && styles.completedTitleText, // Apply line-through if completed
+                ]}
+              >
+                {event.title}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -236,40 +259,53 @@ const styles = StyleSheet.create({
   dateContainer: {
     alignSelf: "flex-start",
     width: "100%",
-    backgroundColor: "rgba(69, 166, 255, 0.6)",
+    backgroundColor: "rgba(69, 166, 255, 0.1)",
     paddingTop: "8%",
     paddingBottom: "10%",
-    borderTopStartRadius: 15,
-    borderTopEndRadius: 15,
+    borderTopWidth: 2,
+    borderTopColor: colors.blue,
   },
   currentDate: {
-    fontFamily: fonts.bold,
+    fontFamily: fonts.regular,
     fontSize: 24,
     color: colors.black,
-    textAlign: "center",
+    //textAlign: "center",
+    marginLeft: "5%",
   },
   eventContainer: {
     flex: 1,
     width: "100%",
     paddingHorizontal: "5%",
-    backgroundColor: "rgba(69, 166, 255, 0.6)",
+    backgroundColor: "rgba(69, 166, 255, 0.1)",
   },
   eventItem: {
-    marginBottom: "10%",
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    width: "70%",
-    height: "30%",
-    justifyContent: "center",
+    flexDirection: "row",
     alignItems: "center",
-    alignSelf: "center",
+    marginBottom: "10%",
+    paddingVertical: "2%",
+    paddingHorizontal: "2%",
   },
   titleText: {
     fontFamily: fonts.regular,
     fontSize: 18,
     color: colors.black,
-    paddingHorizontal: "2%",
-    paddingVertical: "3%",
+    marginLeft: 10,
+    flex: 1,
+    textAlign: "left",
+  },
+  indicator: {
+    width: 18,
+    height: 18,
+    borderRadius: 10,
+    backgroundColor: colors.grey,
+    marginRight: 10,
+  },
+  completedTitleText: {
+    textDecorationLine: "line-through",
+    color: colors.grey,
+  },
+  completedIndicator: {
+    backgroundColor: colors.green,
   },
 
   // MODAL
