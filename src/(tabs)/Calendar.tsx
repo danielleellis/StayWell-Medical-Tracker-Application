@@ -175,24 +175,26 @@ const App: React.FC = () => {
                 Location: {selectedEvent.location}
               </Text>
             )}
-            <TouchableOpacity
-              style={[
-                styles.completeButton,
-                selectedEvent.completed && styles.completedButton,
-              ]}
-              onPress={markEventAsComplete}
-              disabled={selectedEvent.completed}
-            >
-              <Text style={styles.completeButtonText}>
-                {selectedEvent.completed ? "Completed" : "Mark as Complete"}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.completeButton,
+                  selectedEvent.completed && styles.completedButton,
+                ]}
+                onPress={markEventAsComplete}
+                disabled={selectedEvent.completed}
+              >
+                <Text style={styles.completeButtonText}>
+                  {selectedEvent.completed ? "Completed" : "Mark as Complete"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -296,7 +298,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 24,
     color: colors.black,
-    //textAlign: "center",
     marginLeft: "5%",
   },
   eventContainer: {
@@ -354,33 +355,43 @@ const styles = StyleSheet.create({
     marginBottom: "5%",
     fontFamily: fonts.bold,
   },
-  closeButton: {
-    marginTop: "5%",
-    padding: "3%",
-    backgroundColor: colors.blue,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: colors.white,
-    textAlign: "center",
-  },
   modalDate: {
     fontFamily: fonts.regular,
     fontSize: 15,
+    paddingBottom: "1%",
   },
   modalLocation: {
     fontFamily: fonts.regular,
   },
-  completeButton: {
+  buttonContainer: {
+    flexDirection: "row",
     marginTop: "5%",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  completeButton: {
     padding: "3%",
     backgroundColor: colors.green,
     borderRadius: 5,
+    flex: 1,
+    marginRight: 10,
+    alignItems: "center",
   },
   completedButton: {
     backgroundColor: colors.grey,
   },
   completeButtonText: {
+    color: colors.white,
+    textAlign: "center",
+  },
+  closeButton: {
+    padding: "3%",
+    backgroundColor: colors.blue,
+    borderRadius: 5,
+    flex: 1,
+    alignItems: "center",
+  },
+  closeButtonText: {
     color: colors.white,
     textAlign: "center",
   },
