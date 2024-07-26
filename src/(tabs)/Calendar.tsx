@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   dateContainer: {
     alignSelf: "flex-start",
     width: "100%",
-    backgroundColor: "rgba(69, 166, 255, 0.1)",
+    backgroundColor: "rgba(69, 166, 255, 0.25)",
     paddingTop: "8%",
     paddingBottom: "10%",
     borderTopWidth: 2,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     paddingHorizontal: "5%",
-    backgroundColor: "rgba(69, 166, 255, 0.1)",
+    backgroundColor: "rgba(69, 166, 255, 0.25)",
   },
   eventItem: {
     flexDirection: "row",
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   completedTitleText: {
     textDecorationLine: "line-through",
-    color: colors.grey,
+    color: colors.darkgrey,
   },
   completedIndicator: {
     backgroundColor: colors.green,
