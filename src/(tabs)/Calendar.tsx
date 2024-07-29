@@ -62,21 +62,21 @@ const mockEvents: Event[] = [
   },
   {
     title: "Refill Adderall",
-    startDate: "2024-07-25",
-    formattedDate: "July 25, 2024",
+    startDate: "2024-07-28",
+    formattedDate: "July 28, 2024",
     recurring: false,
   },
   {
     title: "Cardiologist Appointment",
-    startDate: "2024-07-26",
-    formattedDate: "July 26, 2024",
+    startDate: "2024-07-29",
+    formattedDate: "July 29, 2024",
     location: "1234 W Bell Rd.",
     recurring: false,
   },
   {
     title: "Blood Work",
-    startDate: "2024-07-27",
-    formattedDate: "July 27, 2024",
+    startDate: "2024-07-30",
+    formattedDate: "July 30, 2024",
     recurring: false,
   },
 ];
@@ -201,7 +201,8 @@ const App: React.FC = () => {
     );
   };
 
-  const calendarHeight = height * 0.5; // 50% of the screen height
+  const calendarHeight = height * 0.43; // 40% of the screen height
+  const calendarWidth = width * 0.9; // 90% of the screen width
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -209,7 +210,7 @@ const App: React.FC = () => {
         <Text style={styles.heading}>S T A Y W E L L</Text>
         <View style={styles.calendarContainer}>
           <Calendar
-            style={{ width: width, height: calendarHeight }}
+            style={{ width: calendarWidth, height: calendarHeight }}
             current={selectedDate}
             hideArrows={false}
             onDayPress={onDayPress}
@@ -275,21 +276,22 @@ const styles = StyleSheet.create({
     paddingTop: "1%",
   },
   heading: {
-    fontSize: 30,
-    marginTop: '14%',
+    fontSize: 26,
+    marginTop: "5%",
     color: colors.blue,
     fontFamily: fonts.regular,
+    textAlign: "center",
   },
   calendarContainer: {
     //marginTop: "4%",
-    marginBottom: "-10%",
+    marginBottom: "10%",
   },
 
   // BOTTOM CONTAINER
   dateContainer: {
     alignSelf: "flex-start",
     width: "100%",
-    backgroundColor: "rgba(69, 166, 255, 0.25)",
+    backgroundColor: "rgba(69, 166, 255, 0.1)",
     paddingTop: "8%",
     paddingBottom: "10%",
     borderTopWidth: 2,
@@ -297,7 +299,7 @@ const styles = StyleSheet.create({
   },
   currentDate: {
     fontFamily: fonts.regular,
-    fontSize: 24,
+    fontSize: 22,
     color: colors.black,
     marginLeft: "5%",
   },
@@ -305,7 +307,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     paddingHorizontal: "5%",
-    backgroundColor: "rgba(69, 166, 255, 0.25)",
+    backgroundColor: "rgba(69, 166, 255, 0.1)",
   },
   eventItem: {
     flexDirection: "row",
