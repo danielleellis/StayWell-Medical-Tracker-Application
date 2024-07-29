@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     paddingTop: "7%",
     paddingBottom: "8%",
     borderTopWidth: 2,
-    borderTopColor: "rgba(0, 0, 0, 0.5)",
+    borderTopColor: "rgba(151, 193, 127, 0.5)",
   },
   currentDate: {
     fontFamily: fonts.regular,
