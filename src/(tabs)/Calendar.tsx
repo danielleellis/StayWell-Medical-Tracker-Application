@@ -276,12 +276,13 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 30,
+    marginTop: '14%',
     color: colors.blue,
     fontFamily: fonts.regular,
   },
   calendarContainer: {
-    marginTop: "4%",
-    marginBottom: "-25%",
+    //marginTop: "4%",
+    marginBottom: "-10%",
   },
 
   // BOTTOM CONTAINER
