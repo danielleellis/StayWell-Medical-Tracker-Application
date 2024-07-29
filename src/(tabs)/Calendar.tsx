@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   calendarContainer: {
-    //marginTop: "4%",
+    marginTop: "1%",
     marginBottom: "10%",
   },
 
@@ -292,10 +292,10 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     width: "100%",
     backgroundColor: "rgba(69, 166, 255, 0.1)",
-    paddingTop: "8%",
-    paddingBottom: "10%",
+    paddingTop: "7%",
+    paddingBottom: "8%",
     borderTopWidth: 2,
-    borderTopColor: colors.blue,
+    borderTopColor: "rgba(0, 0, 0, 0.5)",
   },
   currentDate: {
     fontFamily: fonts.regular,
