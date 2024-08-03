@@ -62,21 +62,21 @@ const mockEvents: Event[] = [
   },
   {
     title: "Refill Adderall",
-    startDate: "2024-07-28",
-    formattedDate: "July 28, 2024",
+    startDate: "2024-08-03",
+    formattedDate: "August 3, 2024",
     recurring: false,
   },
   {
     title: "Cardiologist Appointment",
-    startDate: "2024-07-29",
-    formattedDate: "July 29, 2024",
+    startDate: "2024-08-04",
+    formattedDate: "August 4, 2024",
     location: "1234 W Bell Rd.",
     recurring: false,
   },
   {
     title: "Blood Work",
-    startDate: "2024-07-30",
-    formattedDate: "July 30, 2024",
+    startDate: "2024-08-05",
+    formattedDate: "August 5, 2024",
     recurring: false,
   },
 ];
@@ -393,6 +393,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
   closeButtonText: {
     color: colors.white,
