@@ -1,9 +1,9 @@
+require('dotenv').config();
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
-const path = require('path');
 const cors = require('cors');
-const bcrypt = require('bcrypt');   // for hashing passwords
+const bcrypt = require('bcrypt'); // for hashing passwords
+const mysql = require('mysql');
 
 const app = express();
 const port = 3000;
@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // ==============================================================================
-// Functions for managing status of database
+// Functions for connection of database
 // ==============================================================================
 
 // Start the server
@@ -20,27 +20,58 @@ app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-// Connect to SQLite database
-const dbPath = path.resolve(__dirname, '../database/database.db');
-const db = new sqlite3.Database(dbPath);
+// Declare variables from the .env file for use in the MySQL connection
+const db_host = process.env.DB_HOST;
+const db_port = process.env.DB_PORT;
+const db_user = process.env.DB_USER;
+const db_password = process.env.DB_PASSWORD;
+const db_name = process.env.DB_NAME;
 
-// Create users table if not exists
-db.serialize(() => {
-    db.run(`CREATE TABLE IF NOT EXISTS Users (
-    userID TEXT PRIMARY KEY,
-    firstName TEXT,
-    lastName TEXT,
-    email TEXT UNIQUE,
-    password TEXT,
-    username TEXT,
-    pronouns TEXT,
-    phoneNumber TEXT,
-    birthday TEXT,
-    profilePhoto TEXT,
-    verificationCode INTEGER
-)`);
-
+// Create MySQL connection
+const connection = mysql.createConnection({
+    host: db_host,
+    port: db_port,
+    user: db_user,
+    password: db_password,
+    database: db_name
 });
+
+// Ensure the database connection is established
+connection.connect((err) => {
+    if (err) {
+        console.error('Database connection error:', err);
+        return;
+    }
+    console.log('Connected to MySQL database');
+
+    // Create Users table if not exists
+    const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS Users (
+        userID VARCHAR(255) PRIMARY KEY,
+        firstName VARCHAR(255),
+        lastName VARCHAR(255),
+        email VARCHAR(255) UNIQUE,
+        password VARCHAR(255),
+        username VARCHAR(255),
+        pronouns VARCHAR(255),
+        phoneNumber VARCHAR(255),
+        birthday DATE,
+        profilePhoto VARCHAR(255),
+        verificationCode INT
+    )`;
+
+    connection.query(createTableQuery, (err, results) => {
+        if (err) {
+            console.error('Error creating Users table:', err);
+            return;
+        }
+        console.log('Users table created or already exists');
+    });
+});
+
+// ==============================================================================
+// Helper functions for database needs like generating data
+// ==============================================================================
 
 // userID generation function
 const generateRandomID = (length = 10) => {
@@ -57,31 +88,40 @@ const generateRandomID = (length = 10) => {
 // ==============================================================================
 // Functions for getting info from database
 // ==============================================================================
+// Health check endpoint to test server connection
+app.get('/', (req, res) => {
+    console.log('Root endpoint accessed - server is running');
+    res.send('Server is running on port 3000');
+});
 
 // Endpoint to get all users
-app.get('/api/users', (req, res) => {
-    db.all('SELECT * FROM Users', [], (err, rows) => {
+app.get('/users', (req, res) => {
+    console.log('Attempting to get users data from database');
+
+    const sql = 'SELECT * FROM Users';
+    connection.query(sql, (err, results) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
         }
-        res.json({ users: rows });
+        res.json({ users: results });
         console.log('Returning all users data');
     });
 });
 
-// Ensure all queries reference 'userID' correctly
-app.get('/api/users/:id', (req, res) => {
-    const userID = req.params.id; // Line needing correction
-    db.get('SELECT * FROM Users WHERE userID = ?', [userID], (err, user) => { // Line needing correction
+// Endpoint to get a user by ID
+app.get('/users/:id', (req, res) => {
+    const userID = req.params.id;
+    const sql = 'SELECT * FROM Users WHERE userID = ?';
+    connection.query(sql, [userID], (err, results) => {
         if (err) {
             res.status(500).json({ error: err.message });
-            console.error("get api/users/:id error");
+            console.error("Error fetching user by ID:", err.message);
             return;
         }
-        if (user) {
-            console.log(`Returning data for user ${user.firstName} ${user.lastName}`);
-            res.json({ user });
+        if (results.length > 0) {
+            res.json({ user: results[0] });
+            console.log(`Returning data for user ${results[0].firstName} ${results[0].lastName}`);
         } else {
             res.status(404).json({ error: 'User not found' });
             console.log('User not found');
@@ -90,16 +130,17 @@ app.get('/api/users/:id', (req, res) => {
 });
 
 // Endpoint to check if email is already taken
-app.get('/api/check-email/:email', (req, res) => {
+app.get('/check-email/:email', (req, res) => {
     const email = req.params.email;
     console.log(`Checking email on sign up: ${email}`);
-    db.get('SELECT * FROM Users WHERE email = ?', [email], (err, row) => {
+    const sql = 'SELECT * FROM Users WHERE email = ?';
+    connection.query(sql, [email], (err, results) => {
         if (err) {
             res.status(500).json({ error: err.message });
-            console.error("get api/check-email/:email error");
+            console.error("Error checking email:", err.message);
             return;
         }
-        if (row) {
+        if (results.length > 0) {
             // Email is already taken
             res.json({ taken: true });
             console.log(`Email ${email} is already taken`);
@@ -116,23 +157,25 @@ app.get('/api/check-email/:email', (req, res) => {
 // ==============================================================================
 
 // Endpoint to handle user login
-app.post('/api/signin', async (req, res) => {
+app.post('/signin', async (req, res) => {
     const { email, password } = req.body;
 
-    db.get('SELECT * FROM Users WHERE email = ?', [email], async (err, user) => { // Line needing correction
+    const sql = 'SELECT * FROM Users WHERE email = ?';
+    connection.query(sql, [email], async (err, results) => {
         if (err) {
             res.status(500).json({ error: err.message });
-            console.error("post api/signin error:", err.message);
+            console.error("Error during sign-in:", err.message);
             return;
         }
-        if (user) {
+        if (results.length > 0) {
+            const user = results[0];
             const match = await bcrypt.compare(password, user.password);
             if (match) {
-                res.status(200).json({ userID: user.userID }); // Line needing correction
-                console.log(`Found password match for ${email}`);
+                res.status(200).json({ userID: user.userID });
+                console.log(`Password match found for ${email}`);
             } else {
                 res.status(401).json({ message: 'Invalid email or password' });
-                console.log(`No password match found for ${email}`);
+                console.log(`Password match not found for ${email}`);
             }
         } else {
             res.status(401).json({ message: 'User not found' });
@@ -141,30 +184,29 @@ app.post('/api/signin', async (req, res) => {
     });
 });
 
-app.post('/api/signup', async (req, res) => {
+app.post('/signup', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     console.log(`Signup Attempted: ${firstName} ${lastName} ${email}`);
 
     try {
         // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+        const hashedPassword = await bcrypt.hash(password, 10);
         console.log('Hashed password:', hashedPassword);
 
         // Generate userID
-        const userID = generateRandomID(10); // Generate a random 10-character userID
+        const userID = generateRandomID(10);
         console.log('Generated userID:', userID);
 
-        const stmt = db.prepare('INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)'); // Line needing correction
-        stmt.run([userID, firstName, lastName, email, hashedPassword], function (err) {
+        const sql = 'INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)';
+        connection.query(sql, [userID, firstName, lastName, email, hashedPassword], (err, results) => {
             if (err) {
-                console.log(`Error encountered running signup statement: ${err.message}`);
+                console.log(`Error encountered during signup: ${err.message}`);
                 return res.status(400).json({ error: err.message });
             }
             console.log(`Signup successful for ${userID}: ${firstName} ${lastName} ${email}`);
             res.status(200).json({ success: true, userID, hashedPassword });
         });
 
-        stmt.finalize();
     } catch (error) {
         console.log(`Error caught during signup: ${error.message}`);
         res.status(500).json({ error: error.message });
@@ -172,7 +214,7 @@ app.post('/api/signup', async (req, res) => {
 });
 
 // Endpoint to update user profile
-app.put('/api/profile-setup', async (req, res) => {
+app.put('/profile-setup', async (req, res) => {
     const { userID, username, pronouns = '', phone, birthday, profilePhoto } = req.body;
 
     console.log('Received userID:', userID);
@@ -184,95 +226,82 @@ app.put('/api/profile-setup', async (req, res) => {
         return res.status(400).json({ error: 'Missing fields in profile setup data' });
     }
 
-    try {
-        // Update user profile in the database
-        const stmt = db.prepare('UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?');
-        stmt.run([username, pronouns, phone, birthday, profilePhoto, userID], function (err) {
-            if (err) {
-                console.error('Error updating user:', err.message);
-                return res.status(400).json({ error: err.message });
-            }
-            console.log('Database update successful');
-            res.status(200).json({ success: true });
-        });
-        stmt.finalize(); // Optional in SQLite with node-sqlite3
-
-    } catch (error) {
-        console.error('Exception while updating user profile:', error);
-        res.status(500).json({ error: 'Server error while updating user profile' });
-    }
+    const sql = 'UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?';
+    connection.query(sql, [username, pronouns, phone, birthday, profilePhoto, userID], (err, results) => {
+        if (err) {
+            console.error('Error updating user:', err.message);
+            return res.status(400).json({ error: err.message });
+        }
+        console.log('Database update successful');
+        res.status(200).json({ success: true });
+    });
 });
 
 // Endpoint to fetch user profile data
-app.get('/api/profile/:userID', async (req, res) => {
+app.get('/profile/:userID', async (req, res) => {
     const { userID } = req.params;
     console.log('Received userID:', userID);
 
-    try {
-        console.log(`Fetching profile data for userID ${userID}`);
-        // Query the database to get user profile data
-        const stmt = db.prepare('SELECT username, pronouns, phoneNumber, birthday, profilePhoto FROM Users WHERE userID = ?');
-        stmt.get([userID], (err, row) => {
-            if (err) {
-                console.error('Error fetching user data:', err.message);
-                return res.status(500).json({ error: err.message });
-            }
+    const sql = 'SELECT username, pronouns, phoneNumber, birthday, profilePhoto FROM Users WHERE userID = ?';
+    connection.query(sql, [userID], (err, results) => {
+        if (err) {
+            console.error('Error fetching user data:', err.message);
+            return res.status(500).json({ error: err.message });
+        }
 
-            if (!row) {
-                console.log('User not found');
-                return res.status(404).json({ error: 'User not found' });
-            }
+        if (results.length === 0) {
+            console.log('User not found');
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-            console.log('User data fetched successfully:', row);
-            res.status(200).json(row);
-        });
-        stmt.finalize(); // Optional in SQLite with node-sqlite3
-
-    } catch (error) {
-        console.error('Exception while fetching user profile:', error);
-        res.status(500).json({ error: 'Server error while fetching user profile' });
-    }
+        console.log('User data fetched successfully:', results[0]);
+        res.status(200).json(results[0]);
+    });
 });
-
 
 // ==============================================================================
 // Functions for email verification and forgot password codes
 // ==============================================================================
 
 // Endpoint to retrieve verification code for a specific email
-app.get('/api/verify-code/:email', (req, res) => {
+app.get('/verify-code/:email', (req, res) => {
     const email = req.params.email;
 
     const sql = 'SELECT verificationCode FROM Users WHERE email = ?';
-    db.get(sql, [email], (err, row) => {
+    connection.query(sql, [email], (err, results) => {
         if (err) {
-            return res.status(400).json({ error: err.message });
+            console.error('Error retrieving verification code:', err.message);
+            return res.status(500).json({ error: err.message });
         }
-        if (!row) {
-            return res.status(404).json({ error: 'Verification code not found for the email.' });
+
+        if (results.length === 0) {
+            console.log('User not found');
+            return res.status(404).json({ error: 'User not found' });
         }
-        res.status(200).json({ verificationCode: row.verificationCode });
+
+        console.log('Verification code retrieved successfully');
+        res.status(200).json({ verificationCode: results[0].verificationCode });
     });
 });
 
-// Endpoint to generate a 4-digit code for email verification or forgot password
-app.put('/api/verify-code/:email', async (req, res) => {
-    const email = req.params.email;
+// Endpoint to update verification code for a specific email
+app.put('/update-verify-code', (req, res) => {
+    const { email, verificationCode } = req.body;
 
-    // Function to generate a random 4-digit code
-    function generateVerificationCode() {
-        return Math.floor(1000 + Math.random() * 9000); // Generates a number between 1000 and 9999
-    }
-
-    const verificationCode = generateVerificationCode();
-
-    const stmt = db.prepare('UPDATE Users SET verificationCode = ? WHERE email = ?');
-    stmt.run(verificationCode, email, function (err) {
+    const sql = 'UPDATE Users SET verificationCode = ? WHERE email = ?';
+    connection.query(sql, [verificationCode, email], (err, results) => {
         if (err) {
-            return res.status(400).json({ error: err.message });
+            console.error('Error updating verification code:', err.message);
+            return res.status(500).json({ error: err.message });
         }
-        res.status(200).json({ success: true, verificationCode });
-    });
 
-    stmt.finalize();
+        if (results.affectedRows === 0) {
+            console.log('User not found');
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        console.log('Verification code updated successfully');
+        res.status(200).json({ success: true });
+    });
 });
+
