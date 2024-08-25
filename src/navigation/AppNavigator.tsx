@@ -145,7 +145,7 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="NewDocument"
         component={NewDocument}
-        options={{ headerShown: false }}
+        options={{ headerShown: true }}
       />
       <Stack.Screen
         name="Account"
