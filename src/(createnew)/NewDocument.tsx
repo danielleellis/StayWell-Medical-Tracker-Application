@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
         color: colors.black,
     },
     row: {
-        flexDirection: 'row', // Align children horizontally 
-        alignItems: 'center', // Center children vertically in the row
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 20,
     },
     contentContainer: {

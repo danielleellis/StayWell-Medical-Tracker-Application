@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import Input from "../components/Input";
-import Button from "../components/Button";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { setupProfile } from "../redux/slices/authSlice";
-import { useFonts } from "expo-font";
-import * as ImagePicker from "expo-image-picker";
-import { colors, fonts } from "../constants/constants";
-import axios from 'axios';
-import configData from "../../config.json";
 import { useSelector } from 'react-redux';
+import { colors, fonts } from "../constants/constants";
 
 const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
+    const [documents, setDocuments] = useState([
+        { name: 'Document 1', isLocked: false },
+        { name: 'Document 2', isLocked: true },
+        { name: 'Document 3', isLocked: false },
+    ]);
+
     const createNewDocument = () => {
         console.log("Button clicked: Create New Document");
         navigation.navigate('NewDocument');
-    }
-
-    
+    };
 
     return (
         <View style={styles.container}>
@@ -27,11 +25,27 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
             <TouchableOpacity style={styles.button} onPress={createNewDocument}>
                 <Text style={styles.buttonText}>Create New Document</Text>
             </TouchableOpacity>
-        </View>
 
+            {documents.map((doc, index) => (
+                <View key={index} style={styles.documentContainer}>
+                    <View style={styles.row}>
+                        <Image
+                            source={require('../../assets/images/document-icon.png')}
+                            style={styles.documentIcon}
+                        />
+                        <Text style={styles.text}>{doc.name}</Text>
+                        {doc.isLocked && (
+                            <Image
+                                source={require('../../assets/images/lock-icon.png')}
+                                style={styles.lockIcon}
+                            />
+                        )}
+                    </View>
+                </View>
+            ))}
+        </View>
     );
 };
-
 
 export default Documents;
 
@@ -49,6 +63,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         marginTop: 20,
+        marginBottom: 15,
     },
     buttonText: {
         color: '#fff',
@@ -65,35 +80,34 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.black,
     },
+    documentContainer: {
+        width: '90%',
+        margin: 5,
+        borderWidth: 2,
+        borderColor: '#6BB7ED',
+        borderRadius: 10,
+        padding: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 20,
-    },
-    contentContainer: {
-        alignItems: "center",
-        flexGrow: 1,
+        paddingHorizontal: 10,
+        fontSize: 16,
     },
     documentIcon: {
         width: 12,
-        height: 16,
+        height: 18,
         marginRight: 10,
     },
     lockIcon: {
-        width: 25,
-        height: 25,
-        marginRight: 10,
-    },
-    innerContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: colors.blue,
-        width: '90%',
-        borderRadius: 15,
-        margin: '20%'
+        width: 18,
+        height: 18,
+        marginLeft: 10,
     },
     input: {
-        marginBottom: 16,
+        fontSize: 16,
+        marginRight: 10,
     },
 });
