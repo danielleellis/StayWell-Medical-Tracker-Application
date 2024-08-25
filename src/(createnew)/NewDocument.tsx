@@ -40,15 +40,17 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
                 />
                 <Text style={styles.text}>Password Protect </Text>
                 <Switch
-                    trackColor={{ false: colors.grey, true: colors.blue }}
-                    thumbColor={isEnabled ? colors.white : colors.darkgrey}
+                    trackColor={{ false: colors.grey, true: colors.grey }}
+                    thumbColor={isEnabled ? colors.white : colors.white}
                     ios_backgroundColor={colors.grey}
                     onValueChange={toggleSwitch}
                     value={isEnabled}
                 />
             </View>
 
-            <Button title="Save Document" onPress={saveDocument} />
+            <TouchableOpacity style={styles.saveButton} onPress={saveDocument}>
+                <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
         </ScrollView>
     );
 };
@@ -63,7 +65,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 18,
-        color: colors.black,
+        color: colors.white,
     },
     row: {
         flexDirection: 'row',
@@ -71,8 +73,23 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     contentContainer: {
-        alignItems: "center",
-        flexGrow: 1,
+        backgroundColor: '#45A6FF',
+        margin: 5,
+        borderWidth: 2,
+        borderColor: '#6BB7ED',
+        borderRadius: 20,
+        padding: 15,
+        alignItems: 'center',
+    },
+    saveButton: {
+        borderRadius: 10,
+        backgroundColor: colors.white,
+    },
+    saveButtonText: {
+        fontSize: 18,
+        margin: 10,
+        color: '#45A6FF',
+        fontWeight: 'bold',
     },
     documentIcon: {
         width: 12,
@@ -80,9 +97,9 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     lockIcon: {
-        width: 25,
-        height: 25,
-        marginRight: 10,
+        width: 30,
+        height: 35,
+        margin: 10,
     },
     heading: {
         fontSize: 30,
@@ -101,5 +118,6 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 16,
+        color: colors.white,
     },
 });

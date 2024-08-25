@@ -18,16 +18,17 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate('NewDocument');
     };
 
+    const openDocument = () => {
+        console.log("Button clicked: Open Document");
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.heading}>D O C U M E N T S</Text>
 
-            <TouchableOpacity style={styles.button} onPress={createNewDocument}>
-                <Text style={styles.buttonText}>Create New Document</Text>
-            </TouchableOpacity>
 
             {documents.map((doc, index) => (
-                <View key={index} style={styles.documentContainer}>
+                <TouchableOpacity style={styles.documentContainer} onPress={openDocument}>
                     <View style={styles.row}>
                         <Image
                             source={require('../../assets/images/document-icon.png')}
@@ -41,8 +42,19 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
                             />
                         )}
                     </View>
-                </View>
+                </TouchableOpacity>
             ))}
+
+
+            <TouchableOpacity style={styles.button} onPress={createNewDocument}>
+                <View style={styles.row}>
+                    <Image
+                        source={require('../../assets/images/plus-icon.png')}
+                        style={styles.plusIcon}
+                    />
+                    <Text style={styles.buttonText}>Upload New Document</Text>
+                </View>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -58,7 +70,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
     },
     button: {
-        backgroundColor: '#6BB7ED',
+        //backgroundColor: '#6BB7ED',
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
@@ -66,7 +78,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     buttonText: {
-        color: '#fff',
+        color: colors.blue,
         fontSize: 16,
         fontFamily: 'JosefinSans-Bold',
     },
@@ -75,17 +87,19 @@ const styles = StyleSheet.create({
         color: colors.blue,
         marginTop: '5%',
         fontFamily: fonts.regular,
+        marginBottom: 10,
     },
     text: {
-        fontSize: 18,
-        color: colors.black,
+        fontSize: 20,
+        color: colors.white,
     },
     documentContainer: {
+        backgroundColor: '#45A6FF',
         width: '90%',
         margin: 5,
         borderWidth: 2,
         borderColor: '#6BB7ED',
-        borderRadius: 10,
+        borderRadius: 20,
         padding: 15,
         flexDirection: 'row',
         alignItems: 'center',
@@ -97,14 +111,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     documentIcon: {
-        width: 12,
-        height: 18,
+        width: 13,
+        height: 20,
         marginRight: 10,
     },
     lockIcon: {
-        width: 18,
-        height: 18,
+        width: 17,
+        height: 20,
         marginLeft: 10,
+    },
+    plusIcon: {
+        width: 53,
+        height: 52,
+        margin: 10,
     },
     input: {
         fontSize: 16,
