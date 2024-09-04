@@ -62,21 +62,21 @@ const mockEvents: Event[] = [
   },
   {
     title: "Refill Adderall",
-    startDate: "2024-08-03",
-    formattedDate: "August 3, 2024",
+    startDate: "2024-09-04",
+    formattedDate: "September 4, 2024",
     recurring: false,
   },
   {
     title: "Cardiologist Appointment",
-    startDate: "2024-08-04",
-    formattedDate: "August 4, 2024",
+    startDate: "2024-09-04",
+    formattedDate: "September 4, 2024",
     location: "1234 W Bell Rd.",
     recurring: false,
   },
   {
     title: "Blood Work",
-    startDate: "2024-08-05",
-    formattedDate: "August 5, 2024",
+    startDate: "2024-09-04",
+    formattedDate: "September 4, 2024",
     recurring: false,
   },
 ];
@@ -226,8 +226,11 @@ const App: React.FC = () => {
             Events for {currentDateDisplay}
           </Text>
         </View>
+
+        {/* ScrollView for the list of events */}
         <ScrollView
-          style={styles.eventContainer}
+          style={styles.scrollView}
+          contentContainerStyle={styles.eventContainer}
           key={selectedDate} // key to force rerender on date change
         >
           {filteredEvents.map((event, index) => (
@@ -266,9 +269,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  scrollView: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     justifyContent: "center",
@@ -283,53 +283,56 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   calendarContainer: {
-    marginTop: "1%",
-    marginBottom: "10%",
+    marginBottom: "6%", // Decrease margin to create closer proximity to the events container
   },
 
   // BOTTOM CONTAINER
   dateContainer: {
     alignSelf: "flex-start",
     width: "100%",
-    backgroundColor: "rgba(69, 166, 255, 0.1)",
-    paddingTop: "7%",
-    paddingBottom: "8%",
-    borderTopWidth: 2,
-    borderTopColor: "rgba(151, 193, 127, 0.5)",
+    paddingTop: "5%",
+    paddingBottom: "3%",
+    borderTopWidth: 1,
+    borderColor: colors.darkgrey,
+    backgroundColor: colors.lightgrey,
   },
   currentDate: {
     fontFamily: fonts.regular,
-    fontSize: 22,
+    fontSize: 20,
     color: colors.black,
     marginLeft: "5%",
   },
-  eventContainer: {
+  scrollView: {
     flex: 1,
     width: "100%",
+    backgroundColor: colors.lightgrey,
+    padding: 10,
+  },
+  eventContainer: {
     paddingHorizontal: "5%",
-    backgroundColor: "rgba(69, 166, 255, 0.1)",
   },
   eventItem: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: "10%",
     paddingVertical: "2%",
     paddingHorizontal: "2%",
   },
   titleText: {
     fontFamily: fonts.regular,
-    fontSize: 18,
+    fontSize: 16,
     color: colors.black,
-    marginLeft: 10,
+    marginLeft: "5%",
     flex: 1,
     textAlign: "left",
   },
   indicator: {
-    width: 18,
-    height: 18,
-    borderRadius: 10,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     backgroundColor: colors.grey,
-    marginRight: 10,
+    marginBottom: "1%",
   },
   completedTitleText: {
     textDecorationLine: "line-through",
