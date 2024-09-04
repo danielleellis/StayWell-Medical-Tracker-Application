@@ -5,7 +5,8 @@ export const colors = {
   white: "#FFFFFF",
   black: "#000000",
   grey: "#ccc",
-  darkgrey: "#666666",
+  darkgrey: "#BBBBBB",
+  lightgrey: "#FCFCFC",
 };
 
 export const fonts = {
