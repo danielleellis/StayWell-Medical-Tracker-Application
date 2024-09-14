@@ -12,7 +12,7 @@
  *
  * Developed by: Team 21 Member:
  *    - Danielle Ellis
- * Date: July 26, 2024
+ * Date: September 4, 2024
  * Version: Initial development
  */
 
@@ -283,56 +283,101 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   calendarContainer: {
+<<<<<<< HEAD
     marginBottom: "6%", // Decrease margin to create closer proximity to the events container
+=======
+    marginTop: "1%",
+    marginBottom: "5%",
+>>>>>>> origin
   },
 
   // BOTTOM CONTAINER
   dateContainer: {
     alignSelf: "flex-start",
     width: "100%",
+<<<<<<< HEAD
     paddingTop: "5%",
     paddingBottom: "3%",
     borderTopWidth: 1,
     borderColor: colors.darkgrey,
     backgroundColor: colors.lightgrey,
+=======
+    backgroundColor: "rgba(69, 166, 255, 0.05)",
+    paddingTop: "5%",
+    paddingBottom: "5%",
+    borderTopWidth: 2,
+    borderTopColor: "rgba(151, 193, 127, 0.4)",
+>>>>>>> origin
   },
   currentDate: {
     fontFamily: fonts.regular,
     fontSize: 20,
     color: colors.black,
-    marginLeft: "5%",
+    marginLeft: "4%",
   },
   scrollView: {
     flex: 1,
     width: "100%",
+<<<<<<< HEAD
     backgroundColor: colors.lightgrey,
     padding: 10,
   },
   eventContainer: {
     paddingHorizontal: "5%",
+=======
+    paddingHorizontal: "4%",
+    backgroundColor: "rgba(69, 166, 255, 0.05)",
+>>>>>>> origin
   },
   eventItem: {
     flexDirection: "row",
     alignItems: "center",
+<<<<<<< HEAD
     justifyContent: "space-between",
     marginBottom: "10%",
     paddingVertical: "2%",
+=======
+    marginBottom: "3%",
+    paddingVertical: "3%",
+>>>>>>> origin
     paddingHorizontal: "2%",
+    borderRadius: 15,
+    backgroundColor: colors.white,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   titleText: {
     fontFamily: fonts.regular,
     fontSize: 16,
     color: colors.black,
+<<<<<<< HEAD
     marginLeft: "5%",
+=======
+    marginLeft: "3%",
+>>>>>>> origin
     flex: 1,
     textAlign: "left",
+    paddingTop: "1%",
   },
   indicator: {
+<<<<<<< HEAD
     width: 16,
     height: 16,
     borderRadius: 8,
     backgroundColor: colors.grey,
     marginBottom: "1%",
+=======
+    width: 18,
+    height: 18,
+    borderRadius: 12,
+    backgroundColor: colors.grey,
+    marginRight: 12,
+    justifyContent: "center",
+    alignItems: "center",
+>>>>>>> origin
   },
   completedTitleText: {
     textDecorationLine: "line-through",
@@ -352,22 +397,28 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: colors.white,
     padding: "5%",
-    borderRadius: 10,
-    width: width * 0.8,
+    borderRadius: 20,
+    width: width * 0.85,
     alignItems: "center",
+    shadowColor: colors.white,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 6,
   },
   modalTitle: {
-    fontSize: 20,
-    marginBottom: "5%",
+    fontSize: 22,
+    marginBottom: 12,
     fontFamily: fonts.bold,
   },
   modalDate: {
     fontFamily: fonts.regular,
-    fontSize: 15,
-    paddingBottom: "1%",
+    fontSize: 16,
+    paddingBottom: "3%",
   },
   modalLocation: {
     fontFamily: fonts.regular,
+    fontSize: 16,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -378,10 +429,15 @@ const styles = StyleSheet.create({
   completeButton: {
     padding: "3%",
     backgroundColor: colors.green,
-    borderRadius: 5,
+    borderRadius: 10,
     flex: 1,
-    marginRight: 10,
+    marginRight: 8,
     alignItems: "center",
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   completedButton: {
     backgroundColor: colors.grey,
@@ -391,16 +447,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   closeButton: {
-    padding: "3%",
+    padding: "4%",
     backgroundColor: colors.blue,
-    borderRadius: 5,
+    borderRadius: 10,
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   closeButtonText: {
     color: colors.white,
     textAlign: "center",
+    fontSize: 16,
   },
 });
 
