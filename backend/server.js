@@ -402,6 +402,81 @@ app.put("/update-verify-code", (req, res) => {
     });
 });
 
+
+// ==============================================================================
+// Documents page
+// ==============================================================================
+app.post('/new-document', upload.array('images', 10), async (req, res) => {
+    const { userID, documentName, lockPasscode} = req.body;
+
+    if (!documentName || !userID) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        // Insert the document into the Documents table
+        const insertDocumentSql = `INSERT INTO Documents (documentID, documentName, userID, lockPasscode) VALUES (?, ?, ?, ?)`;
+        const documentID = generateRandomID(10); // Generate unique documentID
+        connection.query(insertDocumentSql, [documentID, documentName, userID, lockPasscode], (err) => {
+            if (err) {
+                console.error('Error inserting document:', err);
+                return res.status(500).json({ error: 'Error inserting document' });
+            }
+
+            // Upload images to S3 and save URLs in the Images table
+            const promises = req.files.map((file, index) => {
+                const imageID = generateRandomID(10); // Generate unique imageID
+                const filePath = `users/${userID}/documents/${documentID}/${imageID}-${file.originalname}`;
+
+                const params = {
+                    Bucket: s3_bucket,
+                    Key: filePath,
+                    Body: file.buffer,
+                    ContentType: file.mimetype,
+                };
+
+                return s3.upload(params).promise().then((data) => {
+                    const imageURL = data.Location;
+                    const insertImageSql = `INSERT INTO Images (imageID, documentID, imageURL) VALUES (?, ?, ?)`;
+                    connection.query(insertImageSql, [imageID, documentID, imageURL], (err) => {
+                        if (err) {
+                            console.error('Error inserting image:', err);
+                        }
+                    });
+                });
+            });
+
+            Promise.all(promises)
+                .then(() => {
+                    res.status(200).json({ success: true, documentID });
+                })
+                .catch((error) => {
+                    console.error('Error uploading images:', error);
+                    res.status(500).json({ error: 'Error uploading images' });
+                });
+        });
+    } catch (error) {
+        console.error('Error creating document:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+app.get('/documents/:userID', (req, res) => {
+    const userID = req.params.userID;
+
+    const sql = "SELECT documentID, documentName, lockPasscode FROM Documents WHERE userID = ?";
+    connection.query(sql, [userID], (err, results) => {
+        if (err) {
+            console.error('Error fetching documents:', err);
+            return res.status(500).json({ error: 'Error fetching documents' });
+        }
+
+        res.status(200).json({ documents: results });
+    });
+});
+
+
 // ==============================================================================
 // S3 bucket variables declaration and commands
 // ==============================================================================
