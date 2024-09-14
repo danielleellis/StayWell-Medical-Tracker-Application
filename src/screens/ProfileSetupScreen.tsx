@@ -130,9 +130,12 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     // Birthday formatting function
     const formatBirthday = (input: string) => {
+        // Remove all non-digit characters
         const cleanedInput = input.replace(/\D/g, "");
+
         let formattedInput = cleanedInput;
 
+        // Format MM/DD/YYYY as the user types
         if (cleanedInput.length > 2) {
             formattedInput = `${cleanedInput.slice(0, 2)}/`;
             if (cleanedInput.length > 4) {
@@ -141,7 +144,26 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 formattedInput += cleanedInput.slice(2);
             }
         }
+
+        // Return formatted input (MM/DD/YYYY)
         return formattedInput;
+    };
+
+    // Function to validate the formatted birthday (checks for valid month, day, and year)
+    const isValidBirthday = (input: string) => {
+        const [month, day, year] = input.split('/').map(Number);
+
+        // Check if the format is correct (MM/DD/YYYY)
+        if (input.length !== 10 || isNaN(month) || isNaN(day) || isNaN(year)) {
+            return false;
+        }
+
+        // Check if month, day, and year are valid
+        const isValidMonth = month >= 1 && month <= 12;
+        const isValidDay = day >= 1 && day <= 31;
+        const isValidYear = year >= 1900 && year <= new Date().getFullYear(); // Adjust year range as needed
+
+        return isValidMonth && isValidDay && isValidYear;
     };
 
     const validateForm = () => {
@@ -155,7 +177,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             newErrors.phone = "Please enter a valid 10-digit phone number";
         }
 
-        if (!/^(\d{2})\/(\d{2})\/(\d{4})$/.test(birthday)) {
+        if (!/^(\d{2})\/(\d{2})\/(\d{4})$/.test(birthday) || !isValidBirthday(birthday)) {
             newErrors.birthday = "Please enter a valid date in MM/DD/YYYY format";
         }
 

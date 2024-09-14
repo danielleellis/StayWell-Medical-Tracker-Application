@@ -106,6 +106,27 @@ const generateRandomID = (length = 10) => {
     return result;
 };
 
+// Helper function to format the date as MM/DD/YYYY with validation
+const formatBirthdayForDisplay = (date) => {
+    if (!date) return null; // Return null if date is not provided
+
+    const parsedDate = new Date(date);
+
+    // Check if parsedDate is a valid date
+    if (isNaN(parsedDate.getTime())) {
+        console.error("Invalid date provided:", date);
+        return null; // Return null if the date is invalid
+    }
+
+    const month = parsedDate.getMonth() + 1; // Months are 0-indexed
+    const day = parsedDate.getDate();
+    const year = parsedDate.getFullYear();
+
+    // Return formatted date as MM/DD/YYYY
+    return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+};
+
+
 // ==============================================================================
 // Functions for getting info from database
 // ==============================================================================
@@ -141,10 +162,18 @@ app.get("/users/:id", (req, res) => {
             console.error("Error fetching user by ID:", err.message);
             return;
         }
+
         if (results.length > 0) {
-            res.json({ user: results[0] });
+            const user = results[0];
+
+            // Format birthday if it exists
+            if (user.birthday) {
+                user.birthday = formatBirthdayForDisplay(user.birthday);
+            }
+
+            res.json({ user });
             console.log(
-                `Returning data for user ${results[0].firstName} ${results[0].lastName}`
+                `Returning data for user ${user.firstName} ${user.lastName}`
             );
         } else {
             res.status(404).json({ error: "User not found" });
@@ -210,6 +239,7 @@ app.post("/signin", async (req, res) => {
     });
 });
 
+
 app.post("/signup", async (req, res) => {
     console.log("/signup endpoint reached");
     const { firstName, lastName, email, password, profilePhoto } = req.body;
@@ -248,6 +278,7 @@ app.post("/signup", async (req, res) => {
     }
 });
 
+
 // Endpoint to update user profile
 app.put("/profile-setup", async (req, res) => {
     console.log("/profile-setup endpoint reached");
@@ -277,21 +308,20 @@ app.put("/profile-setup", async (req, res) => {
             .json({ error: "Missing fields in profile setup data" });
     }
 
-    const sql =
-        "UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?";
-    connection.query(
-        sql,
-        [username, pronouns, phone, birthday, profilePhoto, userID],
-        (err) => {
-            if (err) {
-                console.error("Error updating user:", err.message);
-                return res.status(400).json({ error: err.message });
-            }
-            console.log("Database update successful");
-            res.status(200).json({ success: true });
+    const formattedBirthday = new Date(birthday).toISOString().split('T')[0];
+
+    const sql = "UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?";
+    connection.query(sql, [username, pronouns, phone, formattedBirthday, profilePhoto, userID], (err) => {
+        if (err) {
+            console.error("Error updating user:", err.message);
+            return res.status(400).json({ error: err.message });
         }
-    );
+        console.log("Database update successful");
+        res.status(200).json({ success: true });
+    });
+
 });
+
 
 // Endpoint to fetch user profile data
 app.get("/profile/:userID", async (req, res) => {
@@ -299,8 +329,7 @@ app.get("/profile/:userID", async (req, res) => {
     const { userID } = req.params;
     console.log("Received userID:", userID);
 
-    const sql =
-        "SELECT username, pronouns, phoneNumber, birthday, profilePhoto FROM Users WHERE userID = ?";
+    const sql = "SELECT username, pronouns, phoneNumber, birthday, profilePhoto FROM Users WHERE userID = ?";
     connection.query(sql, [userID], (err, results) => {
         if (err) {
             console.error("Error fetching user data:", err.message);
@@ -312,10 +341,18 @@ app.get("/profile/:userID", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        console.log("User data fetched successfully:", results[0]);
-        res.status(200).json(results[0]);
+        const user = results[0];
+
+        // Format the birthday for display purposes (MM/DD/YYYY)
+        if (user.birthday) {
+            user.birthday = formatBirthdayForDisplay(user.birthday);
+        }
+
+        console.log("User data fetched successfully:", user);
+        res.status(200).json(user);
     });
 });
+
 
 // ==============================================================================
 // Functions for email verification and forgot password codes
