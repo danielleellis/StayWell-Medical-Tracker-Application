@@ -212,7 +212,7 @@ app.post("/signin", async (req, res) => {
 
 app.post("/signup", async (req, res) => {
     console.log("/signup endpoint reached");
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, profilePhoto } = req.body;
     console.log(`Signup Attempted: ${firstName} ${lastName} ${email}`);
 
     try {
@@ -225,10 +225,10 @@ app.post("/signup", async (req, res) => {
         console.log("Generated userID:", userID);
 
         const sql =
-            "INSERT INTO Users (userID, firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)";
+            "INSERT INTO Users (userID, firstName, lastName, email, password, profilePhoto) VALUES (?, ?, ?, ?, ?, ?)";
         connection.query(
             sql,
-            [userID, firstName, lastName, email, hashedPassword],
+            [userID, firstName, lastName, email, hashedPassword, profilePhoto],
             (err) => {
                 if (err) {
                     console.log(
@@ -394,9 +394,9 @@ app.post(
                 return res.status(400).json({ error: "No file uploaded" });
             }
 
-            const userID = req.file.originalname;
-            const fileName = `${userID}-profile-picture.jpg`;
-            const filePath = `users/${userID}/${fileName}`;
+            // Extract userID from req.file.originalname properly
+            const userID = req.file.originalname.split("-")[0];
+            const filePath = `users/${userID}/${userID}-profile-picture.jpg`; // Correct file path
 
             const params = {
                 Bucket: s3_bucket,
@@ -415,20 +415,18 @@ app.post(
     }
 );
 
-// Retrieve image from S3 bucket
 app.get("/get-image", async (req, res) => {
     console.log("/get-image endpoint reached");
 
     const { key } = req.query;
     const params = {
-        Bucket: "staywell.aws.bucket",
-        Key: key,
+        Bucket: s3_bucket,
+        Key: `users/${key}/${key}-profile-picture.jpg`, // Use correct path format
     };
 
-    console.log(`Checking image existence from ${key}`);
+    console.log(`Checking image existence from ${params.Key}`);
     try {
-        // Check if the object exists
-        await s3.headObject(params).promise();
+        await s3.headObject(params).promise(); // Check if the object exists
 
         // If object exists, generate the signed URL
         const url = await s3.getSignedUrlPromise("getObject", {
@@ -437,11 +435,10 @@ app.get("/get-image", async (req, res) => {
         });
         res.status(200).json({ url });
     } catch (error) {
-        if (error.code === 'NotFound') {
-            // Respond with a 404 status code if the image does not exist
+        if (error.code === "NotFound") {
+            console.log(`Image not found at ${params.Key}`);
             res.status(404).json({ error: "Image not found" });
         } else {
-            // Handle other errors
             console.error("Error generating signed URL:", error);
             res.status(500).json({ error: "Error generating signed URL" });
         }
