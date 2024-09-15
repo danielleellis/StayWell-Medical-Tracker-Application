@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { signIn } from "../redux/slices/authSlice";
+import { AppDispatch } from "../../redux/store";
+import { signIn } from "../../redux/slices/authSlice";
 import { useFonts } from "expo-font";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 import { Alert } from 'react-native';
 import axios from 'axios';
-import configData from "../../config.json";
+import configData from "../../../config.json";
 
 const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -19,8 +19,8 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const serverEndpoint = configData.API_ENDPOINT;
 
   const [loaded] = useFonts({
-    "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
-    "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
+    "JosefinSans-Regular": require("../../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
+    "JosefinSans-Bold": require("../../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
   });
 
     if (!loaded) {
@@ -73,7 +73,7 @@ const SignInScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../../assets/images/sun.png")}
+        source={require("../../../assets/images/sun.png")}
         style={styles.logo}
       />
       <Text style={styles.title}>Sign In</Text>

@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, SafeAreaView } from "react-native";
 import React from "react";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
 const NewTask = () => {
   return (

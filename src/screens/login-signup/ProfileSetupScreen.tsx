@@ -7,16 +7,16 @@ import {
     Image,
     Alert,
 } from "react-native";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
 import { useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "../redux/store";
-import { setupProfile } from "../redux/slices/authSlice";
+import { AppDispatch, RootState } from "../../redux/store";
+import { setupProfile } from "../../redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import * as ImagePicker from "expo-image-picker";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 import axios from "axios";
-import configData from "../../config.json";
+import configData from "../../../config.json";
 import { useSelector } from "react-redux";
 
 const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -30,8 +30,8 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const serverEndpoint = configData.API_ENDPOINT;
 
     const [loaded] = useFonts({
-        "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
-        "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
+        "JosefinSans-Regular": require("../../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
+        "JosefinSans-Bold": require("../../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
     });
 
     if (!loaded) {
@@ -195,7 +195,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                     source={
                         profilePhotoUri
                             ? { uri: profilePhotoUri }
-                            : require("../../assets/images/Temp-Profile-Picture.png")
+                            : require("../../../assets/images/Temp-Profile-Picture.png")
                     }
                     style={styles.profilePhoto}
                 />

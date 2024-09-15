@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { signUp } from "../redux/slices/authSlice";
+import { AppDispatch } from "../../redux/store";
+import { signUp } from "../../redux/slices/authSlice";
 import { useFonts } from "expo-font";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 import axios from 'axios';
-import configData from "../../config.json";
+import configData from "../../../config.json";
 
 const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [firstName, setFirstName] = useState("");
@@ -26,8 +26,8 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const serverEndpoint = configData.API_ENDPOINT;
 
     const [loaded] = useFonts({
-        "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
-        "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
+        "JosefinSans-Regular": require("../../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
+        "JosefinSans-Bold": require("../../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
     });
 
     if (!loaded) {
@@ -190,7 +190,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 <Text style={styles.backButtonText}>{"BACK"}</Text>
             </TouchableOpacity>
             <Image
-                source={require("../../assets/images/sun.png")}
+                source={require("../../../assets/images/sun.png")}
                 style={styles.logo}
             />
             <Text style={styles.title}>Create an Account</Text>

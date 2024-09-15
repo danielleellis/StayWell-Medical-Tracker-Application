@@ -1,16 +1,16 @@
 import { Text, View, StyleSheet } from "react-native";
 import React from "react";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
-const RequestInfo = () => {
+const Notification = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Request Information</Text>
+      <Text style={styles.heading}>Notification Settings</Text>
     </View>
   );
 };
 
-export default RequestInfo;
+export default Notification;
 
 const styles = StyleSheet.create({
   container: {

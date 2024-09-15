@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { addFriend } from "../redux/slices/friendsSlice";
-import { RootState } from "../redux/store";
-import { colors, fonts } from "../constants/constants";
+import { addFriend } from "../../redux/slices/friendsSlice";
+import { RootState } from "../../redux/store";
+import { colors, fonts } from "../../constants/constants";
 
 const FriendsListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const dispatch = useDispatch();

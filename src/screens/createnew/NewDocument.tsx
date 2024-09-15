@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Switch, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
+import { RootState } from "../../redux/store";
 import * as ImagePicker from "expo-image-picker";
 import axios from 'axios';
-import configData from "../../config.json";
-import { colors, fonts } from "../constants/constants";
+import configData from "../../../config.json";
+import { colors, fonts } from "../../constants/constants";
 
 const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [documentName, setDocumentName] = useState("");
@@ -108,7 +108,7 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
 
             <View style={styles.row}>
                 <Image
-                    source={require('../../assets/images/lock-icon.png')}
+                    source={require('../../../assets/images/lock-icon.png')}
                     style={styles.lockIcon}
                 />
                 <Text style={styles.text}>Password Protect</Text>

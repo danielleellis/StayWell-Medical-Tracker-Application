@@ -29,7 +29,7 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { format, parseISO, isSameDay } from "date-fns";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
 const { width, height } = Dimensions.get("window");
 

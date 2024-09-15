@@ -1,16 +1,16 @@
 import { Text, View, StyleSheet } from "react-native";
 import React from "react";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
-const Notification = () => {
+const Deactivate = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Notification Settings</Text>
+      <Text style={styles.heading}>Deactivate</Text>
     </View>
   );
 };
 
-export default Notification;
+export default Deactivate;
 
 const styles = StyleSheet.create({
   container: {

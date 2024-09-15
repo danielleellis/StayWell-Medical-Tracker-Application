@@ -1,16 +1,16 @@
 import { Text, View, StyleSheet } from "react-native";
 import React from "react";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
-const Privacy = () => {
+const RequestInfo = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Privacy Settings</Text>
+      <Text style={styles.heading}>Request Information</Text>
     </View>
   );
 };
 
-export default Privacy;
+export default RequestInfo;
 
 const styles = StyleSheet.create({
   container: {

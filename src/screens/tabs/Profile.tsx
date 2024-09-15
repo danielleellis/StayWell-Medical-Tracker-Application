@@ -9,11 +9,11 @@ import {
     Alert,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../redux/store";
-import { signOut } from "../redux/slices/authSlice";
+import { RootState } from "../../redux/store";
+import { signOut } from "../../redux/slices/authSlice";
 import axios from "axios";
-import configData from "../../config.json";
-import { colors, fonts } from "../constants/constants";
+import configData from "../../../config.json";
+import { colors, fonts } from "../../constants/constants";
 
 const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const user = useSelector((state: RootState) => state.auth.user);
@@ -94,7 +94,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 source={
                     fetchedImageUrl
                         ? { uri: fetchedImageUrl }
-                        : require("../../assets/images/Temp-Profile-Picture.png")
+                        : require("../../../assets/images/Temp-Profile-Picture.png")
                 }
                 style={styles.profileImage}
                 onError={() => setFetchedImageUrl(null)} // If there is an error loading, fallback to default

@@ -7,12 +7,12 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import Button from "../components/Button";
+import Button from "../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../redux/store";
-import { verifyEmail } from "../redux/slices/authSlice";
+import { AppDispatch, RootState } from "../../redux/store";
+import { verifyEmail } from "../../redux/slices/authSlice";
 import { useFonts } from "expo-font";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
 const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
   navigation,
@@ -29,8 +29,8 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
   const code4Ref = useRef<TextInput>(null);
 
   const [loaded] = useFonts({
-    "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
-    "JosefinSans-Bold": require("../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
+    "JosefinSans-Regular": require("../../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
+    "JosefinSans-Bold": require("../../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
   });
 
   if (!loaded) {
@@ -57,7 +57,7 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
         <Text style={styles.backButtonText}>{"BACK"}</Text>
       </TouchableOpacity>
       <Image
-        source={require("../../assets/images/sun.png")}
+        source={require("../../../assets/images/sun.png")}
         style={styles.logo}
       />
       <Text style={styles.title}>Verify Email</Text>

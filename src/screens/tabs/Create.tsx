@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, SafeAreaView, Modal, FlatList, TouchableOpacity } from "react-native";
 import React from "react";
 import {useState} from "react";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 import {Ionicons} from '@expo/vector-icons';
 
 //icons for menu

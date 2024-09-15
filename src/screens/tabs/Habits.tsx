@@ -1,27 +1,29 @@
 import { Text, View, StyleSheet } from "react-native";
 import React from "react";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
-const Deactivate = () => {
+const Habits = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Deactivate</Text>
+      <Text style={styles.heading}>S T A Y W E L L</Text>
     </View>
   );
 };
 
-export default Deactivate;
+export default Habits;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: 50,
+    paddingTop: '10%',
+    backgroundColor: colors.white,
   },
   heading: {
     fontSize: 30,
-    color: colors.black,
+    color: colors.blue,
+    marginTop: '5%',
     fontFamily: fonts.regular,
   },
 });

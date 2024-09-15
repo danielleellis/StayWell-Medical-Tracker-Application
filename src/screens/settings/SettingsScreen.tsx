@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import React from "react";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
 const settingsData = [
     {id:'2', title:'Account', page:'Account'},

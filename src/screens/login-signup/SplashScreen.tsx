@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useFonts } from "expo-font";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
 const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [loaded] = useFonts({
-    "JosefinSans-Regular": require("../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
+    "JosefinSans-Regular": require("../../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
   });
 
   const handleGetStarted = () => {
@@ -20,7 +20,7 @@ const SplashScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.content}>
         <Image
-          source={require("../../assets/images/logo.png")}
+          source={require("../../../assets/images/logo.png")}
           style={styles.logo}
         />
         <Text style={styles.tagline}>

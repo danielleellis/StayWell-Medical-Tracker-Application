@@ -1,29 +1,27 @@
 import { Text, View, StyleSheet } from "react-native";
 import React from "react";
-import { colors, fonts } from "../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
-const Habits = () => {
+const Privacy = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>S T A Y W E L L</Text>
+      <Text style={styles.heading}>Privacy Settings</Text>
     </View>
   );
 };
 
-export default Habits;
+export default Privacy;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: '10%',
-    backgroundColor: colors.white,
+    paddingTop: 50,
   },
   heading: {
     fontSize: 30,
-    color: colors.blue,
-    marginTop: '5%',
+    color: colors.black,
     fontFamily: fonts.regular,
   },
 });

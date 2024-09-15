@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ScrollView } from "react-native";
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { RootState } from "../redux/store";
-import { colors, fonts } from "../constants/constants";
-import configData from "../../config.json";
+import { RootState } from "../../redux/store";
+import { colors, fonts } from "../../constants/constants";
+import configData from "../../../config.json";
 import { useFocusEffect } from '@react-navigation/native';
 
 const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -51,7 +51,7 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
             <TouchableOpacity style={styles.button} onPress={createNewDocument}>
                 <View style={styles.row}>
                     <Image
-                        source={require('../../assets/images/plus-icon.png')}
+                        source={require('../../../assets/images/plus-icon.png')}
                         style={styles.plusIcon}
                     />
                     <Text style={styles.buttonText}>Upload New Document</Text>
@@ -69,13 +69,13 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
                         >
                             <View style={styles.row}>
                                 <Image
-                                    source={require('../../assets/images/document-icon.png')}
+                                    source={require('../../../assets/images/document-icon.png')}
                                     style={styles.documentIcon}
                                 />
                                 <Text style={styles.text}>{doc.documentName}</Text>
                                 {doc.lockPasscode && (
                                     <Image
-                                        source={require('../../assets/images/lock-icon.png')}
+                                        source={require('../../../assets/images/lock-icon.png')}
                                         style={styles.lockIcon}
                                     />
                                 )}

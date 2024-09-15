@@ -1,31 +1,38 @@
+// Library dependencies
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import SignUpScreen from "../screens/SignUpScreen";
-import EmailVerificationScreen from "../screens/EmailVerificationScreen";
-import ProfileSetupScreen from "../screens/ProfileSetupScreen";
-import DashboardScreen from "../screens/DashboardScreen";
-import SplashScreen from "../screens/SplashScreen";
-import SignInScreen from "../screens/SignInScreen";
-import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
-import FriendsListScreen from "../screens/FriendsListScreen";
-import FriendProfileScreen from "../viewfriendslist/FriendProfileScreen";
-import SettingsScreen from "../screens/SettingsScreen";
+import { TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Habits from "../(tabs)/Habits";
-import Calendar from "../(tabs)/Calendar";
-import Create from "../(tabs)/Create";
-import Documents from "../(tabs)/Documents";
-import Profile from "../(tabs)/Profile";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts } from "../constants/constants";
-import NewDocument from "../(createnew)/NewDocument";
-import NewTask from "../(createnew)/NewTask";
-import Account from "../settings/Account";
-import Privacy from "../settings/Privacy";
-import Notification from "../settings/Notification";
-import RequestInfo from "../settings/RequestInfo";
-import Deactivate from "../settings/Deactivate";
-import { TouchableOpacity } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+// Login and Signup
+import SignUpScreen from "../screens/login-signup/SignUpScreen";
+import EmailVerificationScreen from "../screens/login-signup/EmailVerificationScreen";
+import ProfileSetupScreen from "../screens/login-signup/ProfileSetupScreen";
+import DashboardScreen from "../screens/login-signup/DashboardScreen";
+import SplashScreen from "../screens/login-signup/SplashScreen";
+import SignInScreen from "../screens/login-signup/SignInScreen";
+import ForgotPasswordScreen from "../screens/login-signup/ForgotPasswordScreen";
+// Friends list
+import FriendsListScreen from "../screens/viewfriendslist/FriendsListScreen";
+import FriendProfileScreen from "../screens/viewfriendslist/FriendProfileScreen";
+// Bottom tab bar
+import Habits from "../screens/tabs/Habits";
+import Calendar from "../screens/tabs/Calendar";
+import Create from "../screens/tabs/Create";
+import Documents from "../screens/tabs/Documents";
+import Profile from "../screens/tabs/Profile";
+// Creating new calendar events
+import NewDocument from "../screens/createnew/NewDocument";
+import NewTask from "../screens/createnew/NewTask";
+// Settings navigation
+import SettingsScreen from "../screens/settings/SettingsScreen";
+import Account from "../screens/settings/Account";
+import Privacy from "../screens/settings/Privacy";
+import Notification from "../screens/settings/Notification";
+import RequestInfo from "../screens/settings/RequestInfo";
+import Deactivate from "../screens/settings/Deactivate";
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
