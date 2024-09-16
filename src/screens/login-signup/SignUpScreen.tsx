@@ -58,7 +58,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     };
 
     const validateForm = () => {
-        let newErrors: { [key: string]: string } = {};
+        const newErrors: { [key: string]: string } = {};
         if (!firstName) {
             newErrors.firstName = "First name is required";
         } else if (!isValidName(firstName)) {

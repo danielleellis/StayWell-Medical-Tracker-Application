@@ -58,7 +58,7 @@ const TabNav: React.FC<{ navigation: any }> = ({ navigation }) => {
                 }}
             />
             <Tab.Screen
-                name="Documents"
+                name="DocumentsHome"
                 component={DocumentNavigator}
                 options={{
                     tabBarLabel: "Documents",

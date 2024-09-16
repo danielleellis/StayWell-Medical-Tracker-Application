@@ -1,18 +1,28 @@
-import React from "react";
-import { View, Image, StyleSheet } from "react-native";
-import { useRoute, RouteProp } from "@react-navigation/native";
+﻿import React from "react";
+import { View, Image, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/native";
 import { DocumentStackParamList } from "../../navigation/DocumentNavigator";
+import { colors } from "../../constants/constants";
 
-// Define the route type for ImageViewer
+type ImageViewerNavigationProp = StackNavigationProp<DocumentStackParamList, "ImageViewer">;
 type ImageViewerRouteProp = RouteProp<DocumentStackParamList, "ImageViewer">;
 
-const ImageViewer: React.FC = () => {
-    const route = useRoute<ImageViewerRouteProp>();
-    const { imageUri } = route.params; // Destructure imageUri from route params
+type ImageViewerProps = {
+    navigation: ImageViewerNavigationProp;
+    route: ImageViewerRouteProp;
+};
+
+const ImageViewer: React.FC<ImageViewerProps> = ({ navigation, route }) => {
+    const { imageUri } = route.params;
 
     return (
         <View style={styles.container}>
-            <Image source={{ uri: imageUri }} style={styles.fullImage} />
+            <Image
+                source={{ uri: imageUri }}
+                style={styles.fullScreenImage}
+                resizeMode="contain"
+            />
         </View>
     );
 };
@@ -22,13 +32,10 @@ export default ImageViewer;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "black",
+        backgroundColor: colors.white,
     },
-    fullImage: {
+    fullScreenImage: {
         width: "100%",
         height: "100%",
-        resizeMode: "contain",
     },
 });

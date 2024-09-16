@@ -13,14 +13,13 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 import configData from "../../../config.json";
-import { colors, fonts } from "../../constants/constants";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { colors } from "../../constants/constants";
 import { DocumentStackParamList } from "../../navigation/DocumentNavigator";
 
 // Define types for navigation and route
-type LoadDocumentNavigationProp = StackNavigationProp<
-    DocumentStackParamList,
-    "LoadDocument"
->;
+type LoadDocumentNavigationProp = StackNavigationProp<DocumentStackParamList, "LoadDocument">;
 type LoadDocumentRouteProp = RouteProp<DocumentStackParamList, "LoadDocument">;
 
 const LoadDocument: React.FC = () => {
@@ -28,20 +27,24 @@ const LoadDocument: React.FC = () => {
     const route = useRoute<LoadDocumentRouteProp>();
     const navigation = useNavigation<LoadDocumentNavigationProp>();
 
+    const user = useSelector((state: RootState) => state.auth.user);
+    const userID = user?.userID; // Get userID from Redux
     const { documentID, documentName } = route.params;
     const serverEndpoint = configData.API_ENDPOINT;
+
 
     useEffect(() => {
         navigation.setOptions({ title: documentName }); // Set document name in the header
 
         // Fetch document details (including images)
-        const fetchDocumentDetails = async () => {
+        const fetchDocumentImages = async () => {
             try {
                 const response = await axios.get(
-                    `${serverEndpoint}/documents/${documentID}`
+                    `${serverEndpoint}/documents/${userID}/${documentID}`
                 );
                 if (response.status === 200 && response.data.images) {
                     setImages(response.data.images); // Set images in state
+                    console.log("Fetched images:", response.data.images);
                 } else {
                     Alert.alert("Error", "Failed to load document images.");
                 }
@@ -54,7 +57,8 @@ const LoadDocument: React.FC = () => {
             }
         };
 
-        fetchDocumentDetails();
+
+        fetchDocumentImages();
     }, [documentID, documentName, navigation]);
 
     const viewImageFullScreen = (imageUri: string) => {
@@ -67,11 +71,16 @@ const LoadDocument: React.FC = () => {
                 images.map((imageUri, index) => (
                     <TouchableOpacity
                         key={index}
-                        onPress={() => viewImageFullScreen(imageUri)}
+                        onPress={() => navigation.navigate("ImageViewer", { imageUri })} // Pass the correct imageUri to the ImageViewer
                     >
                         <Image
                             source={{ uri: imageUri }}
                             style={styles.image}
+                            resizeMode="contain"
+                            onError={(error) => {
+                                console.error("Error loading image:", error.nativeEvent.error);
+                                Alert.alert("Error", "Failed to load image.");
+                            }}
                         />
                     </TouchableOpacity>
                 ))
@@ -82,6 +91,7 @@ const LoadDocument: React.FC = () => {
             )}
         </ScrollView>
     );
+
 };
 
 export default LoadDocument;
@@ -93,10 +103,10 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
     },
     image: {
-        width: "90%",
-        height: 200,
-        marginVertical: 10,
-        borderRadius: 10,
+        width: 100,
+        height: 100,
+        alignSelf: "center",
+        marginTop: 16,
     },
     noImagesText: {
         fontSize: 18,

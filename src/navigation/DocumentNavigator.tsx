@@ -35,7 +35,7 @@ const DocumentNavigator: React.FC = () => {
             <DocumentStack.Screen
                 name="ImageViewer"
                 component={ImageViewer}
-                options={{ headerShown: false }}
+                options={{ headerShown: true, title: "Image" }}
             />
         </DocumentStack.Navigator>
     );

@@ -428,9 +428,9 @@ app.post("/new-document", upload.array("images", 10), async (req, res) => {
                 }
 
                 // Upload images to S3 and save URLs in the Images table
-                const promises = req.files.map((file, index) => {
+                const promises = req.files.map((file) => {
                     const imageID = generateRandomID(10); // Generate unique imageID
-                    const filePath = `users/${userID}/documents/${documentID}/${imageID}-${file.originalname}`;
+                    const filePath = `users/${userID}/documents/${documentID}/${imageID}`;
 
                     const params = {
                         Bucket: s3_bucket,
@@ -462,6 +462,9 @@ app.post("/new-document", upload.array("images", 10), async (req, res) => {
 
                 Promise.all(promises)
                     .then(() => {
+                        console.log(
+                            `Created Document: ${documentID} : ${documentName}`
+                        );
                         res.status(200).json({ success: true, documentID });
                     })
                     .catch((error) => {
@@ -478,6 +481,7 @@ app.post("/new-document", upload.array("images", 10), async (req, res) => {
     }
 });
 
+// Get all the documents, name, their passcode
 app.get("/documents/:userID", (req, res) => {
     const userID = req.params.userID;
 
@@ -489,7 +493,49 @@ app.get("/documents/:userID", (req, res) => {
             return res.status(500).json({ error: "Error fetching documents" });
         }
 
+        results.forEach((document) => {
+            console.log(`Fetched Document: ${document.documentID} : ${document.documentName}`);
+        });
+
         res.status(200).json({ documents: results });
+    });
+});
+
+// Endpoint to fetch all images for a specific document
+app.get("/documents/:userID/:documentID", (req, res) => {
+    const { userID, documentID } = req.params;
+
+    // Query to get all images for the specified document
+    const sql = `
+        SELECT imageURL
+        FROM Images
+        WHERE documentID = ? AND documentID IN (
+            SELECT documentID FROM Documents WHERE userID = ?
+        )
+    `;
+
+    connection.query(sql, [documentID, userID], (err, results) => {
+        if (err) {
+            console.error("Error fetching images for the document:", err);
+            return res
+                .status(500)
+                .json({ error: "Error fetching document images" });
+        }
+
+        if (results.length > 0) {
+            const imageURLs = results.map((row) => row.imageURL);
+
+            // Loop through the fetched images and print each image URL
+            results.forEach((image) => {
+                console.log(`Fetched Image URL: ${image.imageURL}`);
+            });
+
+            res.status(200).json({ images: imageURLs });
+        } else {
+            res.status(404).json({
+                error: "No images found for this document",
+            });
+        }
     });
 });
 
