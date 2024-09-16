@@ -1,11 +1,20 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Switch, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    Switch,
+    TouchableOpacity,
+    Image,
+    ScrollView,
+    Alert,
+} from "react-native";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import * as ImagePicker from "expo-image-picker";
-import axios from 'axios';
+import axios from "axios";
 import configData from "../../../config.json";
 import { colors, fonts } from "../../constants/constants";
 
@@ -22,7 +31,7 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     // Handle lock switch toggle
     const toggleSwitch = () => {
-        setIsLocked(isLocked => !isLocked);
+        setIsLocked((isLocked) => !isLocked);
         if (!isLocked) {
             setLockPasscode(null); // Clear passcode when lock is enabled
         }
@@ -30,9 +39,13 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     // Handle image selection
     const handleImageUpload = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
-            Alert.alert("Permission Denied", "Permission to access gallery is required!");
+            Alert.alert(
+                "Permission Denied",
+                "Permission to access gallery is required!"
+            );
             return;
         }
 
@@ -43,7 +56,7 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
         });
 
         if (!result.canceled && result.assets) {
-            setSelectedImages(result.assets.map(asset => asset.uri)); // Store URIs of selected images
+            setSelectedImages(result.assets.map((asset) => asset.uri)); // Store URIs of selected images
         }
     };
 
@@ -77,27 +90,32 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
                 } as any);
             }
 
-            const response = await axios.post(`${serverEndpoint}/new-document`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            const response = await axios.post(
+                `${serverEndpoint}/new-document`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
 
             if (response.data.success) {
-                Alert.alert("Success", "Document created successfully");
-                navigation.navigate('Documents'); // Navigate back to Documents page
+                navigation.navigate("Documents");
             } else {
                 Alert.alert("Error", "Failed to create document");
             }
         } catch (error) {
-            console.error('Error creating document:', error);
+            console.error("Error creating document:", error);
             Alert.alert("Error", "An error occurred");
         }
     };
 
-
     return (
-        <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
+        <ScrollView
+            contentContainerStyle={styles.contentContainer}
+            style={styles.container}
+        >
             <Input
                 placeholder="Document Name"
                 value={documentName}
@@ -108,7 +126,7 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
 
             <View style={styles.row}>
                 <Image
-                    source={require('../../../assets/images/lock-icon.png')}
+                    source={require("../../../assets/images/lock-icon.png")}
                     style={styles.lockIcon}
                 />
                 <Text style={styles.text}>Password Protect</Text>
@@ -154,18 +172,18 @@ const styles = StyleSheet.create({
         color: colors.white,
     },
     row: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         marginBottom: 20,
     },
     contentContainer: {
-        backgroundColor: '#45A6FF',
+        backgroundColor: "#45A6FF",
         margin: 5,
         borderWidth: 2,
-        borderColor: '#6BB7ED',
+        borderColor: "#6BB7ED",
         borderRadius: 20,
         padding: 15,
-        alignItems: 'center',
+        alignItems: "center",
     },
     saveButton: {
         borderRadius: 10,
@@ -174,8 +192,8 @@ const styles = StyleSheet.create({
     saveButtonText: {
         fontSize: 18,
         margin: 10,
-        color: '#45A6FF',
-        fontWeight: 'bold',
+        color: "#45A6FF",
+        fontWeight: "bold",
     },
     lockIcon: {
         width: 30,

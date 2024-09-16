@@ -123,9 +123,8 @@ const formatBirthdayForDisplay = (date) => {
     const year = parsedDate.getFullYear();
 
     // Return formatted date as MM/DD/YYYY
-    return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+    return `${month.toString().padStart(2, "0")}/${day.toString().padStart(2, "0")}/${year}`;
 };
-
 
 // ==============================================================================
 // Functions for getting info from database
@@ -239,7 +238,6 @@ app.post("/signin", async (req, res) => {
     });
 });
 
-
 app.post("/signup", async (req, res) => {
     console.log("/signup endpoint reached");
     const { firstName, lastName, email, password, profilePhoto } = req.body;
@@ -278,7 +276,6 @@ app.post("/signup", async (req, res) => {
     }
 });
 
-
 // Endpoint to update user profile
 app.put("/profile-setup", async (req, res) => {
     console.log("/profile-setup endpoint reached");
@@ -308,20 +305,23 @@ app.put("/profile-setup", async (req, res) => {
             .json({ error: "Missing fields in profile setup data" });
     }
 
-    const formattedBirthday = new Date(birthday).toISOString().split('T')[0];
+    const formattedBirthday = new Date(birthday).toISOString().split("T")[0];
 
-    const sql = "UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?";
-    connection.query(sql, [username, pronouns, phone, formattedBirthday, profilePhoto, userID], (err) => {
-        if (err) {
-            console.error("Error updating user:", err.message);
-            return res.status(400).json({ error: err.message });
+    const sql =
+        "UPDATE Users SET username = ?, pronouns = ?, phoneNumber = ?, birthday = ?, profilePhoto = ? WHERE userID = ?";
+    connection.query(
+        sql,
+        [username, pronouns, phone, formattedBirthday, profilePhoto, userID],
+        (err) => {
+            if (err) {
+                console.error("Error updating user:", err.message);
+                return res.status(400).json({ error: err.message });
+            }
+            console.log("Database update successful");
+            res.status(200).json({ success: true });
         }
-        console.log("Database update successful");
-        res.status(200).json({ success: true });
-    });
-
+    );
 });
-
 
 // Endpoint to fetch user profile data
 app.get("/profile/:userID", async (req, res) => {
@@ -329,7 +329,8 @@ app.get("/profile/:userID", async (req, res) => {
     const { userID } = req.params;
     console.log("Received userID:", userID);
 
-    const sql = "SELECT username, pronouns, phoneNumber, birthday, profilePhoto FROM Users WHERE userID = ?";
+    const sql =
+        "SELECT username, pronouns, phoneNumber, birthday, profilePhoto FROM Users WHERE userID = ?";
     connection.query(sql, [userID], (err, results) => {
         if (err) {
             console.error("Error fetching user data:", err.message);
@@ -352,7 +353,6 @@ app.get("/profile/:userID", async (req, res) => {
         res.status(200).json(user);
     });
 });
-
 
 // ==============================================================================
 // Functions for email verification and forgot password codes
@@ -402,80 +402,96 @@ app.put("/update-verify-code", (req, res) => {
     });
 });
 
-
 // ==============================================================================
 // Documents page
 // ==============================================================================
-app.post('/new-document', upload.array('images', 10), async (req, res) => {
-    const { userID, documentName, lockPasscode} = req.body;
+app.post("/new-document", upload.array("images", 10), async (req, res) => {
+    const { userID, documentName, lockPasscode } = req.body;
 
     if (!documentName || !userID) {
-        return res.status(400).json({ error: 'Missing required fields' });
+        return res.status(400).json({ error: "Missing required fields" });
     }
 
     try {
         // Insert the document into the Documents table
         const insertDocumentSql = `INSERT INTO Documents (documentID, documentName, userID, lockPasscode) VALUES (?, ?, ?, ?)`;
         const documentID = generateRandomID(10); // Generate unique documentID
-        connection.query(insertDocumentSql, [documentID, documentName, userID, lockPasscode], (err) => {
-            if (err) {
-                console.error('Error inserting document:', err);
-                return res.status(500).json({ error: 'Error inserting document' });
-            }
+        connection.query(
+            insertDocumentSql,
+            [documentID, documentName, userID, lockPasscode],
+            (err) => {
+                if (err) {
+                    console.error("Error inserting document:", err);
+                    return res
+                        .status(500)
+                        .json({ error: "Error inserting document" });
+                }
 
-            // Upload images to S3 and save URLs in the Images table
-            const promises = req.files.map((file, index) => {
-                const imageID = generateRandomID(10); // Generate unique imageID
-                const filePath = `users/${userID}/documents/${documentID}/${imageID}-${file.originalname}`;
+                // Upload images to S3 and save URLs in the Images table
+                const promises = req.files.map((file, index) => {
+                    const imageID = generateRandomID(10); // Generate unique imageID
+                    const filePath = `users/${userID}/documents/${documentID}/${imageID}-${file.originalname}`;
 
-                const params = {
-                    Bucket: s3_bucket,
-                    Key: filePath,
-                    Body: file.buffer,
-                    ContentType: file.mimetype,
-                };
+                    const params = {
+                        Bucket: s3_bucket,
+                        Key: filePath,
+                        Body: file.buffer,
+                        ContentType: file.mimetype,
+                    };
 
-                return s3.upload(params).promise().then((data) => {
-                    const imageURL = data.Location;
-                    const insertImageSql = `INSERT INTO Images (imageID, documentID, imageURL) VALUES (?, ?, ?)`;
-                    connection.query(insertImageSql, [imageID, documentID, imageURL], (err) => {
-                        if (err) {
-                            console.error('Error inserting image:', err);
-                        }
+                    return s3
+                        .upload(params)
+                        .promise()
+                        .then((data) => {
+                            const imageURL = data.Location;
+                            const insertImageSql = `INSERT INTO Images (imageID, documentID, imageURL) VALUES (?, ?, ?)`;
+                            connection.query(
+                                insertImageSql,
+                                [imageID, documentID, imageURL],
+                                (err) => {
+                                    if (err) {
+                                        console.error(
+                                            "Error inserting image:",
+                                            err
+                                        );
+                                    }
+                                }
+                            );
+                        });
+                });
+
+                Promise.all(promises)
+                    .then(() => {
+                        res.status(200).json({ success: true, documentID });
+                    })
+                    .catch((error) => {
+                        console.error("Error uploading images:", error);
+                        res.status(500).json({
+                            error: "Error uploading images",
+                        });
                     });
-                });
-            });
-
-            Promise.all(promises)
-                .then(() => {
-                    res.status(200).json({ success: true, documentID });
-                })
-                .catch((error) => {
-                    console.error('Error uploading images:', error);
-                    res.status(500).json({ error: 'Error uploading images' });
-                });
-        });
+            }
+        );
     } catch (error) {
-        console.error('Error creating document:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error("Error creating document:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
-
-app.get('/documents/:userID', (req, res) => {
+app.get("/documents/:userID", (req, res) => {
     const userID = req.params.userID;
 
-    const sql = "SELECT documentID, documentName, lockPasscode FROM Documents WHERE userID = ?";
+    const sql =
+        "SELECT documentID, documentName, lockPasscode FROM Documents WHERE userID = ?";
     connection.query(sql, [userID], (err, results) => {
         if (err) {
-            console.error('Error fetching documents:', err);
-            return res.status(500).json({ error: 'Error fetching documents' });
+            console.error("Error fetching documents:", err);
+            return res.status(500).json({ error: "Error fetching documents" });
         }
 
         res.status(200).json({ documents: results });
     });
 });
-
 
 // ==============================================================================
 // S3 bucket variables declaration and commands

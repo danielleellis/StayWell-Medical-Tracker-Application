@@ -1,11 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ScrollView } from "react-native";
-import axios from 'axios';
-import { useSelector } from 'react-redux';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    Alert,
+    ScrollView,
+} from "react-native";
+import axios from "axios";
+import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { colors, fonts } from "../../constants/constants";
 import configData from "../../../config.json";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 
 const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [documents, setDocuments] = useState<any[]>([]); // State to hold documents
@@ -16,7 +24,9 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
     // Function to fetch documents from the backend
     const fetchDocuments = async () => {
         try {
-            const response = await axios.get(`${serverEndpoint}/documents/${userID}`);
+            const response = await axios.get(
+                `${serverEndpoint}/documents/${userID}`
+            );
             if (response.status === 200) {
                 setDocuments(response.data.documents); // Update documents state with the response data
             } else {
@@ -31,17 +41,16 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
     // Fetch documents every time the screen is focused
     useFocusEffect(
         useCallback(() => {
-            fetchDocuments();  // Fetch documents when screen is focused
+            fetchDocuments(); // Fetch documents when screen is focused
         }, [userID])
     );
 
     const createNewDocument = () => {
-        navigation.navigate('NewDocument');
+        navigation.navigate("NewDocument");
     };
 
-    const openDocument = (documentID: string) => {
-        // Handle opening the document, possibly navigating to a document details page
-        console.log(`Button clicked: Open Document ${documentID}`);
+    const openDocument = (documentID: string, documentName: string) => {
+        navigation.navigate("LoadDocument", { documentID, documentName });
     };
 
     return (
@@ -51,7 +60,7 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
             <TouchableOpacity style={styles.button} onPress={createNewDocument}>
                 <View style={styles.row}>
                     <Image
-                        source={require('../../../assets/images/plus-icon.png')}
+                        source={require("../../../assets/images/plus-icon.png")}
                         style={styles.plusIcon}
                     />
                     <Text style={styles.buttonText}>Upload New Document</Text>
@@ -65,17 +74,21 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
                         <TouchableOpacity
                             key={index}
                             style={styles.documentContainer}
-                            onPress={() => openDocument(doc.documentID)}
+                            onPress={() =>
+                                openDocument(doc.documentID, doc.documentName)
+                            }
                         >
                             <View style={styles.row}>
                                 <Image
-                                    source={require('../../../assets/images/document-icon.png')}
+                                    source={require("../../../assets/images/document-icon.png")}
                                     style={styles.documentIcon}
                                 />
-                                <Text style={styles.text}>{doc.documentName}</Text>
+                                <Text style={styles.text}>
+                                    {doc.documentName}
+                                </Text>
                                 {doc.lockPasscode && (
                                     <Image
-                                        source={require('../../../assets/images/lock-icon.png')}
+                                        source={require("../../../assets/images/lock-icon.png")}
                                         style={styles.lockIcon}
                                     />
                                 )}
@@ -83,9 +96,17 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
                         </TouchableOpacity>
                     ))
                 ) : (
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={styles.noDocumentsText}>No Documents Found</Text>
-                        </View>
+                    <View
+                        style={{
+                            flex: 1,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Text style={styles.noDocumentsText}>
+                            No Documents Found
+                        </Text>
+                    </View>
                 )}
             </ScrollView>
         </View>
@@ -98,56 +119,56 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "flex-start",
-        paddingTop: '10%',
+        paddingTop: "10%",
         backgroundColor: colors.white,
     },
     button: {
         padding: 5,
         borderRadius: 10,
-        alignItems: 'center',
+        alignItems: "center",
         marginTop: 5,
         marginBottom: 5,
     },
     buttonText: {
         color: colors.blue,
         fontSize: 16,
-        fontFamily: 'JosefinSans-Bold',
+        fontFamily: "JosefinSans-Bold",
     },
     heading: {
         fontSize: 30,
         color: colors.blue,
-        marginTop: '5%',
+        marginTop: "5%",
         fontFamily: fonts.regular,
-        textAlign: 'center',
+        textAlign: "center",
     },
     text: {
         fontSize: 20,
         color: colors.white,
     },
     documentsContainer: {
-        paddingBottom: 20,  // To ensure last item isn't hidden
+        paddingBottom: 20, // To ensure last item isn't hidden
     },
     documentContainer: {
-        backgroundColor: '#45A6FF',
-        width: '90%',
+        backgroundColor: "#45A6FF",
+        width: "90%",
         margin: 5,
         borderWidth: 2,
-        borderColor: '#6BB7ED',
+        borderColor: "#6BB7ED",
         borderRadius: 20,
         padding: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'center',
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "center",
     },
     noDocumentsText: {
-        textAlign: 'center',
-        color: 'gray',
+        textAlign: "center",
+        color: "gray",
         fontSize: 18,
         marginTop: 20,
     },
     row: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         paddingHorizontal: 10,
         fontSize: 16,
     },
