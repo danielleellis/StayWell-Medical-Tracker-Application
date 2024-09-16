@@ -9,7 +9,7 @@ import RequestInfo from "../screens/settings/RequestInfo";
 import Deactivate from "../screens/settings/Deactivate";
 
 type SettingsStackParamList = {
-    Settings: undefined;
+    SettingsHome: undefined;
     Account: undefined;
     Privacy: undefined;
     Notification: undefined;
@@ -23,7 +23,7 @@ const SettingsNavigator: React.FC = () => {
     return (
         <SettingsStack.Navigator>
             <SettingsStack.Screen
-                name="Settings"
+                name="SettingsHome"
                 component={SettingsScreen}
                 options={{ headerShown: true, title: "Settings" }}
             />
