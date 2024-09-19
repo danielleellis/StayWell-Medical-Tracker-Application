@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+    FlatList,
     View,
     Text,
     StyleSheet,
@@ -7,6 +8,7 @@ import {
     Image,
     TouchableOpacity,
     Alert,
+    Dimensions,
 } from "react-native";
 import axios from "axios";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -65,53 +67,62 @@ const LoadDocument: React.FC = () => {
         navigation.navigate("ImageViewer", { imageUri });
     };
 
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {images.length > 0 ? (
-                images.map((imageUri, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        onPress={() => navigation.navigate("ImageViewer", { imageUri })} // Pass the correct imageUri to the ImageViewer
-                    >
-                        <Image
-                            source={{ uri: imageUri }}
-                            style={styles.image}
-                            resizeMode="contain"
-                            onError={(error) => {
-                                console.error("Error loading image:", error.nativeEvent.error);
-                                Alert.alert("Error", "Failed to load image.");
-                            }}
-                        />
-                    </TouchableOpacity>
-                ))
-            ) : (
+        <FlatList
+            data={images}
+            keyExtractor={(item, index) => index.toString()}
+            numColumns={2} // Set number of columns to 2
+            contentContainerStyle={styles.container}
+            columnWrapperStyle={styles.row}
+            renderItem={({ item: imageUri, index }) => (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("ImageViewer", { imageUri })}
+                    style={styles.imageWrapper}
+                >
+                    <Image
+                        source={{ uri: imageUri }}
+                        style={styles.image}
+                        resizeMode="contain"
+                        onError={(error) => {
+                            console.error("Error loading image:", error.nativeEvent.error);
+                            Alert.alert("Error", "Failed to load image.");
+                        }}
+                    />
+                </TouchableOpacity>
+            )}
+            ListEmptyComponent={() => (
                 <Text style={styles.noImagesText}>
                     No images found for this document.
                 </Text>
             )}
-        </ScrollView>
+        />
     );
 
 };
 
 export default LoadDocument;
 
-const styles = StyleSheet.create({
+const screenWidth = Dimensions.get('window').width;
+
+const styles = {
     container: {
-        padding: 16,
-        alignItems: "center",
-        backgroundColor: colors.white,
+        paddingHorizontal: 10,
+    },
+    row: {
+        flex: 1,
+        justifyContent: 'flex-start',
+    },
+    imageWrapper: {
+        width: (screenWidth / 2) - 15,
+        margin: 5,
     },
     image: {
-        width: 100,
-        height: 100,
-        alignSelf: "center",
-        marginTop: 16,
+        width: '100%',
+        height: 125,
     },
     noImagesText: {
-        fontSize: 18,
-        color: "gray",
+        textAlign: 'center',
         marginTop: 20,
-        textAlign: "center",
     },
-});
+};
