@@ -226,7 +226,7 @@ const App: React.FC = () => {
         <Text style={styles.heading}>S T A Y W E L L</Text>
         <View style={styles.calendarContainer}>
           <Calendar
-            style={{ width: calendarWidth, height: calendarHeight }}
+            style={{ width: "100%", height: calendarHeight }} // Make width 100% of the container
             current={selectedDate}
             hideArrows={false}
             onDayPress={onDayPress}
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     paddingTop: "1%",
   },
   heading: {
-    fontSize: 26,
+    fontSize: 22,
     marginTop: "5%",
     color: colors.blue,
     fontFamily: fonts.regular,
@@ -302,50 +302,63 @@ const styles = StyleSheet.create({
   calendarContainer: {
     marginBottom: "6%",
     marginTop: "1%",
+    width: "100%",
   },
   dateContainer: {
     alignSelf: "flex-start",
     width: "100%",
-    backgroundColor: "rgba(69, 166, 255, 0.05)",
+    backgroundColor: "rgba(240, 240, 240, 0.1)", // Ensure the same background color
     paddingTop: "5%",
-    paddingBottom: "5%",
-    borderTopWidth: 2,
-    borderTopColor: "rgba(151, 193, 127, 0.4)",
+    paddingBottom: "3%",
+    borderTopStartRadius: 10,
+    borderTopEndRadius: 10,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   currentDate: {
     fontFamily: fonts.regular,
-    fontSize: 20,
+    fontSize: 22,
     color: colors.black,
     marginLeft: "4%",
   },
   scrollView: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.lightgrey,
+    backgroundColor: "rgba(240, 240, 240, 0.1)",
   },
   eventContainer: {
     paddingHorizontal: "4%",
-    backgroundColor: "rgba(69, 166, 255, 0.05)",
+    paddingVertical: "3%",
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    backgroundColor: "rgba(240, 240, 240, 0.1)",
   },
+
   eventItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: "3%",
-    paddingVertical: "3%",
-    paddingHorizontal: "2%",
+    paddingVertical: "4%",
+    paddingHorizontal: "4%",
     borderRadius: 15,
-    backgroundColor: colors.white,
+    backgroundColor: "rgba(69, 166, 255, 0.8)",
     shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
   },
   titleText: {
     fontFamily: fonts.regular,
     fontSize: 16,
-    color: colors.black,
+    color: colors.white,
     marginLeft: "3%",
     flex: 1,
     textAlign: "left",
@@ -355,7 +368,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 12,
-    backgroundColor: colors.grey,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     marginRight: 12,
     justifyContent: "center",
     alignItems: "center",
