@@ -133,7 +133,9 @@ const App: React.FC = () => {
     if (selectedEvent) {
       setEvents((prevEvents) =>
         prevEvents.map((e) =>
-          e.title === selectedEvent.title ? { ...e, completed: true } : e
+          e.title === selectedEvent.title
+            ? { ...e, completed: true, notes } // Save notes here
+            : e
         )
       );
       setModalVisible(false);
@@ -145,7 +147,7 @@ const App: React.FC = () => {
       setEvents((prevEvents) =>
         prevEvents.map((e) =>
           e.title === selectedEvent.title
-            ? { ...e, notes } // save notes
+            ? { ...e, notes } // Always save notes when closing the modal
             : e
         )
       );
