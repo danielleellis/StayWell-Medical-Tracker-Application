@@ -81,6 +81,7 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
                 formData.append("lockPasscode", lockPasscode);
             }
 
+            console.log("Uploading images from Document");
             // Upload selected images
             for (const [index, imageUri] of selectedImages.entries()) {
                 formData.append("images", {
@@ -149,8 +150,9 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
                 />
             )}
 
-            {/* Button to trigger image selection */}
-            <Button title="Select Images" onPress={handleImageUpload} />
+            <TouchableOpacity style={styles.saveButton} onPress={handleImageUpload}>
+                <Text style={styles.saveButtonText}>Upload Images</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.saveButton} onPress={saveDocument}>
                 <Text style={styles.saveButtonText}>Save</Text>
