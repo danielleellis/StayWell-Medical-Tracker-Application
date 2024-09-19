@@ -1,11 +1,27 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { colors, fonts } from "../../constants/constants";
 
-const Habits = () => {
+const Habits: React.FC<{ navigation: any }> = ({ navigation }) => {
+
+  const newHabit = () => {
+    navigation.navigate("NewTask");
+};
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>S T A Y W E L L</Text>
+
+      <TouchableOpacity style={styles.button} onPress={newHabit}>
+                <View style={styles.row}>
+                    <Image
+                        source={require("../../../assets/images/plus-icon.png")}
+                        style={styles.plusIcon}
+                    />
+                    <Text style={styles.buttonText}>Create Habit</Text>
+                </View>
+            </TouchableOpacity>
+      
     </View>
   );
 };
@@ -26,4 +42,27 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     fontFamily: fonts.regular,
   },
+  button: {
+    padding: 5,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
+},
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    fontSize: 16,
+  },
+  plusIcon: {
+    width: 30,
+    height: 30,
+    margin: 10,
+},
+buttonText: {
+  color: colors.blue,
+  fontSize: 16,
+  fontFamily: "JosefinSans-Bold",
+},
 });

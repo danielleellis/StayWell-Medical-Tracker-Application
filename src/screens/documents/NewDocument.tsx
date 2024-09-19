@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
     saveButton: {
         borderRadius: 10,
         backgroundColor: colors.white,
+        margin: 10
     },
     saveButtonText: {
         fontSize: 18,
@@ -202,6 +203,6 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 16,
-        color: colors.white,
+        backgroundColor: colors.white,
     },
 });
