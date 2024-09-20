@@ -134,7 +134,7 @@ const App: React.FC = () => {
       setEvents((prevEvents) =>
         prevEvents.map((e) =>
           e.title === selectedEvent.title
-            ? { ...e, completed: true, notes } // Save notes here
+            ? { ...e, completed: true, notes } // save notes here
             : e
         )
       );
@@ -147,7 +147,7 @@ const App: React.FC = () => {
       setEvents((prevEvents) =>
         prevEvents.map((e) =>
           e.title === selectedEvent.title
-            ? { ...e, notes } // Always save notes when closing the modal
+            ? { ...e, notes } // always save notes when closing the modal
             : e
         )
       );
@@ -197,6 +197,10 @@ const App: React.FC = () => {
             />
 
             <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                <Text style={styles.closeButtonText}>Save and Close</Text>
+              </TouchableOpacity>
+
               <TouchableOpacity
                 style={[
                   styles.completeButton,
@@ -206,11 +210,10 @@ const App: React.FC = () => {
                 disabled={selectedEvent.completed}
               >
                 <Text style={styles.completeButtonText}>
-                  {selectedEvent.completed ? "Completed" : "Mark as Complete"}
+                  {selectedEvent.completed
+                    ? "Completed"
+                    : "Save and Complete Task"}
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -430,6 +433,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   completeButton: {
+    margin: "1%",
     padding: "3%",
     backgroundColor: colors.green,
     borderRadius: 10,
@@ -450,7 +454,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   closeButton: {
-    padding: "4%",
+    padding: "3%",
+    margin: "1%",
     backgroundColor: colors.blue,
     borderRadius: 10,
     flex: 1,
@@ -464,7 +469,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: colors.white,
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 14,
   },
 });
 
