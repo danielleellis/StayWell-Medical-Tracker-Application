@@ -231,7 +231,7 @@ const App: React.FC = () => {
         <Text style={styles.heading}>S T A Y W E L L</Text>
         <View style={styles.calendarContainer}>
           <Calendar
-            style={{ width: "100%", height: calendarHeight }} // Make width 100% of the container
+            style={{ width: "100%", height: calendarHeight }} // make width 100% of the container
             current={selectedDate}
             hideArrows={false}
             onDayPress={onDayPress}
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   dateContainer: {
     alignSelf: "flex-start",
     width: "100%",
-    backgroundColor: "rgba(240, 240, 240, 0.1)", // Ensure the same background color
+    backgroundColor: "rgba(240, 240, 240, 0.1)",
     paddingTop: "5%",
     paddingBottom: "3%",
     borderTopStartRadius: 10,
@@ -322,12 +322,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
+    alignItems: "center",
   },
   currentDate: {
     fontFamily: fonts.regular,
     fontSize: 22,
     color: colors.black,
-    marginLeft: "4%",
   },
   scrollView: {
     flex: 1,
