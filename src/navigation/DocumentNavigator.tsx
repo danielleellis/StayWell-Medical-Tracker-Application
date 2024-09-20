@@ -20,7 +20,7 @@ const DocumentNavigator: React.FC = () => {
             <DocumentStack.Screen
                 name="Documents"
                 component={Documents}
-                options={{ headerShown: true, title: "Documents" }}
+                options={{ headerShown: false, title: "Documents" }}
             />
             <DocumentStack.Screen
                 name="NewDocument"
