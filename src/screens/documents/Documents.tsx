@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
         color: "gray",
         fontSize: 18,
         marginTop: 20,
+        fontFamily: fonts.regular,
     },
     row: {
         flexDirection: "row",
