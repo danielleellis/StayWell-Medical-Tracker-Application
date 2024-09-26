@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   completedTitleText: {
     fontFamily: fonts.regular,
     textDecorationLine: "line-through",
-    color: colors.darkgrey,
+    color: colors.green,
   },
   completedIndicator: {
     backgroundColor: colors.green,
