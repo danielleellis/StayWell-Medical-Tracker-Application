@@ -242,6 +242,26 @@ const App: React.FC = () => {
                 selectedColor: colors.blue,
               },
             }}
+            theme={{
+              textSectionTitleColor: colors.black,
+              textSectionTitleDisabledColor: colors.grey,
+              dayTextColor: colors.black,
+              todayTextColor: colors.blue,
+              selectedDayTextColor: colors.white,
+              textDisabledColor: colors.grey,
+              dotColor: colors.blue,
+              selectedDotColor: colors.white,
+              arrowColor: colors.blue,
+              disabledArrowColor: colors.grey,
+              monthTextColor: colors.black,
+              indicatorColor: colors.blue,
+              textDayFontFamily: fonts.regular,
+              textMonthFontFamily: fonts.regular,
+              textDayHeaderFontFamily: fonts.regular,
+              textDayFontWeight: 'normal',
+              textMonthFontWeight: 'bold',
+              textDayHeaderFontWeight: 'normal',
+            }}
           />
         </View>
 
@@ -379,6 +399,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   completedTitleText: {
+    fontFamily: fonts.regular,
     textDecorationLine: "line-through",
     color: colors.darkgrey,
   },
@@ -406,7 +427,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     marginBottom: 12,
-    fontFamily: fonts.bold,
+    fontFamily: fonts.regular,
   },
   modalDate: {
     fontFamily: fonts.regular,
@@ -418,6 +439,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   notesInput: {
+    fontFamily: fonts.regular,
     height: 100,
     borderColor: colors.grey,
     borderWidth: 1,
@@ -450,6 +472,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grey,
   },
   completeButtonText: {
+    fontFamily: fonts.regular,
     color: colors.white,
     textAlign: "center",
   },
@@ -467,8 +490,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   closeButtonText: {
+    fontFamily: fonts.regular,
     color: colors.white,
-    textAlign: "center",
+    textAlign: "center", 
     fontSize: 14,
   },
 });
