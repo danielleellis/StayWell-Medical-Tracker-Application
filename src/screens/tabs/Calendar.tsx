@@ -314,15 +314,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: "5%",
+    paddingTop: "2%",
   },
-  heading: {
-    fontSize: 22,
-    marginTop: "5%",
-    color: colors.blue,
-    fontFamily: fonts.regular,
-    textAlign: "center",
-  },
+
   calendarContainer: {
     marginBottom: "6%",
     marginTop: "1%",
