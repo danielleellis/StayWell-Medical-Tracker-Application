@@ -228,7 +228,6 @@ const App: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.heading}>S T A Y W E L L</Text>
         <View style={styles.calendarContainer}>
           <Calendar
             style={{ width: "100%", height: calendarHeight }} // make width 100% of the container
@@ -315,7 +314,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: "1%",
+    paddingTop: "5%",
   },
   heading: {
     fontSize: 22,
