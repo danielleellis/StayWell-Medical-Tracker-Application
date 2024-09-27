@@ -16,7 +16,7 @@
  * Version: Initial development
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -28,22 +28,30 @@ import {
   Modal,
   TextInput,
 } from "react-native";
+import configData from "../../../config.json";
+import axios, { AxiosError } from "axios";
 import { Calendar } from "react-native-calendars";
 import { format, parseISO, isSameDay } from "date-fns";
 import { colors, fonts } from "../../constants/constants";
+import { useFocusEffect } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
 type Event = {
-  title: string;
-  startDate: string; // ISO string format
-  endDate?: string;
-  formattedDate: string; // formatted for display purposes
-  location?: string;
-  time?: string;
-  recurring?: boolean;
-  completed?: boolean;
-  notes?: string;
+  eventID: string; // Unique identifier for the event
+  eventName: string; // Title of the event
+  color?: string; // Color associated with the event (optional)
+  isPublic?: boolean; // Indicates if the event is public (optional)
+  viewableBy?: string; // Users allowed to view the event (optional)
+  notes?: string; // Notes about the event (optional)
+  streakDays?: number; // Number of streak days (optional)
+  reminder?: string; // Reminder for the event (optional)
+  startTime: string; // ISO string format for start time
+  endTime?: string; // ISO string format for end time (optional)
+  allDay?: boolean; // Indicates if the event lasts all day (optional)
+  eventType?: string; // Type of the event (optional)
+  calendarID?: string; // ID of the associated calendar (optional)
+  userID: string; // ID of the user associated with the event
 };
 
 const formatDate = (dateString: string) => {
@@ -54,57 +62,78 @@ const isSameDayEvent = (eventDate: string, selectedDate: string) => {
   return isSameDay(parseISO(eventDate), parseISO(selectedDate));
 };
 
-// hard-coded mock events for demo
-const mockEvents: Event[] = [
-  {
-    title: "Daily Medication",
-    startDate: new Date().toISOString().split("T")[0], // current date for demo purposes
-    formattedDate: formatDate(new Date().toISOString().split("T")[0]),
-    recurring: true,
-  },
-  {
-    title: "Refill Adderall",
-    startDate: "2024-09-19",
-    formattedDate: "September 4, 2024",
-    recurring: false,
-  },
-  {
-    title: "Cardiologist Appointment",
-    startDate: "2024-09-19",
-    formattedDate: "September 19, 2024",
-    location: "1234 W Bell Rd.",
-    recurring: false,
-  },
-  {
-    title: "Blood Work",
-    startDate: "2024-09-19",
-    formattedDate: "September 19, 2024",
-    recurring: false,
-  },
-];
-
-const App: React.FC = () => {
+const CalendarScreen: React.FC = () => {
   const currentDate = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState<string>(currentDate);
   const [currentDateDisplay, setCurrentDateDisplay] = useState<string>(
     formatDate(currentDate)
   );
-  const [events, setEvents] = useState<Event[]>(mockEvents);
+  const [events, setEvents] = useState<Event[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [notes, setNotes] = useState<string>("");
 
-  // filter events based on selected date
+  const serverEndpoint = configData.API_ENDPOINT;
+
+  // Fetch events from the server
+  const fetchEvents = async (userID: string) => {
+    try {
+      console.log(
+        "Fetching events from:",
+        `${serverEndpoint}/events/${userID}`
+      );
+      const response = await axios.get(`${serverEndpoint}/events/${userID}`);
+      console.log("Fetched events:", response.data.events);
+
+      if (response.status === 200) {
+        const formattedEvents: Event[] = response.data.events.map(
+          (event: any) => ({
+            eventID: event.eventID,
+            eventName: event.eventName,
+            color: event.color,
+            isPublic: event.isPublic === 1, // Convert tinyint to boolean
+            viewableBy: event.viewableBy,
+            notes: event.notes,
+            streakDays: event.streakDays,
+            reminder: event.reminder,
+            startTime: event.startTime,
+            endTime: event.endTime,
+            allDay: event.allDay === 1, // Convert tinyint to boolean
+            eventType: event.eventType,
+            calendarID: event.calendarID,
+            userID: event.userID,
+            formattedDate: formatDate(event.startTime), // Format for display
+          })
+        );
+
+        setEvents(formattedEvents); // Set the formatted events
+      } else {
+        console.error("Error fetching events:", response.status);
+      }
+    } catch (error: unknown) {
+      // Check if the error is an AxiosError
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data || error.message);
+      } else {
+        console.error("Unexpected error:", error);
+      }
+    }
+  };
+
+  // Fetch events every time the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const userID = "C5vj8Ibdks"; // Replace with actual userID
+      fetchEvents(userID); // Fetch events for this user
+    }, [])
+  );
+
+  // Filter events based on selected date
   const filterEvents = (selectedDate: string) => {
     const filtered = events.filter((event) => {
-      if (event.recurring) {
-        const eventStartDate = parseISO(event.startDate);
-        const selectedDateObj = parseISO(selectedDate);
-        return selectedDateObj >= eventStartDate;
-      } else {
-        return isSameDayEvent(event.startDate, selectedDate);
-      }
+      // Compare event start time with selected date
+      return isSameDayEvent(event.startTime, selectedDate);
     });
 
     console.log("Filtered events:", filtered);
@@ -125,7 +154,7 @@ const App: React.FC = () => {
 
   const handleEventPress = (event: Event) => {
     setSelectedEvent(event);
-    setNotes(event.notes || ""); // load existing notes
+    setNotes(event.notes || ""); // Load existing notes
     setModalVisible(true);
   };
 
@@ -133,8 +162,8 @@ const App: React.FC = () => {
     if (selectedEvent) {
       setEvents((prevEvents) =>
         prevEvents.map((e) =>
-          e.title === selectedEvent.title
-            ? { ...e, completed: true, notes } // save notes here
+          e.eventID === selectedEvent.eventID
+            ? { ...e, notes } // Save notes here
             : e
         )
       );
@@ -146,22 +175,13 @@ const App: React.FC = () => {
     if (selectedEvent) {
       setEvents((prevEvents) =>
         prevEvents.map((e) =>
-          e.title === selectedEvent.title
-            ? { ...e, notes } // always save notes when closing the modal
+          e.eventID === selectedEvent.eventID
+            ? { ...e, notes } // Always save notes when closing the modal
             : e
         )
       );
     }
     setModalVisible(false);
-  };
-
-  // function to toggle event completion
-  const toggleEventCompletion = (eventTitle: string) => {
-    setEvents((prevEvents) =>
-      prevEvents.map((e) =>
-        e.title === eventTitle ? { ...e, completed: !e.completed } : e
-      )
-    );
   };
 
   const renderModal = () => {
@@ -176,13 +196,13 @@ const App: React.FC = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{selectedEvent.title}</Text>
+            <Text style={styles.modalTitle}>{selectedEvent.eventName}</Text>
             <Text style={styles.modalDate}>
-              Date: {selectedEvent.formattedDate}
+              Date: {selectedEvent.startTime}
             </Text>
-            {selectedEvent.location && (
+            {selectedEvent.notes && (
               <Text style={styles.modalLocation}>
-                Location: {selectedEvent.location}
+                Notes: {selectedEvent.notes}
               </Text>
             )}
 
@@ -202,17 +222,11 @@ const App: React.FC = () => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[
-                  styles.completeButton,
-                  selectedEvent.completed && styles.completedButton,
-                ]}
+                style={styles.completeButton}
                 onPress={markEventAsComplete}
-                disabled={selectedEvent.completed}
               >
                 <Text style={styles.completeButtonText}>
-                  {selectedEvent.completed
-                    ? "Completed"
-                    : "Save and Complete Task"}
+                  Save and Complete Task
                 </Text>
               </TouchableOpacity>
             </View>
@@ -230,7 +244,7 @@ const App: React.FC = () => {
       <View style={styles.container}>
         <View style={styles.calendarContainer}>
           <Calendar
-            style={{ width: "100%", height: calendarHeight }} // make width 100% of the container
+            style={{ width: "100%", height: calendarHeight }}
             current={selectedDate}
             hideArrows={false}
             onDayPress={onDayPress}
@@ -257,9 +271,9 @@ const App: React.FC = () => {
               textDayFontFamily: fonts.regular,
               textMonthFontFamily: fonts.regular,
               textDayHeaderFontFamily: fonts.regular,
-              textDayFontWeight: 'normal',
-              textMonthFontWeight: 'bold',
-              textDayHeaderFontWeight: 'normal',
+              textDayFontWeight: "normal",
+              textMonthFontWeight: "bold",
+              textDayHeaderFontWeight: "normal",
             }}
           />
         </View>
@@ -281,21 +295,7 @@ const App: React.FC = () => {
               onPress={() => handleEventPress(event)}
               style={styles.eventItem}
             >
-              <TouchableOpacity
-                onPress={() => toggleEventCompletion(event.title)}
-                style={[
-                  styles.indicator,
-                  event.completed && styles.completedIndicator,
-                ]}
-              />
-              <Text
-                style={[
-                  styles.titleText,
-                  event.completed && styles.completedTitleText,
-                ]}
-              >
-                {event.title}
-              </Text>
+              <Text style={styles.titleText}>{event.eventName}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -485,9 +485,9 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontFamily: fonts.regular,
     color: colors.white,
-    textAlign: "center", 
+    textAlign: "center",
     fontSize: 14,
   },
 });
 
-export default App;
+export default CalendarScreen;
