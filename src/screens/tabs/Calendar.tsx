@@ -198,7 +198,7 @@ const CalendarScreen: React.FC = () => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{selectedEvent.eventName}</Text>
             <Text style={styles.modalDate}>
-              Date: {selectedEvent.startTime}
+              Date: {formatDate(selectedEvent.startTime)}
             </Text>
             {selectedEvent.notes && (
               <Text style={styles.modalLocation}>
