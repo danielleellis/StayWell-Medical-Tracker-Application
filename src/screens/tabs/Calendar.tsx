@@ -12,7 +12,7 @@
  *
  * Developed by: Team 21 Member:
  *    - Danielle Ellis
- * Date: September 27, 2024
+ * Date: September 28, 2024
  * Version: Initial development
  */
 
@@ -37,6 +37,10 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
+// -----------------------------------
+// EVENTS - must match MySql table
+// -----------------------------------
+
 type Event = {
   eventID: string;
   eventName: string;
@@ -52,7 +56,12 @@ type Event = {
   eventType?: string;
   calendarID?: string;
   userID: string;
+  completed: boolean; // allows for toggle completion
 };
+
+// -----------------------------------
+//        HELPER FUNCTIONS
+// -----------------------------------
 
 const formatDate = (dateString: string) => {
   return format(parseISO(dateString), "MMMM dd, yyyy");
@@ -61,6 +70,10 @@ const formatDate = (dateString: string) => {
 const isSameDayEvent = (eventDate: string, selectedDate: string) => {
   return isSameDay(parseISO(eventDate), parseISO(selectedDate));
 };
+
+// -----------------------------------
+//          MAIN COMPONENT
+// -----------------------------------
 
 const CalendarScreen: React.FC = () => {
   const currentDate = new Date().toLocaleDateString("en-CA");
@@ -73,6 +86,11 @@ const CalendarScreen: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [notes, setNotes] = useState<string>("");
+
+  // -----------------------------------
+  //      BACKEND COMMUNICATION
+  //      AND HANDLER FUNCTIONS
+  // -----------------------------------
 
   const serverEndpoint = configData.API_ENDPOINT;
 
@@ -103,6 +121,7 @@ const CalendarScreen: React.FC = () => {
             eventType: event.eventType,
             calendarID: event.calendarID,
             userID: event.userID,
+            completed: event.completed === 1, // convert int to boolean
             formattedDate: formatDate(event.startTime),
           })
         );
@@ -156,20 +175,57 @@ const CalendarScreen: React.FC = () => {
 
   const handleEventPress = (event: Event) => {
     setSelectedEvent(event);
-    setNotes(event.notes || ""); // Load existing notes
+    setNotes(event.notes || ""); // load existing notes
     setModalVisible(true);
   };
 
-  const markEventAsComplete = () => {
+  const markEventAsComplete = async () => {
     if (selectedEvent) {
+      try {
+        const response = await axios.put(
+          `${serverEndpoint}/events/${selectedEvent.eventID}`,
+          {
+            completed: true, // send the completed status
+          }
+        );
+        console.log("Server response:", response.data);
+
+        // update the local state to reflect the completion
+        setEvents((prevEvents) =>
+          prevEvents.map((e) =>
+            e.eventID === selectedEvent.eventID
+              ? { ...e, completed: true } // update to completed
+              : e
+          )
+        );
+        setModalVisible(false);
+      } catch (error) {
+        console.error("Error marking event as complete", error);
+      }
+    }
+  };
+
+  const toggleEventCompletion = async (event: Event) => {
+    try {
+      const updatedStatus = !event.completed;
+      const response = await axios.put(
+        `${serverEndpoint}/events/${event.eventID}`,
+        {
+          completed: updatedStatus, // toggle completed
+        }
+      );
+      console.log("Server response:", response.data);
+
+      // update the local state to reflect the completion status
       setEvents((prevEvents) =>
         prevEvents.map((e) =>
-          e.eventID === selectedEvent.eventID
-            ? { ...e, notes } // Save notes here
+          e.eventID === event.eventID
+            ? { ...e, completed: updatedStatus } // toggle completed
             : e
         )
       );
-      setModalVisible(false);
+    } catch (error) {
+      console.error("Error toggling event completion", error);
     }
   };
 
@@ -178,13 +234,17 @@ const CalendarScreen: React.FC = () => {
       setEvents((prevEvents) =>
         prevEvents.map((e) =>
           e.eventID === selectedEvent.eventID
-            ? { ...e, notes } // Always save notes when closing the modal
+            ? { ...e, notes } // always save notes when closing the modal
             : e
         )
       );
     }
     setModalVisible(false);
   };
+
+  // -----------------------------------
+  //            POP-UP MODAL
+  // -----------------------------------
 
   const renderModal = () => {
     if (!selectedEvent) return null;
@@ -241,12 +301,16 @@ const CalendarScreen: React.FC = () => {
   const calendarHeight = height * 0.43; // 40% of the screen height
   const calendarWidth = width * 0.9; // 90% of the screen width
 
+  // -----------------------------------
+  //            MAIN VIEW
+  // -----------------------------------
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.calendarContainer}>
           <Calendar
-            style={{ width: "100%", height: calendarHeight }}
+            style={{ width: "100%", height: calendarHeight }} // make width 100% of the container
             current={selectedDate}
             hideArrows={false}
             onDayPress={onDayPress}
@@ -294,10 +358,27 @@ const CalendarScreen: React.FC = () => {
           {filteredEvents.map((event, index) => (
             <TouchableOpacity
               key={index}
+              style={[
+                styles.eventItem,
+                event.completed && styles.completedEventItem,
+              ]}
               onPress={() => handleEventPress(event)}
-              style={styles.eventItem}
             >
-              <Text style={styles.titleText}>{event.eventName}</Text>
+              <TouchableOpacity
+                style={[
+                  styles.indicator,
+                  event.completed && styles.completedIndicator,
+                ]}
+                onPress={() => toggleEventCompletion(event)}
+              />
+              <Text
+                style={[
+                  styles.titleText,
+                  event.completed && styles.completedTitleText,
+                ]}
+              >
+                {event.eventName}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -306,6 +387,10 @@ const CalendarScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
+
+// -----------------------------------
+//             STYLING
+// -----------------------------------
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -396,7 +481,8 @@ const styles = StyleSheet.create({
   completedTitleText: {
     fontFamily: fonts.regular,
     textDecorationLine: "line-through",
-    color: colors.green,
+    textDecorationColor: colors.green,
+    color: colors.white,
   },
   completedIndicator: {
     backgroundColor: colors.green,
@@ -406,6 +492,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  completedEventItem: {
+    backgroundColor: "rgba(69, 166, 255, 0.5)",
   },
   modalContent: {
     backgroundColor: colors.white,
