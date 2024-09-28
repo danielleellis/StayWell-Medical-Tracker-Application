@@ -656,3 +656,34 @@
         res.status(500).json({ error: "Error fetching events" });
     }
 });
+
+// Endpoint to mark an event as complete
+app.put("/events/:eventID", async (req, res) => {
+    console.log("/events/:eventID endpoint reached");
+    const { eventID } = req.params;
+    const { completed } = req.body;
+
+    const sql = "UPDATE Events SET completed = ? WHERE eventID = ?";
+
+    try {
+        const result = await new Promise((resolve, reject) => {
+            connection.query(sql, [completed ? 1 : 0, eventID], (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: "Event marked as complete." });
+        } else {
+            res.status(404).json({ error: "Event not found." });
+        }
+    } catch (error) {
+        console.error("Error marking event as complete:", error.message);
+        res.status(500).json({ error: "Error marking event as complete." });
+    }
+});
+
