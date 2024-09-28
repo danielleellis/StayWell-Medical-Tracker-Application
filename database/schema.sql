@@ -18,19 +18,21 @@ CREATE TABLE Calendar (
 );
 
 CREATE TABLE Event (
-    eventID TEXT PRIMARY KEY,
-    eventName TEXT,
-    color TEXT,
-    isPublic BOOLEAN,
-    viewableBy TEXT,
+    eventID VARCHAR(255) PRIMARY KEY,
+    eventName VARCHAR(255),
+    color VARCHAR(255),
+    isPublic TINYINT(1),
+    viewableBy VARCHAR(255),
     notes TEXT,
-    streakDays INTEGER,
-    reminder TEXT,
-    startTime DATE,
-    endTime DATE,
-    allDay BOOLEAN,
-    eventType TEXT,
-    calendarID TEXT,
+    streakDays INT,
+    reminder VARCHAR(255),
+    startTime DATETIME,
+    endTime DATETIME,
+    allDay TINYINT(1),
+    eventType VARCHAR(255),
+    calendarID VARCHAR(255),
+    userID VARCHAR(255) NOT NULL,
+    completed TINYINT(1) DEFAULT 0,
     FOREIGN KEY (calendarID) REFERENCES Calendar(rowid),
     FOREIGN KEY (eventType) REFERENCES EventType(name)
 );
