@@ -12,7 +12,7 @@
  *
  * Developed by: Team 21 Member:
  *    - Danielle Ellis
- * Date: September 19, 2024
+ * Date: September 27, 2024
  * Version: Initial development
  */
 
@@ -38,20 +38,20 @@ import { useFocusEffect } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 
 type Event = {
-  eventID: string; // Unique identifier for the event
-  eventName: string; // Title of the event
-  color?: string; // Color associated with the event (optional)
-  isPublic?: boolean; // Indicates if the event is public (optional)
-  viewableBy?: string; // Users allowed to view the event (optional)
-  notes?: string; // Notes about the event (optional)
-  streakDays?: number; // Number of streak days (optional)
-  reminder?: string; // Reminder for the event (optional)
-  startTime: string; // ISO string format for start time
-  endTime?: string; // ISO string format for end time (optional)
-  allDay?: boolean; // Indicates if the event lasts all day (optional)
-  eventType?: string; // Type of the event (optional)
-  calendarID?: string; // ID of the associated calendar (optional)
-  userID: string; // ID of the user associated with the event
+  eventID: string;
+  eventName: string;
+  color?: string;
+  isPublic?: boolean;
+  viewableBy?: string;
+  notes?: string;
+  streakDays?: number;
+  reminder?: string;
+  startTime: string;
+  endTime?: string;
+  allDay?: boolean;
+  eventType?: string;
+  calendarID?: string;
+  userID: string;
 };
 
 const formatDate = (dateString: string) => {
@@ -63,7 +63,7 @@ const isSameDayEvent = (eventDate: string, selectedDate: string) => {
 };
 
 const CalendarScreen: React.FC = () => {
-  const currentDate = new Date().toISOString().split("T")[0];
+  const currentDate = new Date().toLocaleDateString("en-CA");
   const [selectedDate, setSelectedDate] = useState<string>(currentDate);
   const [currentDateDisplay, setCurrentDateDisplay] = useState<string>(
     formatDate(currentDate)
@@ -92,22 +92,23 @@ const CalendarScreen: React.FC = () => {
             eventID: event.eventID,
             eventName: event.eventName,
             color: event.color,
-            isPublic: event.isPublic === 1, // Convert tinyint to boolean
+            isPublic: event.isPublic === 1, // convert int to boolean
             viewableBy: event.viewableBy,
             notes: event.notes,
             streakDays: event.streakDays,
             reminder: event.reminder,
             startTime: event.startTime,
             endTime: event.endTime,
-            allDay: event.allDay === 1, // Convert tinyint to boolean
+            allDay: event.allDay === 1, // convert int to boolean
             eventType: event.eventType,
             calendarID: event.calendarID,
             userID: event.userID,
-            formattedDate: formatDate(event.startTime), // Format for display
+            formattedDate: formatDate(event.startTime),
           })
         );
 
-        setEvents(formattedEvents); // Set the formatted events
+        // Set the formatted events
+        setEvents(formattedEvents);
       } else {
         console.error("Error fetching events:", response.status);
       }
@@ -122,10 +123,11 @@ const CalendarScreen: React.FC = () => {
   };
 
   // Fetch events every time the screen is focused
+  // Hard-coded for now - will replace with dynamic userID
   useFocusEffect(
     useCallback(() => {
-      const userID = "C5vj8Ibdks"; // Replace with actual userID
-      fetchEvents(userID); // Fetch events for this user
+      const userID = "C5vj8Ibdks";
+      fetchEvents(userID);
     }, [])
   );
 
