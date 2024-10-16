@@ -7,6 +7,9 @@ import {
     Image,
     Alert,
     ScrollView,
+    Modal,
+    TextInput,
+    Button,
 } from "react-native";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -17,6 +20,9 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [documents, setDocuments] = useState<any[]>([]); // State to hold documents
+    const [isModalVisible, setModalVisible] = useState(false); // State to control modal visibility
+    const [selectedDocument, setSelectedDocument] = useState<any>(null); // State to hold the selected document
+    const [enteredPasscode, setEnteredPasscode] = useState(""); // State for the entered passcode
     const user = useSelector((state: RootState) => state.auth.user);
     const userID = user?.userID; // Get userID from Redux
     const serverEndpoint = configData.API_ENDPOINT;
@@ -49,8 +55,30 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate("NewDocument");
     };
 
-    const openDocument = (documentID: string, documentName: string) => {
-        navigation.navigate("LoadDocument", { documentID, documentName });
+    const openDocument = (documentID: string, documentName: string, lockPasscode?: string) => {
+        if (lockPasscode) {
+            // If the document is locked, show the modal to enter the passcode
+            setSelectedDocument({ documentID, documentName, lockPasscode });
+            setModalVisible(true);
+        } else {
+            // If the document is not locked, open it directly
+            navigation.navigate("LoadDocument", { documentID, documentName });
+        }
+    };
+
+    const validatePasscode = () => {
+        if (selectedDocument && enteredPasscode === selectedDocument.lockPasscode) {
+            // Passcode is correct, open the document
+            setModalVisible(false);
+            setEnteredPasscode("");
+            navigation.navigate("LoadDocument", {
+                documentID: selectedDocument.documentID,
+                documentName: selectedDocument.documentName,
+            });
+        } else {
+            // Incorrect passcode
+            Alert.alert("Error", "Incorrect passcode. Please try again.");
+        }
     };
 
     return (
@@ -75,7 +103,7 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
                             key={index}
                             style={styles.documentContainer}
                             onPress={() =>
-                                openDocument(doc.documentID, doc.documentName)
+                                openDocument(doc.documentID, doc.documentName, doc.lockPasscode)
                             }
                         >
                             <View style={styles.row}>
@@ -109,6 +137,44 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
                     </View>
                 )}
             </ScrollView>
+
+            {/* Modal for entering the passcode */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => {
+                    setModalVisible(false);
+                    setEnteredPasscode("");
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Enter Passcode</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter Passcode"
+                            secureTextEntry
+                            value={enteredPasscode}
+                            onChangeText={setEnteredPasscode}
+                            keyboardType="number-pad"
+                        />
+                        <View style={styles.modalButtons}>
+                            <Button
+                                title="Cancel"
+                                onPress={() => {
+                                    setModalVisible(false);
+                                    setEnteredPasscode("");
+                                }}
+                            />
+                            <Button
+                                title="OK"
+                                onPress={validatePasscode}
+                            />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -187,5 +253,37 @@ const styles = StyleSheet.create({
         width: 53,
         height: 52,
         margin: 10,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        width: "80%",
+        backgroundColor: "white",
+        borderRadius: 10,
+        padding: 20,
+        alignItems: "center",
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "gray",
+        borderRadius: 5,
+        width: "100%",
+        padding: 10,
+        marginBottom: 15,
+        textAlign: "center",
+    },
+    modalButtons: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
     },
 });
