@@ -11,9 +11,9 @@ const document = <Ionicons name='document-outline' color={colors.blue} size={25}
 
 //menu items
 const menuData = [
-  {id:'1', title:'Habit', icon:habit, page:'NewHabit'},
-  {id:'2', title:'Task', icon:task, page:'NewTask'},
-  {id:'3', title:'Document', icon:document, page:'NewDocument'}
+  {id:'1', title:'Habit', icon:habit, page:'NewTask'},
+  { id: '2', title: 'Task', icon: task, page:'NewTask'},
+  {id:'3', title:'Document', icon:document, page:'DocumentsHome'}
 ]
 
 const Create: React.FC<{navigation:any}> = ({navigation}) => {
@@ -57,7 +57,6 @@ const Create: React.FC<{navigation:any}> = ({navigation}) => {
                   >
                     <Text style={styles.title}>{item.icon}{'  '}{item.title}</Text> 
                   </TouchableOpacity>
-                  
                 )}  
                 ItemSeparatorComponent={seperator}
               />
