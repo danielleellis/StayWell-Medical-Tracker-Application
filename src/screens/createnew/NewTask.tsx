@@ -117,7 +117,9 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style= {styles.dateContainer}>
       
         <View style= {styles.testContainer}>
-          <Button title="Start Date" onPress={() => showMode('date')}/>
+          <TouchableOpacity style={styles.clockButton} onPress={() => showMode('date')}>
+            <Text style={styles.clockText}>Start Date</Text>
+          </TouchableOpacity>
           {showStartDatePicker && (<DateTimePicker
             mode={"date"}
             display="default" 
@@ -128,7 +130,9 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
         </View>
 
         <View style= {styles.testContainer}>
-          <Button title="Start Time" onPress={() => showStartTimeMode('time')}/> 
+          <TouchableOpacity style={styles.clockButton} onPress={showStartTimeMode}>
+            <Text style={styles.clockText}>Start Time</Text>
+          </TouchableOpacity>
           {showStartTimePicker && (<DateTimePicker
             mode="time"
             display="default" 
@@ -140,7 +144,9 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
 
 
         <View style= {styles.testContainer}>
-          <Button title="End Date" onPress={() => showEndDateMode('date')}/>
+          <TouchableOpacity style={styles.clockButton} onPress={showEndDateMode}>
+            <Text style={styles.clockText}>End Date</Text>
+          </TouchableOpacity>
           {showEndDatePicker && (<DateTimePicker
             mode="date"
             display="default" 
@@ -151,7 +157,9 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
         </View>
 
         <View style= {styles.testContainer}>
-          <Button title="End Time" onPress={() => showEndTimeMode('time')}/> 
+          <TouchableOpacity style={styles.clockButton} onPress={showEndTimeMode}>
+            <Text style={styles.clockText}>End Time</Text>
+          </TouchableOpacity>
           {showEndTimePicker && (<DateTimePicker
             mode="time"
             display="default" 
@@ -163,13 +171,11 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       </View>
 
-
       <View style={styles.saveContainer}>
         <TouchableOpacity style={styles.saveButton} onPress={saveHabit}>
           <Text style={styles.saveButtonText}>Save</Text>
         </TouchableOpacity>   
       </View>  
-
 
       </View>
     </SafeAreaView>
@@ -183,7 +189,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: '10%',
+    paddingTop: '5%',
     backgroundColor: colors.white,
   },
   heading: {
@@ -191,7 +197,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.regular,
     marginTop:'10%',
-    padding: 40
+    padding: '10%'
   },
   innerContainer: {
     flex: 1,
@@ -202,20 +208,20 @@ const styles = StyleSheet.create({
     borderRadius:15,
     margin:'10%'
   },
+  input: {
+    width: '85%',
+    backgroundColor: colors.white,
+    margin:'3%'
+  },
   saveButton: {
     borderRadius: 10,
-    backgroundColor: colors.white,
-    
+    backgroundColor: colors.white,  
   },
   saveButtonText: {
     fontSize: 18,
     margin: 10,
-    color: "#45A6FF",
+    color: colors.blue,
     fontWeight: "bold",
-  },
-  input: {
-    width: '85%',
-    backgroundColor: colors.white,
   },
   saveContainer: {
     flex: 1,
@@ -226,7 +232,7 @@ const styles = StyleSheet.create({
   dateContainer:{
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: "center",
+    alignItems: 'baseline',
   },
   backButton: {
     position: "absolute",
@@ -241,13 +247,21 @@ const styles = StyleSheet.create({
   testContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start'
-    
   },
   regularText: {
     fontSize: 16,
     color: colors.white,
     fontFamily: fonts.regular,
     margin: '5%'
-  }
+  },
+  clockText: {
+    color: colors.blue,
+    fontSize: 14,
+    fontFamily: fonts.bold,
+    padding: '3%',
+  }, 
+  clockButton: {
+    borderRadius: 20,
+    backgroundColor: colors.white,
+  },
   });
