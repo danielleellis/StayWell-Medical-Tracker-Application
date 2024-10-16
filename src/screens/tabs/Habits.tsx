@@ -2,7 +2,6 @@ import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { colors, fonts } from "../../constants/constants";
 import { CalendarProvider, WeekCalendar } from "react-native-calendars";
-import { format, parseISO, isSameDay } from "date-fns";
 
 
 const Habits: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -26,11 +25,25 @@ const Habits: React.FC<{ navigation: any }> = ({ navigation }) => {
         > 
           <WeekCalendar 
             allowShadow={false}
+            theme={{
+              textSectionTitleColor: colors.black,
+              dayTextColor: colors.black,
+              selectedDayTextColor: colors.white,
+              todayTextColor: colors.blue,
+              textDisabledColor: colors.grey,
+              arrowColor: colors.blue,
+              selectedDotColor: colors.white,
+              textDayFontFamily: fonts.regular,
+              textMonthFontFamily: fonts.regular,
+              textDayHeaderFontFamily: fonts.regular,
+              textDayFontWeight: "normal",
+              textMonthFontWeight: "bold",
+              textDayHeaderFontWeight: "normal",
+            }}
           />
-          
         </CalendarProvider>
       </View>
-      
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={newHabit}>
           <View style={styles.row}>
@@ -41,9 +54,7 @@ const Habits: React.FC<{ navigation: any }> = ({ navigation }) => {
             <Text style={styles.buttonText}>Create Habit</Text>
           </View>
         </TouchableOpacity>
-
       </View>
-      
     </View>
   );
 };
@@ -55,21 +66,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: '10%',
+    paddingTop: "10%",
     backgroundColor: colors.white,
   },
   heading: {
     fontSize: 30,
     color: colors.blue,
-    marginTop: '5%',
+    marginTop: "5%",
     fontFamily: fonts.regular,
   },
-  weekContainer:{
+  weekContainer: {
     flex: 1,
   },
-  buttonContainer:{
+  buttonContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   button: {
     padding: 5,
@@ -77,10 +88,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 5,
     marginBottom: 5,
-},
+  },
   row: {
     flexDirection: "row",
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 10,
     fontSize: 16,
   },
@@ -88,10 +99,10 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     margin: 10,
-},
-buttonText: {
-  color: colors.blue,
-  fontSize: 16,
-  fontFamily: "JosefinSans-Bold",
-},
+  },
+  buttonText: {
+    color: colors.blue,
+    fontSize: 16,
+    fontFamily: fonts.regular,
+  },
 });

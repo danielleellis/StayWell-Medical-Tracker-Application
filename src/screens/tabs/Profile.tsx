@@ -83,7 +83,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     // Render a loading state while fetching data
     if (!profileData) {
-        return <Text>Loading...</Text>;
+        return <Text style={{ fontFamily: fonts.regular }}>Loading...</Text>;
     }
 
     return (
@@ -163,11 +163,12 @@ const styles = StyleSheet.create({
     username: {
         marginTop: 5,
         fontSize: 24,
-        fontWeight: "600",
+        fontFamily: fonts.regular,
         textAlign: "center",
     },
     subText: {
         fontSize: 14,
+        fontFamily: fonts.regular,
         textAlign: "center",
         marginTop: 2,
     },
@@ -189,10 +190,11 @@ const styles = StyleSheet.create({
     },
     infoLabel: {
         fontSize: 12,
-        fontWeight: "600",
+        fontFamily: fonts.regular,
     },
     infoText: {
         fontSize: 12,
+        fontFamily: fonts.regular,
     },
     button: {
         justifyContent: "center",
@@ -212,6 +214,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 16,
+        fontFamily: fonts.regular,
         textDecorationLine: "underline",
     },
     signOutButton: {
@@ -220,5 +223,6 @@ const styles = StyleSheet.create({
     },
     signOutButtonText: {
         color: "red",
+        fontFamily: fonts.regular,
     },
 });

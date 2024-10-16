@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { colors } from '../constants/constants';
 
 type ButtonProps = {
   title: string;
@@ -23,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({ title, onPress, disabled = false }) => 
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#6BB7ED',
+    backgroundColor: colors.blue,
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -34,10 +35,10 @@ const styles = StyleSheet.create({
     fontFamily: 'JosefinSans-Bold',
   },
   disabledButton: {
-    backgroundColor: '#eee',
+    backgroundColor: colors.lightblue,
   },
   disabledButtonText: {
-    color: '#999',
+    color: colors.blue,
   },
 });
 

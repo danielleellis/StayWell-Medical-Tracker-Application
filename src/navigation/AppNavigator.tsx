@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../constants/constants";
+import { colors, fonts } from "../constants/constants"; // Imported fonts
 import { createStackNavigator } from "@react-navigation/stack";
 import FriendsListScreen from "../screens/viewfriendslist/FriendsListScreen";
 import FriendProfileScreen from "../screens/viewfriendslist/FriendProfileScreen";
@@ -22,12 +22,34 @@ const Tab = createBottomTabNavigator();
 const TabNav: React.FC<{ navigation: any }> = ({ navigation }) => {
     return (
         <Tab.Navigator
-            initialRouteName="Calendar"
-            screenOptions={{
-                headerShown: false,
-                tabBarActiveTintColor: colors.green,
-                tabBarInactiveTintColor: colors.blue,
-            }}
+        initialRouteName="Calendar"
+        screenOptions={{
+            headerShown: false,
+            tabBarActiveTintColor: colors.green,
+            tabBarInactiveTintColor: colors.blue,
+            tabBarStyle: {
+                position: 'absolute',
+                bottom: 20,
+                left: 20,
+                right: 20,
+                borderRadius: 20,
+                height: 70,
+                backgroundColor: 'white',
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.3,
+                shadowRadius: 2,
+                elevation: 3,
+            },
+            tabBarLabelStyle: {
+                fontFamily: fonts.regular, // Custom font for tab labels
+                fontSize: 12, // Adjust font size as needed
+                paddingBottom: 15, // Reduces space between icon and label
+            },
+            tabBarIconStyle: {
+                marginBottom: -10, // Reduces the gap between the icon and the label
+            },
+        }}
         >
             <Tab.Screen
                 name="Habits"

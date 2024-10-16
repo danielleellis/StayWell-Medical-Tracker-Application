@@ -1,5 +1,6 @@
 import React from 'react';
 import { TextInput, View, StyleSheet, TextStyle, ViewStyle, TouchableOpacity, Image } from 'react-native';
+import { colors } from '../constants/constants';
 
 type InputProps = {
   placeholder: string;
@@ -33,6 +34,7 @@ const Input: React.FC<InputProps> = ({
       <TextInput
         style={styles.input}
         placeholder={placeholder}
+        placeholderTextColor={colors.lightblue}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
@@ -59,13 +61,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.lightblue,
     borderRadius: 10,
   },
   input: {
     flex: 1,
     padding: 10,
     fontFamily: 'JosefinSans-Regular',
+    color: colors.blue,
   },
   eyeIcon: {
     padding: 10,
