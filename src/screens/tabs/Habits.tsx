@@ -2,21 +2,28 @@ import { Text, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { colors, fonts } from "../../constants/constants";
 import { CalendarProvider, WeekCalendar } from "react-native-calendars";
+import { format, parseISO, isSameDay } from "date-fns";
 
 
 const Habits: React.FC<{ navigation: any }> = ({ navigation }) => {
 
+  // navigate to create habit page when button is clicked
   const newHabit = () => {
     navigation.navigate("NewTask");
   };
 
+  // current day so calendar opens to current date
+  const currentDay = new Date().toISOString().split("T")[0];
+
+  
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>S T A Y W E L L</Text>
 
       <View style ={styles.weekContainer}>
         <CalendarProvider
-          date={'2024-09-19'}> 
+          date={currentDay}
+        > 
           <WeekCalendar 
             allowShadow={false}
           />
