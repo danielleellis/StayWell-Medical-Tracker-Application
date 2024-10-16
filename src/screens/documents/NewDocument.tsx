@@ -10,79 +10,59 @@ import {
     Alert,
 } from "react-native";
 import Input from "../../components/Input";
+import Button from "../../components/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 import * as ImagePicker from "expo-image-picker";
-import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
 import configData from "../../../config.json";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { colors } from "../../constants/constants";
+import { colors, fonts } from "../../constants/constants";
 
 const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [documentName, setDocumentName] = useState("");
-    const [selectedImages, setSelectedImages] = useState<string[]>([]);
-    const [selectedPdf, setSelectedPdf] = useState<{ uri: string; name: string } | null>(null);
-    const [isLocked, setIsLocked] = useState(false);
-    const [lockPasscode, setLockPasscode] = useState<string | null>(null);
+    const [selectedImages, setSelectedImages] = useState<string[]>([]); // Storing URIs of selected images
+    const [isLocked, setIsLocked] = useState(false); // State to handle whether the document is locked
+    const [lockPasscode, setLockPasscode] = useState<string | null>(null); // State for the passcode
     const serverEndpoint = configData.API_ENDPOINT;
 
+    // Fetch userID from Redux state
     const user = useSelector((state: RootState) => state.auth.user);
     const userID = user?.userID;
 
+    // Handle lock switch toggle
     const toggleSwitch = () => {
         setIsLocked((isLocked) => !isLocked);
         if (!isLocked) {
-            setLockPasscode(null);
+            setLockPasscode(null); // Clear passcode when lock is enabled
         }
     };
 
+    // Handle image selection
     const handleImageUpload = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
-            Alert.alert("Permission Denied", "Permission to access gallery is required!");
+            Alert.alert(
+                "Permission Denied",
+                "Permission to access gallery is required!"
+            );
             return;
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsMultipleSelection: true,
+            allowsMultipleSelection: true, // Allow multiple image selection
             quality: 1,
         });
 
         if (!result.canceled && result.assets) {
-            setSelectedImages(result.assets.map((asset) => asset.uri));
-            setSelectedPdf(null);
-        }
-    };
-
-    const handlePdfUpload = async () => {
-        const result = await DocumentPicker.getDocumentAsync({
-            type: "application/pdf",
-        });
-
-        if (result.canceled === false && result.assets && result.assets.length > 0) {
-            const { uri, name } = result.assets[0];
-            setSelectedPdf({ uri, name });
-            setSelectedImages([]);
+            setSelectedImages(result.assets.map((asset) => asset.uri)); // Store URIs of selected images
         }
     };
 
     const saveDocument = async () => {
-        // Check if document has a name
         if (!documentName) {
             Alert.alert("Error", "Document name is required");
-            return;
-        }
-
-        // Check if neither images or a PDF is selected
-        if (selectedImages.length === 0 && !selectedPdf) {
-            Alert.alert("Error", "You cannot create a document without images or a file!");
-            return;
-        }
-
-        // Check if the user wanted to set a password, but didn't add anything
-        if (isLocked && (!lockPasscode || lockPasscode.trim() === "")) {
-            Alert.alert("Error", "Password Protect is turned on, but no password was added!\n\nTurn the setting off or add a password.");
             return;
         }
 
@@ -96,31 +76,30 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
             formData.append("userID", userID);
             formData.append("documentName", documentName);
 
+            // Only append lockPasscode if it's not null
             if (isLocked && lockPasscode) {
                 formData.append("lockPasscode", lockPasscode);
             }
 
-            if (selectedPdf) {
-                formData.append("pdf", {
-                    uri: selectedPdf.uri,
-                    name: selectedPdf.name,
-                    type: "application/pdf",
+            console.log("Uploading images from Document");
+            // Upload selected images
+            for (const [index, imageUri] of selectedImages.entries()) {
+                formData.append("images", {
+                    uri: imageUri,
+                    name: `image${index}.jpg`,
+                    type: "image/jpeg",
                 } as any);
-            } else {
-                for (const [index, imageUri] of selectedImages.entries()) {
-                    formData.append("images", {
-                        uri: imageUri,
-                        name: `image${index}.jpg`,
-                        type: "image/jpeg",
-                    } as any);
-                }
             }
 
-            const response = await axios.post(`${serverEndpoint}/new-document`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            const response = await axios.post(
+                `${serverEndpoint}/new-document`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
 
             if (response.data.success) {
                 navigation.navigate("Documents");
@@ -134,21 +113,23 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
+        <ScrollView
+            contentContainerStyle={styles.contentContainer}
+            style={styles.container}
+        >
             <Input
                 placeholder="Document Name"
                 value={documentName}
-                onChangeText={(text) => {
-                    if (text.length <= 50) {
-                        setDocumentName(text);
-                    }
-                }}
+                onChangeText={setDocumentName}
                 autoCapitalize="words"
                 style={styles.input}
             />
 
             <View style={styles.row}>
-                <Image source={require("../../../assets/images/lock-icon.png")} style={styles.lockIcon} />
+                <Image
+                    source={require("../../../assets/images/lock-icon.png")}
+                    style={styles.lockIcon}
+                />
                 <Text style={styles.text}>Password Protect</Text>
                 <Switch
                     trackColor={{ false: colors.grey, true: colors.grey }}
@@ -164,36 +145,14 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
                     placeholder="Enter Passcode"
                     value={lockPasscode || ""}
                     onChangeText={setLockPasscode}
-                    secureTextEntry
                     style={styles.input}
                     keyboardType="numeric"
                 />
             )}
 
-            <View style={styles.buttonRow}>
-                <TouchableOpacity style={styles.uploadButton} onPress={handleImageUpload}>
-                    <Text style={styles.buttonText}>Upload Images</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.uploadButton} onPress={handlePdfUpload}>
-                    <Text style={styles.buttonText}>Upload a PDF</Text>
-                </TouchableOpacity>
-            </View>
-
-            {selectedImages.length > 0 ? (
-                <ScrollView horizontal contentContainerStyle={styles.imageScrollView} showsHorizontalScrollIndicator={false}>
-                    {selectedImages.map((imageUri, index) => (
-                        <Image key={index} source={{ uri: imageUri }} style={styles.uploadedImage} />
-                    ))}
-                </ScrollView>
-            ) : selectedPdf ? (
-                <View style={styles.pdfPreviewContainer}>
-                    <Image
-                        source={require("../../../assets/images/pdf-icon.png")}
-                        style={styles.pdfIcon}
-                    />
-                    <Text style={styles.pdfText}>{selectedPdf.name}</Text>
-                </View>
-            ) : null}
+            <TouchableOpacity style={styles.saveButton} onPress={handleImageUpload}>
+                <Text style={styles.saveButtonText}>Upload Images</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.saveButton} onPress={saveDocument}>
                 <Text style={styles.saveButtonText}>Save</Text>
@@ -228,32 +187,14 @@ const styles = StyleSheet.create({
         padding: 15,
         alignItems: "center",
     },
-    buttonRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 10,
-    },
-    uploadButton: {
-        borderRadius: 10,
-        backgroundColor: colors.white,
-        marginHorizontal: 5,
-        padding: 10,
-        width: 145,
-        alignItems: "center",
-    },
-    buttonText: {
-        fontSize: 18,
-        color: "#45A6FF",
-        fontWeight: "bold",
-    },
     saveButton: {
         borderRadius: 10,
         backgroundColor: colors.white,
-        margin: 10,
-        padding: 10,
+        margin: 10
     },
     saveButtonText: {
         fontSize: 18,
+        margin: 10,
         color: "#45A6FF",
         fontWeight: "bold",
     },
@@ -265,28 +206,5 @@ const styles = StyleSheet.create({
     input: {
         marginBottom: 16,
         backgroundColor: colors.white,
-    },
-    imageScrollView: {
-        flexDirection: "row",
-        marginVertical: 10,
-    },
-    uploadedImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 5,
-        marginRight: 5,
-    },
-    pdfPreviewContainer: {
-        alignItems: "center",
-        marginVertical: 10,
-    },
-    pdfIcon: {
-        width: 40,
-        height: 40,
-    },
-    pdfText: {
-        fontSize: 14,
-        color: colors.white,
-        marginTop: 5,
     },
 });
