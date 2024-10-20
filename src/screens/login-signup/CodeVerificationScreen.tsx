@@ -17,9 +17,9 @@ import axios from 'axios';
 import configData from "../../../config.json";
 const serverEndpoint = configData.API_ENDPOINT;
 
-const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
-  navigation,
-}) => {
+const CodeVerificationScreen: React.FC<{ navigation: any, route: any }> = ({ navigation, route }) => {
+  const { from } = route.params; // to determine what code we're verifying
+
   const [code1, setCode1] = useState("");
   const [code2, setCode2] = useState("");
   const [code3, setCode3] = useState("");
@@ -43,7 +43,14 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
   const handleVerifyEmail = () => {
     const verificationCode = code1 + code2 + code3 + code4;
     dispatch(verifyEmail(verificationCode));
-    navigation.navigate("../tabs/ProfileSetup", { from: "signup" });
+
+      if (from === "signup") {
+          navigation.navigate("Dashboard");
+      } else if (from === "forgotPassword") {
+          navigation.navigate("ChangePassword");
+      } else {
+          navigation.navigate("Calendar");
+      }
 
   };
 
@@ -54,7 +61,7 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
           if (response.status === 200) {
               // Show success message to user
               console.log("Verification code resent successfully");
-              alert("A new verification code has been sent to your email.");
+              alert(`A new verification code has been sent to ${email}.`);
           } else {
               console.error('Failed to resend verification code:', response.data);
               alert("Failed to resend verification code. Please try again later.");
@@ -64,7 +71,7 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
           alert("Network error. Please check your connection and try again.");
       }
   };
-
+  
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -77,9 +84,9 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
         source={require("../../../assets/images/sun.png")}
         style={styles.logo}
       />
-      <Text style={styles.title}>Verify Email</Text>
+      <Text style={styles.title}>Enter verification code</Text>
       <Text style={styles.description}>
-        Please enter the verification code sent to: {email}
+        Please enter the code sent to: {email}
       </Text>
       <View style={styles.codeInputContainer}>
         <TextInput
@@ -197,4 +204,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EmailVerificationScreen;
+export default CodeVerificationScreen;

@@ -42,12 +42,29 @@ const authSlice = createSlice({
             state.profileComplete = false;
             console.log('User signed out');
         },
-        forgotPassword: (state, action: PayloadAction<string>) => {
-            console.log('Reset password email sent to:', action.payload);
-        },
         verifyEmail: (state, action: PayloadAction<string>) => {
             state.isVerified = true;
         },
+        forgotPassword: (state, action: PayloadAction<string>) => {
+            if (state.user) {
+                state.user.email = action.payload; // Update the email if user exists
+            } else {
+                // Initialize the user with just the email if state.user is null
+                state.user = {
+                    firstName: '',
+                    lastName: '',
+                    email: action.payload,
+                    password: '',
+                    username: '',
+                    userID: null,
+                    pronouns: '',
+                    phone: '',
+                    birthday: '',
+                    profilePhoto: null,
+                };
+            }
+        },
+
         setupProfile: (state, action: PayloadAction<Omit<User, 'firstName' | 'lastName' | 'email' | 'password'>>) => {
             state.profileComplete = true;
             if (state.user) {

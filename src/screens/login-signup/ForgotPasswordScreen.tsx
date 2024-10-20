@@ -8,9 +8,7 @@ import { forgotPassword } from "../../redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import { colors, fonts } from "../../constants/constants";
 
-const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({
-  navigation,
-}) => {
+const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({ navigation, }) => {
   const [email, setEmail] = useState("");
   const dispatch = useDispatch<AppDispatch>();
 
@@ -24,9 +22,9 @@ const ForgotPasswordScreen: React.FC<{ navigation: any }> = ({
   }
 
   const handleForgotPassword = () => {
+    // Dispatch the email to Redux
     dispatch(forgotPassword(email));
-    // Navigate to a success screen or show a success message
-    navigation.navigate("SignIn");
+    navigation.navigate("CodeVerification", { from: "forgotPassword" });
   };
 
   return (

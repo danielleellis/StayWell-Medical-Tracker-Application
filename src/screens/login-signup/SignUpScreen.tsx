@@ -142,8 +142,8 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                     // Send the verification code after successful signup
                     await sendVerificationCode(email);
 
-                    // Navigate to EmailVerification screen
-                    navigation.navigate('EmailVerification');
+                    // Navigate to CodeVerification screen
+                    navigation.navigate("CodeVerification", { from: "signup" });
                     console.log('Sign up successful. UserData:', updatedUserData);
                 } else {
                     console.error('Failed to sign up:', response.data);

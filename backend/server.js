@@ -292,6 +292,43 @@ app.post("/signup", async (req, res) => {
     }
 });
 
+// Endpoint to change password of a registered user
+app.post("/change-password", async (req, res) => {
+    console.log("/change-password endpoint reached");
+    const { email, password } = req.body; // Get the email and new password from the request body
+
+    // Check if the email and password were provided
+    if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required." });
+    }
+
+    try {
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log(`Hashed password for ${email}:`, hashedPassword);
+
+        // Update the user's password in the database
+        const sql = "UPDATE Users SET password = ? WHERE email = ?";
+        connection.query(sql, [hashedPassword, email], (err, result) => {
+            if (err) {
+                console.log(`Error encountered during password change for ${email}: ${err.message}`);
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Check if any rows were affected (i.e., if the email exists)
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "User not found with this email." });
+            }
+
+            console.log(`Password changed successfully for ${email}`);
+            res.status(200).json({ success: true, message: "Password changed successfully." });
+        });
+    } catch (error) {
+        console.log(`Error caught during password change: ${error.message}`);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Endpoint to update user profile
 app.put("/profile-setup", async (req, res) => {
     console.log("/profile-setup endpoint reached");
@@ -406,8 +443,8 @@ app.get("/verify-code/:email", async (req, res) => {
             console.log(`Sending new verification code to ${email}...`);
             const emailResponse = await resend.emails.send({
                 from: 'onboarding@resend.dev', // Replace with your actual sender email address
-                to: 'email', // The email to which the code should be sent
-                //to: 'meschum2@asu.edu',
+                //to: 'email', // The email to which the code should be sent
+                to: 'meschum2@asu.edu',
                 subject: 'StayWell Verification Code',
                 html: `<strong>Your new verification code is: ${newVerificationCode}</strong>`,
             });
