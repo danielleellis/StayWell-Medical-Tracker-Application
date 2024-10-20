@@ -308,6 +308,7 @@ const CalendarScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        <Text style={styles.heading}>S T A Y W E L L</Text>
         <View style={styles.calendarContainer}>
           <Calendar
             style={{ width: "100%", height: calendarHeight }} // make width 100% of the container
@@ -403,10 +404,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: "2%",
   },
-
+  heading: {
+    fontSize: 30,
+    marginTop: "10%",
+    color: colors.blue,
+    fontFamily: fonts.regular,
+    textAlign: "center",
+  },
   calendarContainer: {
     marginBottom: "6%",
-    marginTop: "1%",
+    //marginTop: "1%",
     width: "100%",
   },
   dateContainer: {
