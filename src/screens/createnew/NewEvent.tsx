@@ -116,7 +116,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.heading}>Create Event</Text>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("Events")}
+          onPress={() => navigation.navigate("Calendar")}
           style={styles.backButton}
         >
           <Text style={styles.backButtonText}>{"BACK"}</Text>
