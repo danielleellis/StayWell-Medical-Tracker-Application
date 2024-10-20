@@ -36,9 +36,10 @@ import axios, { AxiosError } from "axios";
 import { Calendar } from "react-native-calendars";
 import { format, parseISO, isSameDay } from "date-fns";
 import { colors, fonts } from "../../constants/constants";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import NewEvent from "../createnew/NewEvent";
 
 const { width, height } = Dimensions.get("window");
 
@@ -80,7 +81,7 @@ const isSameDayEvent = (eventDate: string, selectedDate: string) => {
 //          MAIN COMPONENT
 // -----------------------------------
 
-const CalendarScreen: React.FC = () => {
+const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const currentDate = new Date().toLocaleDateString("en-CA");
   const [selectedDate, setSelectedDate] = useState<string>(currentDate);
   const [currentDateDisplay, setCurrentDateDisplay] = useState<string>(
@@ -248,7 +249,7 @@ const CalendarScreen: React.FC = () => {
   };
 
   const createNewEvent = () => {
-    //  logic added after
+    navigation.navigate("NewEvent");
   };
 
   // -----------------------------------
