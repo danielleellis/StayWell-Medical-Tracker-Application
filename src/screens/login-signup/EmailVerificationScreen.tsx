@@ -43,7 +43,8 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
   const handleVerifyEmail = () => {
     const verificationCode = code1 + code2 + code3 + code4;
     dispatch(verifyEmail(verificationCode));
-    navigation.navigate("ProfileSetup");
+    navigation.navigate("../tabs/ProfileSetup", { from: "signup" });
+
   };
 
   const handleResendCode = async () => {
@@ -67,7 +68,7 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => navigation.navigate("SignUp")}
+        onPress={() => navigation.navigate("ProfileSetup", { from: "signup" })}
         style={styles.backButton}
       >
         <Text style={styles.backButtonText}>{"BACK"}</Text>

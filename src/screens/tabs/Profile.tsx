@@ -36,7 +36,10 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate("Settings");
     };
 
-    // Fetch profile data and image when component mounts
+    const handleEditProfile = () => {
+        navigation.navigate("ProfileSetup", { from: "profile" });
+    };
+
     useEffect(() => {
         const fetchProfileData = async () => {
             if (!userID) return;
@@ -44,9 +47,9 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             try {
                 const response = await axios.get(`${serverEndpoint}/users/${userID}`);
                 if (response.data.user) {
-                    setProfileData(response.data.user); // Assuming `user` key exists
+                    setProfileData(response.data.user);
                 } else {
-                    setProfileData(response.data); // If no `user` key, use direct response
+                    setProfileData(response.data);
                 }
             } catch (error) {
                 console.error("Error fetching profile data:", error);
@@ -58,7 +61,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             if (!userID) return;
 
             try {
-                const key = `${userID}`; // Use the correct key
+                const key = `${userID}`;
                 const response = await axios.get(`${serverEndpoint}/get-image`, {
                     params: { key },
                 });
@@ -70,7 +73,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 }
             } catch (error) {
                 if (axios.isAxiosError(error) && error.response?.status === 404) {
-                    setFetchedImageUrl(null); // Default to placeholder if not found
+                    setFetchedImageUrl(null);
                 } else {
                     console.error("Error fetching image:", error);
                 }
@@ -81,7 +84,6 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         fetchProfileImage();
     }, [userID]);
 
-    // Render a loading state while fetching data
     if (!profileData) {
         return <Text style={{ fontFamily: fonts.regular }}>Loading...</Text>;
     }
@@ -97,7 +99,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                         : require("../../../assets/images/Temp-Profile-Picture.png")
                 }
                 style={styles.profileImage}
-                onError={() => setFetchedImageUrl(null)} // If there is an error loading, fallback to default
+                onError={() => setFetchedImageUrl(null)}
             />
 
             <Text style={styles.username}>{profileData.username}</Text>
@@ -118,6 +120,10 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                     <Text style={styles.infoText}>{profileData.phoneNumber}</Text>
                 </View>
             </View>
+
+            <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
+                <Text style={styles.editProfileText}>Edit Profile</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={handleViewFriends}>
                 <Text style={styles.buttonText}>View Friends List</Text>
@@ -224,5 +230,15 @@ const styles = StyleSheet.create({
     signOutButtonText: {
         color: "red",
         fontFamily: fonts.regular,
+    },
+    editProfileButton: {
+        alignSelf: "center",
+        marginTop: 10,
+    },
+    editProfileText: {
+        fontSize: 14,
+        fontFamily: fonts.regular,
+        color: colors.blue,
+        textDecorationLine: "underline",
     },
 });
