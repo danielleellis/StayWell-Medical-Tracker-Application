@@ -19,14 +19,17 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
+  Text,
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  Text,
   Dimensions,
   TouchableOpacity,
   Modal,
   TextInput,
+  Button,
+  Image,
+  Alert,
 } from "react-native";
 import configData from "../../../config.json";
 import axios, { AxiosError } from "axios";
@@ -34,6 +37,8 @@ import { Calendar } from "react-native-calendars";
 import { format, parseISO, isSameDay } from "date-fns";
 import { colors, fonts } from "../../constants/constants";
 import { useFocusEffect } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const { width, height } = Dimensions.get("window");
 
@@ -242,6 +247,10 @@ const CalendarScreen: React.FC = () => {
     setModalVisible(false);
   };
 
+  const createNewEvent = () => {
+    //  logic added after
+  };
+
   // -----------------------------------
   //            POP-UP MODAL
   // -----------------------------------
@@ -345,6 +354,16 @@ const CalendarScreen: React.FC = () => {
           />
         </View>
 
+        <TouchableOpacity style={styles.button} onPress={createNewEvent}>
+          <View style={styles.row}>
+            <Image
+              source={require("../../../assets/images/plus-icon.png")}
+              style={styles.plusIcon}
+            />
+            <Text style={styles.buttonText}>Create New Event</Text>
+          </View>
+        </TouchableOpacity>
+
         <View style={styles.dateContainer}>
           <Text style={styles.currentDate}>
             Events for {currentDateDisplay}
@@ -402,18 +421,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: "2%",
+    paddingTop: "5%",
   },
   heading: {
     fontSize: 30,
-    marginTop: "10%",
+    marginTop: "5%",
     color: colors.blue,
     fontFamily: fonts.regular,
     textAlign: "center",
   },
   calendarContainer: {
-    marginBottom: "6%",
-    //marginTop: "1%",
+    marginTop: "1%",
     width: "100%",
   },
   dateContainer: {
@@ -585,6 +603,33 @@ const styles = StyleSheet.create({
     color: colors.white,
     textAlign: "center",
     fontSize: 14,
+  },
+
+  //styling for create event button
+  button: {
+    padding: 5,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: "2%",
+    backgroundColor: colors.white,
+    flexDirection: "row",
+  },
+  buttonText: {
+    color: colors.blue,
+    fontSize: 16,
+    fontFamily: "JosefinSans-Bold",
+    alignItems: "center",
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  plusIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 5,
   },
 });
 
