@@ -13,6 +13,9 @@ import { AppDispatch, RootState } from "../../redux/store";
 import { verifyEmail } from "../../redux/slices/authSlice";
 import { useFonts } from "expo-font";
 import { colors, fonts } from "../../constants/constants";
+import axios from 'axios';
+import configData from "../../../config.json";
+const serverEndpoint = configData.API_ENDPOINT;
 
 const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
   navigation,
@@ -43,9 +46,22 @@ const EmailVerificationScreen: React.FC<{ navigation: any }> = ({
     navigation.navigate("ProfileSetup");
   };
 
-  const handleResendCode = () => {
-    // Implement the logic to resend the verification code to the user's email
-    console.log("Resend verification code to:", email);
+  const handleResendCode = async () => {
+      try {
+          const response = await axios.get(`${serverEndpoint}/verify-code/${email}`);
+
+          if (response.status === 200) {
+              // Show success message to user
+              console.log("Verification code resent successfully");
+              alert("A new verification code has been sent to your email.");
+          } else {
+              console.error('Failed to resend verification code:', response.data);
+              alert("Failed to resend verification code. Please try again later.");
+          }
+      } catch (error) {
+          console.error('An error occurred while resending the verification code:', error);
+          alert("Network error. Please check your connection and try again.");
+      }
   };
 
   return (

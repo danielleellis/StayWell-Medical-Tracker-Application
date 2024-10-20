@@ -138,6 +138,11 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                     const updatedUserData = { ...userData, userID: userID, password: hashedPassword };
 
                     dispatch(signUp(updatedUserData));
+
+                    // Send the verification code after successful signup
+                    await sendVerificationCode(email);
+
+                    // Navigate to EmailVerification screen
                     navigation.navigate('EmailVerification');
                     console.log('Sign up successful. UserData:', updatedUserData);
                 } else {
@@ -151,7 +156,8 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     const sendVerificationCode = async (email: string) => {
         try {
-            const response = await axios.put(`${serverEndpoint}/api/verify-code/${email}`);
+            console.log("Requesting to send verification code to server.js");
+            const response = await axios.put(`${serverEndpoint}/verify-code/${email}`);
 
             if (response.status === 200) {
                 setVerificationCodeSent(true);

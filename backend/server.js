@@ -37,6 +37,10 @@ const upload = multer({
     { name: "pdf", maxCount: 1 }      // Allow only one PDF
 ]);
 
+// Resend used for verification codes sent in emails
+const { Resend } = require('resend');
+const resend = new Resend(String(process.env.EMAIL_API_KEY));
+
 // ==============================================================================
 // Functions for connection of MYSQL database
 // ==============================================================================
@@ -260,11 +264,15 @@ app.post("/signup", async (req, res) => {
         const userID = generateRandomID(10);
         console.log("Generated userID:", userID);
 
+        // Generate a random 4-digit verification code
+        const verificationCode = Math.floor(1000 + Math.random() * 9000);  // Random 4-digit code
+        console.log("Generated verification code:", verificationCode);
+
         const sql =
-            "INSERT INTO Users (userID, firstName, lastName, email, password, profilePhoto) VALUES (?, ?, ?, ?, ?, ?)";
+            "INSERT INTO Users (userID, firstName, lastName, email, password, profilePhoto, verificationCode) VALUES (?, ?, ?, ?, ?, ?, ?)";
         connection.query(
             sql,
-            [userID, firstName, lastName, email, hashedPassword, profilePhoto],
+            [userID, firstName, lastName, email, hashedPassword, profilePhoto, verificationCode],
             (err) => {
                 if (err) {
                     console.log(
@@ -366,35 +374,65 @@ app.get("/profile/:userID", async (req, res) => {
 // Functions for email verification and forgot password codes
 // ==============================================================================
 
-// Endpoint to retrieve verification code for a specific email
-app.get("/verify-code/:email", (req, res) => {
-    console.log("//verify-code/:email endpoint reached");
+// Endpoint to send and generate a new verification code for a specific email
+app.get("/verify-code/:email", async (req, res) => {
+    console.log("/verify-code/:email endpoint reached");
+
+    // Get email from the request parameters
     const email = req.params.email;
 
-    const sql = "SELECT verificationCode FROM Users WHERE email = ?";
-    connection.query(sql, [email], (err, results) => {
+    // Generate a new random 4-digit verification code
+    const newVerificationCode = Math.floor(1000 + Math.random() * 9000);  // Generates a 4-digit number
+    console.log(`Generated new verification code: ${newVerificationCode}`);
+
+    // SQL query to update the new verification code in the database
+    const updateSql = "UPDATE Users SET verificationCode = ? WHERE email = ?";
+    connection.query(updateSql, [newVerificationCode, email], async (err, results) => {
         if (err) {
-            console.error("Error retrieving verification code:", err.message);
-            return res.status(500).json({ error: err.message });
+            console.error(`Error updating verification code for ${email}:`, err.message);
+            return res.status(500).json({ error: 'Internal server error' });
         }
 
-        if (results.length === 0) {
-            console.log("User not found");
-            return res.status(404).json({ error: "User not found" });
+        // If no user is found with the given email
+        if (results.affectedRows === 0) {
+            console.log(`User with email ${email} not found`);
+            return res.status(404).json({ error: `User with email ${email} not found` });
         }
 
-        console.log("Verification code retrieved successfully");
-        res.status(200).json({ verificationCode: results[0].verificationCode });
+        console.log(`Verification code updated for ${email}:`, newVerificationCode);
+
+        // Send the new verification code via email
+        try {
+            console.log(`Sending new verification code to ${email}...`);
+            const emailResponse = await resend.emails.send({
+                from: 'onboarding@resend.dev', // Replace with your actual sender email address
+                to: 'email', // The email to which the code should be sent
+                //to: 'meschum2@asu.edu',
+                subject: 'StayWell Verification Code',
+                html: `<strong>Your new verification code is: ${newVerificationCode}</strong>`,
+            });
+
+            console.log(`Email sent to ${email} successfully`);
+            return res.status(200).json({ message: 'New verification code sent via email!', data: emailResponse });
+        } catch (error) {
+            console.error(`Error sending verification code to ${email}:`, error.message);
+            return res.status(500).json({ error: 'Failed to send verification code via email' });
+        }
     });
 });
+
 
 // Endpoint to update verification code for a specific email
 app.put("/update-verify-code", (req, res) => {
     console.log("/update-verify-code endpoint reached");
-    const { email, verificationCode } = req.body;
+    const { email } = req.body;
+
+    // Generate a new random 4-digit verification code
+    const newVerificationCode = Math.floor(1000 + Math.random() * 9000); // Generates a 4-digit number
+    console.log("Generated new verification code:", newVerificationCode);
 
     const sql = "UPDATE Users SET verificationCode = ? WHERE email = ?";
-    connection.query(sql, [verificationCode, email], (err, results) => {
+    connection.query(sql, [newVerificationCode, email], (err, results) => {
         if (err) {
             console.error("Error updating verification code:", err.message);
             return res.status(500).json({ error: err.message });
@@ -406,9 +444,10 @@ app.put("/update-verify-code", (req, res) => {
         }
 
         console.log("Verification code updated successfully");
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true, newVerificationCode }); // Optionally include the new code in the response for testing
     });
 });
+
 
 // ==============================================================================
 // Documents page
