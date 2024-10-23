@@ -40,6 +40,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import NewEvent from "../createnew/NewEvent";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
 const { width, height } = Dimensions.get("window");
 
@@ -98,6 +99,8 @@ const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   //      AND HANDLER FUNCTIONS
   // -----------------------------------
 
+  const user = useSelector((state: RootState) => state.auth.user);
+  const userID = user?.userID; // get userID from Redux
   const serverEndpoint = configData.API_ENDPOINT;
 
   // Fetch events from the server
@@ -112,24 +115,32 @@ const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       if (response.status === 200) {
         const formattedEvents: Event[] = response.data.events.map(
-          (event: any) => ({
-            eventID: event.eventID,
-            eventName: event.eventName,
-            color: event.color,
-            isPublic: event.isPublic === 1, // convert int to boolean
-            viewableBy: event.viewableBy,
-            notes: event.notes,
-            streakDays: event.streakDays,
-            reminder: event.reminder,
-            startTime: event.startTime,
-            endTime: event.endTime,
-            allDay: event.allDay === 1, // convert int to boolean
-            eventType: event.eventType,
-            calendarID: event.calendarID,
-            userID: event.userID,
-            completed: event.completed === 1, // convert int to boolean
-            formattedDate: formatDate(event.startTime),
-          })
+          (event: any) => {
+            const utcStartTime = fromZonedTime(event.startTime, "UTC"); // Convert to UTC
+            const localStartTime = toZonedTime(
+              utcStartTime,
+              Intl.DateTimeFormat().resolvedOptions().timeZone
+            ); // Convert to local time
+
+            return {
+              eventID: event.eventID,
+              eventName: event.eventName,
+              color: event.color,
+              isPublic: event.isPublic === 1, // convert int to boolean
+              viewableBy: event.viewableBy,
+              notes: event.notes,
+              streakDays: event.streakDays,
+              reminder: event.reminder,
+              startTime: format(localStartTime, "yyyy-MM-dd HH:mm:ss"), // Format for display
+              endTime: event.endTime,
+              allDay: event.allDay === 1, // convert int to boolean
+              eventType: event.eventType,
+              calendarID: event.calendarID,
+              userID: event.userID,
+              completed: event.completed === 1, // convert int to boolean
+              formattedDate: format(localStartTime, "MMMM dd, yyyy"), // Format for display
+            };
+          }
         );
 
         // Set the formatted events
@@ -148,12 +159,12 @@ const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   // Fetch events every time the screen is focused
-  // Hard-coded for now - will replace with dynamic userID
   useFocusEffect(
     useCallback(() => {
-      const userID = "C5vj8Ibdks";
-      fetchEvents(userID);
-    }, [])
+      if (userID) {
+        fetchEvents(userID);
+      }
+    }, [userID]) // userID is a dependency
   );
 
   // Filter events based on selected date
