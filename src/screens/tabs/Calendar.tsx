@@ -40,7 +40,6 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import NewEvent from "../createnew/NewEvent";
-import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
 const { width, height } = Dimensions.get("window");
 
@@ -115,32 +114,24 @@ const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       if (response.status === 200) {
         const formattedEvents: Event[] = response.data.events.map(
-          (event: any) => {
-            const utcStartTime = fromZonedTime(event.startTime, "UTC"); // Convert to UTC
-            const localStartTime = toZonedTime(
-              utcStartTime,
-              Intl.DateTimeFormat().resolvedOptions().timeZone
-            ); // Convert to local time
-
-            return {
-              eventID: event.eventID,
-              eventName: event.eventName,
-              color: event.color,
-              isPublic: event.isPublic === 1, // convert int to boolean
-              viewableBy: event.viewableBy,
-              notes: event.notes,
-              streakDays: event.streakDays,
-              reminder: event.reminder,
-              startTime: format(localStartTime, "yyyy-MM-dd HH:mm:ss"), // Format for display
-              endTime: event.endTime,
-              allDay: event.allDay === 1, // convert int to boolean
-              eventType: event.eventType,
-              calendarID: event.calendarID,
-              userID: event.userID,
-              completed: event.completed === 1, // convert int to boolean
-              formattedDate: format(localStartTime, "MMMM dd, yyyy"), // Format for display
-            };
-          }
+          (event: any) => ({
+            eventID: event.eventID,
+            eventName: event.eventName,
+            color: event.color,
+            isPublic: event.isPublic === 1, // convert int to boolean
+            viewableBy: event.viewableBy,
+            notes: event.notes,
+            streakDays: event.streakDays,
+            reminder: event.reminder,
+            startTime: event.startTime,
+            endTime: event.endTime,
+            allDay: event.allDay === 1, // convert int to boolean
+            eventType: event.eventType,
+            calendarID: event.calendarID,
+            userID: event.userID,
+            completed: event.completed === 1, // convert int to boolean
+            formattedDate: formatDate(event.startTime),
+          })
         );
 
         // Set the formatted events
@@ -169,9 +160,18 @@ const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   // Filter events based on selected date
   const filterEvents = (selectedDate: string) => {
+    const selectedDateStartOfDay = new Date(selectedDate);
+    selectedDateStartOfDay.setHours(0, 0, 0, 0); // start of the day
+
+    const selectedDateEndOfDay = new Date(selectedDate);
+    selectedDateEndOfDay.setHours(23, 59, 59, 999); // end of the day
+
     const filtered = events.filter((event) => {
-      // Compare event start time with selected date
-      return isSameDayEvent(event.startTime, selectedDate);
+      const eventStartTime = new Date(event.startTime); // convert startTime to Date object
+      return (
+        eventStartTime >= selectedDateStartOfDay &&
+        eventStartTime <= selectedDateEndOfDay
+      );
     });
 
     console.log("Filtered events:", filtered);
