@@ -1,19 +1,55 @@
-import React from 'react';
-import { TextInput, View, StyleSheet, TextStyle, ViewStyle, TouchableOpacity, Image } from 'react-native';
-import { colors } from '../constants/constants';
+import React from "react";
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import { colors } from "../constants/constants";
 
 type InputProps = {
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
   style?: ViewStyle | TextStyle;
   isPassword?: boolean;
   togglePasswordVisibility?: () => void;
-  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoCorrect?: boolean;
-  textContentType?: 'none' | 'URL' | 'addressCity' | 'addressCityAndState' | 'addressState' | 'countryName' | 'creditCardNumber' | 'emailAddress' | 'familyName' | 'fullStreetAddress' | 'givenName' | 'jobTitle' | 'location' | 'middleName' | 'name' | 'namePrefix' | 'nameSuffix' | 'nickname' | 'organizationName' | 'postalCode' | 'streetAddressLine1' | 'streetAddressLine2' | 'sublocality' | 'telephoneNumber' | 'username' | 'password' | 'newPassword' | 'oneTimeCode';
+  textContentType?:
+    | "none"
+    | "URL"
+    | "addressCity"
+    | "addressCityAndState"
+    | "addressState"
+    | "countryName"
+    | "creditCardNumber"
+    | "emailAddress"
+    | "familyName"
+    | "fullStreetAddress"
+    | "givenName"
+    | "jobTitle"
+    | "location"
+    | "middleName"
+    | "name"
+    | "namePrefix"
+    | "nameSuffix"
+    | "nickname"
+    | "organizationName"
+    | "postalCode"
+    | "streetAddressLine1"
+    | "streetAddressLine2"
+    | "sublocality"
+    | "telephoneNumber"
+    | "username"
+    | "password"
+    | "newPassword"
+    | "oneTimeCode";
 };
 
 const Input: React.FC<InputProps> = ({
@@ -21,11 +57,11 @@ const Input: React.FC<InputProps> = ({
   value,
   onChangeText,
   secureTextEntry = false,
-  keyboardType = 'default',
+  keyboardType = "default",
   style,
   isPassword = false,
   togglePasswordVisibility,
-  autoCapitalize = 'none',
+  autoCapitalize = "none",
   autoCorrect,
   textContentType,
 }) => {
@@ -34,7 +70,7 @@ const Input: React.FC<InputProps> = ({
       <TextInput
         style={styles.input}
         placeholder={placeholder}
-        placeholderTextColor={colors.lightblue}
+        placeholderTextColor={colors.blue}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
@@ -44,9 +80,16 @@ const Input: React.FC<InputProps> = ({
         textContentType={textContentType}
       />
       {isPassword && (
-        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+        <TouchableOpacity
+          onPress={togglePasswordVisibility}
+          style={styles.eyeIcon}
+        >
           <Image
-            source={secureTextEntry ? require('../../assets/images/eye-off.png') : require('../../assets/images/eye.png')}
+            source={
+              secureTextEntry
+                ? require("../../assets/images/eye-off.png")
+                : require("../../assets/images/eye.png")
+            }
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -58,8 +101,8 @@ const Input: React.FC<InputProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: colors.lightblue,
     borderRadius: 10,
@@ -67,8 +110,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     padding: 10,
-    fontFamily: 'JosefinSans-Regular',
-    color: colors.blue,
+    fontFamily: "JosefinSans-Regular",
+    color: colors.black,
   },
   eyeIcon: {
     padding: 10,
