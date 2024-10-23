@@ -1,13 +1,9 @@
-import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Alert, Switch, FlatList} from "react-native";
+import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Alert, FlatList} from "react-native";
 import { colors, fonts } from "../../constants/constants";
 import Input from "../../components/Input";
 import React, { useState } from "react";
-import DateTimePicker from '@react-native-community/datetimepicker';
-
-
 import axios from "axios";
 import configData from "../../../config.json";
-import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [habitName, setHabitName] = useState("");
@@ -23,78 +19,6 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
     {id:'7', title:'S'},
 ]
 
-  const [allDay, setAllDay] = useState(false);
-  
-  // recurring
-  const [recurring, setRecurring] = useState(false);
-
-  const toggleRecurring = () => {
-    setRecurring((recurring) => !recurring);
-  };
-
-  //mode??
-  const [mode, setMode] = useState('date');
-
-  //start date, declare vars and set up show/hide functions
-  const [startDate, setStartDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(new Date());
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
-
-  const showMode = (currentMode: any) => {
-    setShowStartDatePicker(true);
-    setMode(currentMode);
-  }; 
-
-  //when start date button clicked and user selects date it'll close the picker
-  const onChangeStartDate = (event: any, selectedDate: any) => {
-    const currentStart = selectedDate;
-    setStartDate(currentStart);
-    setShowStartDatePicker(false);
-  }; 
-
-  //show start time picker
-  const showStartTimeMode = (currentMode: any) => {
-    setShowStartTimePicker(true);
-  }; 
-
-  //when start time button clicked and user selects time it'll close the picker
-  const onChangeStartTime = (event: any, selectedDate: any) => {
-    const currentStart = selectedDate;
-    setStartTime(currentStart);
-    setShowStartTimePicker(false);
-  }; 
-  
-  // end date
-  const [endDate, setEndDate] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
-
-  //when end date button clicked and user selects date it'll close the picker
-  const onChangeEndDate = (event: any, selectedDate: any) => {
-    const currentStart = selectedDate;
-    setEndDate(currentStart);
-    setShowEndDatePicker(false);
-  }; 
-
-  //show end date picker
-  const showEndDateMode = (currentMode: any) => {
-    setShowEndDatePicker(true);
-  }; 
-
-  //show end time picker
-  const showEndTimeMode = (currentMode: any) => {
-    setShowEndTimePicker(true);
-  }; 
-
-  //when end time button clicked and user selects time it'll close the picker
-  const onChangeEndTime = (event: any, selectedDate: any) => {
-    const currentEnd = selectedDate;
-    setEndTime(currentEnd);
-    setShowEndTimePicker(false);
-  }; 
-  
   const serverEndpoint = configData.API_ENDPOINT;
 
   //save habit
@@ -107,8 +31,7 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      
+    <SafeAreaView style={styles.container}> 
       <View style={styles.innerContainer}>
       <Text style={styles.heading}>Create Habit</Text>
       
@@ -157,83 +80,6 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
       />
       */}
         
-
-      
-
-{/*
-commenting out for now to try a different format
-<View style= {styles.dateContainer}>
-      
-        <View style= {styles.testContainer}>
-          <TouchableOpacity style={styles.clockButton} onPress={() => showMode('date')}>
-            <Text style={styles.clockText}>Start Date</Text>
-          </TouchableOpacity>
-          {showStartDatePicker && (<DateTimePicker
-            mode={"date"}
-            display="default" 
-            value = {startDate}
-            onChange={onChangeStartDate}
-            />)}
-          <Text style={styles.regularText}>{startDate.toLocaleDateString()}</Text> 
-        </View>
-
-        <View style= {styles.testContainer}>
-          <TouchableOpacity style={styles.clockButton} onPress={showStartTimeMode}>
-            <Text style={styles.clockText}>Start Time</Text>
-          </TouchableOpacity>
-          {showStartTimePicker && (<DateTimePicker
-            mode="time"
-            display="default" 
-            value = {startTime}
-            onChange={onChangeStartTime}
-            />)}
-          <Text style={styles.regularText}>{startTime.toLocaleTimeString()}</Text>
-        </View> 
-
-
-        <View style= {styles.testContainer}>
-          <TouchableOpacity style={styles.clockButton} onPress={showEndDateMode}>
-            <Text style={styles.clockText}>End Date</Text>
-          </TouchableOpacity>
-          {showEndDatePicker && (<DateTimePicker
-            mode="date"
-            display="default" 
-            value = {endDate}
-            onChange={onChangeEndDate}
-            />)}
-          <Text style={styles.regularText}>{endDate.toLocaleDateString()}</Text> 
-        </View>
-
-        <View style= {styles.testContainer}>
-          <TouchableOpacity style={styles.clockButton} onPress={showEndTimeMode}>
-            <Text style={styles.clockText}>End Time</Text>
-          </TouchableOpacity>
-          {showEndTimePicker && (<DateTimePicker
-            mode="time"
-            display="default" 
-            value = {endTime}
-            onChange={onChangeEndTime}
-            />)}
-          <Text style={styles.regularText}>{endTime.toLocaleTimeString()}</Text>
-        </View>
-
-      </View>
-
-
-      <View style={styles.testContainer}>
-        <Text style={styles.regularText}>Recurring</Text>
-        <Switch
-          trackColor={{ false: colors.grey, true: colors.grey }}
-          thumbColor={recurring ? colors.white : colors.white}
-          ios_backgroundColor={colors.grey}
-          onValueChange={toggleRecurring}
-          value={recurring}
-          />
-      </View>
-
-
-*/}
-      
       <View style={styles.saveContainer}>
         <TouchableOpacity style={styles.saveButton} onPress={saveHabit}>
           <Text style={styles.saveButtonText}>Save</Text>
@@ -304,11 +150,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     margin: '10%'
   },
-  dateContainer:{
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: 'baseline',
-  },
   backButton: {
     position: "absolute",
     top: '3%',
@@ -329,16 +170,6 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.regular,
     margin: '5%'
-  },
-  clockText: {
-    color: colors.blue,
-    fontSize: 14,
-    fontFamily: fonts.bold,
-    padding: '3%',
-  }, 
-  clockButton: {
-    borderRadius: 20,
-    backgroundColor: colors.white,
   },
   item:{
     backgroundColor: 'white',
