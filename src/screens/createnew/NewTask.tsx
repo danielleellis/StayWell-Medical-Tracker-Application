@@ -1,8 +1,9 @@
-import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Alert} from "react-native";
+import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Alert, Switch, FlatList} from "react-native";
 import { colors, fonts } from "../../constants/constants";
 import Input from "../../components/Input";
 import React, { useState } from "react";
 import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 import axios from "axios";
 import configData from "../../../config.json";
@@ -10,10 +11,26 @@ import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [habitName, setHabitName] = useState("");
+  const [description, setDescription] = useState("");
+  const [emoji, setEmoji] = useState("");
+  const freqDays = [
+    {id:'1', title:'S'},
+    {id:'2', title:'M'},
+    {id:'3', title:'T'},
+    {id:'4', title:'W'},
+    {id:'5', title:'T'},
+    {id:'6', title:'F'},
+    {id:'7', title:'S'},
+]
+
   const [allDay, setAllDay] = useState(false);
   
   // recurring
   const [recurring, setRecurring] = useState(false);
+
+  const toggleRecurring = () => {
+    setRecurring((recurring) => !recurring);
+  };
 
   //mode??
   const [mode, setMode] = useState('date');
@@ -48,7 +65,6 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
     setShowStartTimePicker(false);
   }; 
   
-
   // end date
   const [endDate, setEndDate] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
@@ -79,7 +95,6 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
     setShowEndTimePicker(false);
   }; 
   
-
   const serverEndpoint = configData.API_ENDPOINT;
 
   //save habit
@@ -88,9 +103,7 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
       Alert.alert("Error", "Habit name is required");
       return;
   }
-
     navigation.navigate("Habits");
-
   }
 
   return (
@@ -114,7 +127,42 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
         style={styles.input}
       />   
 
-      <View style= {styles.dateContainer}>
+      <Input
+        placeholder="Description"
+        value={description}
+        onChangeText={setDescription}
+        autoCapitalize="words"
+        style={styles.inputDescription}
+      />
+
+      <Input
+        placeholder="Emoji"
+        value={emoji}
+        onChangeText={setEmoji}
+        autoCapitalize="words"
+        style={styles.inputEmoji}
+      />
+
+      {/*
+        <FlatList
+        data={freqDays}
+        horizontal={true}
+        keyExtractor={item => item.id}
+        renderItem={({item}) =>(
+        <View style={styles.item}>
+          <TouchableOpacity>
+            <Text style={styles.title}>{item.title}</Text> 
+          </TouchableOpacity>
+        </View>)}     
+      />
+      */}
+        
+
+      
+
+{/*
+commenting out for now to try a different format
+<View style= {styles.dateContainer}>
       
         <View style= {styles.testContainer}>
           <TouchableOpacity style={styles.clockButton} onPress={() => showMode('date')}>
@@ -171,6 +219,21 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       </View>
 
+
+      <View style={styles.testContainer}>
+        <Text style={styles.regularText}>Recurring</Text>
+        <Switch
+          trackColor={{ false: colors.grey, true: colors.grey }}
+          thumbColor={recurring ? colors.white : colors.white}
+          ios_backgroundColor={colors.grey}
+          onValueChange={toggleRecurring}
+          value={recurring}
+          />
+      </View>
+
+
+*/}
+      
       <View style={styles.saveContainer}>
         <TouchableOpacity style={styles.saveButton} onPress={saveHabit}>
           <Text style={styles.saveButtonText}>Save</Text>
@@ -186,7 +249,7 @@ export default NewTask;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "flex-start",
     alignItems: "center",
     paddingTop: '5%',
@@ -196,12 +259,12 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: colors.white,
     fontFamily: fonts.regular,
-    marginTop:'10%',
+    marginTop:'15%',
     padding: '10%'
   },
   innerContainer: {
-    flex: 1,
-    justifyContent: "center",
+    flexGrow: 1,
+    justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: colors.blue,
     width:'90%',
@@ -209,9 +272,21 @@ const styles = StyleSheet.create({
     margin:'10%'
   },
   input: {
-    width: '85%',
+    width: '90%',
     backgroundColor: colors.white,
     margin:'3%'
+  },
+  inputDescription: {
+    width: '90%',
+    height: '15%',
+    backgroundColor: colors.white,
+    margin:'3%'
+  },
+  inputEmoji: {
+    width: '20%',
+    backgroundColor: colors.white,
+    margin:'3%',
+    justifyContent: 'flex-start'
   },
   saveButton: {
     borderRadius: 10,
@@ -247,6 +322,7 @@ const styles = StyleSheet.create({
   testContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: '2%',
   },
   regularText: {
     fontSize: 16,
@@ -263,5 +339,19 @@ const styles = StyleSheet.create({
   clockButton: {
     borderRadius: 20,
     backgroundColor: colors.white,
+  },
+  item:{
+    backgroundColor: 'white',
+    alignContent: 'center',
+    //padding: '5%',
+    //margin: '4%', 
+    borderRadius: 10,
+    height: 'auto',
+    width: 'auto'
+},
+  title:{
+    fontSize:16,
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
   });
