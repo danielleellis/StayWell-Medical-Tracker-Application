@@ -912,7 +912,7 @@ app.post("/events", async (req, res) => {
         completed,
     } = req.body;
 
-    // check to ensure required fields are filled
+    // Check to ensure required fields are filled
     if (!eventName || !startTime || !userID) {
         return res.status(400).json({ error: "Missing required event data" });
     }
