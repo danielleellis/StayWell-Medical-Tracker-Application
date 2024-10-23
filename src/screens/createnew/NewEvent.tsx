@@ -36,6 +36,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [userID, setUserID] = useState("");
   const [completed, setCompleted] = useState(false);
   const [recurring, setRecurring] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
   const [startDate, setStartDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
@@ -88,7 +89,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  // handle the end date when allDay is true
+  // handles endDate when allDay is true
   useEffect(() => {
     if (allDay) {
       const nextDay = new Date(startDate);
@@ -98,6 +99,17 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
       setEndDate(startDate); // reset endDate if allDay is false
     }
   }, [allDay, startDate]);
+
+  // handles recurring events
+  const toggleDay = (day: string) => {
+    setSelectedDays((prev) => {
+      if (prev.includes(day)) {
+        return prev.filter((d) => d !== day); // remove if already selected
+      } else {
+        return [...prev, day]; // add if not selected
+      }
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -249,6 +261,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             style={styles.input}
           />
 
+          {/* All Day Event toggle */}
           <View style={styles.switchContainer}>
             <Text style={styles.label}>All Day Event</Text>
             <Switch
@@ -257,14 +270,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             />
           </View>
 
-          <View style={styles.switchContainer}>
-            <Text style={styles.label}>Public</Text>
-            <Switch
-              value={isPublic}
-              onValueChange={(value) => setIsPublic(value)}
-            />
-          </View>
-
+          {/* Recurring Event toggle */}
           <View style={styles.switchContainer}>
             <Text style={styles.label}>Recurring</Text>
             <Switch
@@ -273,6 +279,36 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             />
           </View>
 
+          {/* Recurring Event Details */}
+          {recurring && (
+            <View style={styles.recurrenceContainer}>
+              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                (day, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.dayButton,
+                      selectedDays.includes(day) && styles.selectedDayButton,
+                    ]}
+                    onPress={() => toggleDay(day)}
+                  >
+                    <Text style={styles.dayButtonText}>{day}</Text>
+                  </TouchableOpacity>
+                )
+              )}
+            </View>
+          )}
+
+          {/* Public Event toggle */}
+          <View style={styles.switchContainer}>
+            <Text style={styles.label}>Public</Text>
+            <Switch
+              value={isPublic}
+              onValueChange={(value) => setIsPublic(value)}
+            />
+          </View>
+
+          {/* Completed Event toggle */}
           <View style={styles.switchContainer}>
             <Text style={styles.label}>Completed</Text>
             <Switch
@@ -422,5 +458,28 @@ const styles = StyleSheet.create({
   pickerLabel: {
     textAlign: "left",
     margin: "2%",
+  },
+  recurrenceContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 15,
+  },
+  recurrenceTitle: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: colors.black,
+  },
+  dayButton: {
+    padding: 8,
+    margin: 4,
+    borderRadius: 10,
+    backgroundColor: colors.white,
+  },
+  dayButtonText: {
+    color: colors.blue,
+    fontSize: 16,
+  },
+  selectedDayButton: {
+    backgroundColor: colors.green,
   },
 });
