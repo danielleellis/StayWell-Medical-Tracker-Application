@@ -40,6 +40,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import NewEvent from "../createnew/NewEvent";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
 const { width, height } = Dimensions.get("window");
 
@@ -70,7 +71,9 @@ type Event = {
 // -----------------------------------
 
 const formatDate = (dateString: string) => {
-  return format(parseISO(dateString), "MMMM dd, yyyy");
+  const utcDate = parseISO(dateString);
+  const zonedDate = toZonedTime(utcDate, "UTC");
+  return format(zonedDate, "MMMM dd, yyyy");
 };
 
 const isSameDayEvent = (eventDate: string, selectedDate: string) => {
@@ -161,13 +164,13 @@ const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   // Filter events based on selected date
   const filterEvents = (selectedDate: string) => {
     const selectedDateStartOfDay = new Date(selectedDate);
-    selectedDateStartOfDay.setHours(0, 0, 0, 0); // start of the day
+    selectedDateStartOfDay.setHours(0, 0, 0, 0); // Set to the start of the day
 
     const selectedDateEndOfDay = new Date(selectedDate);
-    selectedDateEndOfDay.setHours(23, 59, 59, 999); // end of the day
+    selectedDateEndOfDay.setHours(23, 59, 59, 999); // Set to the end of the day
 
     const filtered = events.filter((event) => {
-      const eventStartTime = new Date(event.startTime); // convert startTime to Date object
+      const eventStartTime = new Date(event.startTime); // Convert startTime to Date object
       return (
         eventStartTime >= selectedDateStartOfDay &&
         eventStartTime <= selectedDateEndOfDay
