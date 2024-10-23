@@ -13,8 +13,10 @@ import {
 } from "react-native";
 import { colors, fonts } from "../../constants/constants";
 import Input from "../../components/Input";
-import React, { useState } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import React, { useState, useEffect } from "react";
+import DateTimePicker, {
+  Event as RNEvent,
+} from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { ColorPicker } from "react-native-color-picker";
 import axios from "axios";
@@ -31,7 +33,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [reminder, setReminder] = useState("");
   const [eventType, setEventType] = useState("");
   const [calendarID, setCalendarID] = useState("");
-  const [userID, setUserID] = useState(""); // Assuming this comes from a logged-in user
+  const [userID, setUserID] = useState("");
   const [completed, setCompleted] = useState(false);
   const [recurring, setRecurring] = useState(false);
 
@@ -45,6 +47,10 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
   const serverEndpoint = configData.API_ENDPOINT;
 
   const saveEvent = async () => {
@@ -52,7 +58,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
       Alert.alert("Error", "Please fill in all required fields");
       return;
     }
-
     try {
       const response = await axios.post(`${serverEndpoint}/events`, {
         eventName,
@@ -82,6 +87,17 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
       Alert.alert("Error", "Failed to create event");
     }
   };
+
+  // handle the end date when allDay is true
+  useEffect(() => {
+    if (allDay) {
+      const nextDay = new Date(startDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      setEndDate(nextDay);
+    } else {
+      setEndDate(startDate); // reset endDate if allDay is false
+    }
+  }, [allDay, startDate]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -122,15 +138,17 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             )}
 
             {/* Start Time */}
-            <TouchableOpacity
-              style={styles.halfClockButton}
-              onPress={() => setShowStartTimePicker(true)}
-            >
-              <Text style={styles.centeredText}>
-                Start Time: {"\n"}
-                {startTime.toLocaleTimeString()}
-              </Text>
-            </TouchableOpacity>
+            {!allDay && (
+              <TouchableOpacity
+                style={styles.halfClockButton}
+                onPress={() => setShowStartTimePicker(true)}
+              >
+                <Text style={styles.centeredText}>
+                  Start Time: {"\n"}
+                  {formatTime(startTime)}
+                </Text>
+              </TouchableOpacity>
+            )}
             {showStartTimePicker && (
               <DateTimePicker
                 mode="time"
@@ -169,15 +187,17 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             )}
 
             {/* End Time */}
-            <TouchableOpacity
-              style={styles.halfClockButton}
-              onPress={() => setShowEndTimePicker(true)}
-            >
-              <Text style={styles.centeredText}>
-                End Time: {"\n"}
-                {endTime.toLocaleTimeString()}
-              </Text>
-            </TouchableOpacity>
+            {!allDay && (
+              <TouchableOpacity
+                style={styles.halfClockButton}
+                onPress={() => setShowEndTimePicker(true)}
+              >
+                <Text style={styles.centeredText}>
+                  End Time: {"\n"}
+                  {formatTime(endTime)}
+                </Text>
+              </TouchableOpacity>
+            )}
             {showEndTimePicker && (
               <DateTimePicker
                 mode="time"
