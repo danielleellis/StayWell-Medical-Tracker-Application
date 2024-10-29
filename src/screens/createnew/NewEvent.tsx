@@ -100,6 +100,17 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   }, [allDay, startDate]);
 
+  // Set the initial startTime and endTime
+  useEffect(() => {
+    const now = new Date();
+    setStartDate(now);
+    setStartTime(now);
+    const initialEndTime = new Date(now);
+    initialEndTime.setHours(now.getHours() + 1); // set end time to 1 hour after start time
+    setEndTime(initialEndTime);
+    setEndDate(now);
+  }, []);
+
   // handles recurring events
   const toggleDay = (day: string) => {
     setSelectedDays((prev) => {
