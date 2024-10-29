@@ -223,44 +223,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             )}
           </View>
 
-          {/* Event Type Picker */}
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Event Type:</Text>
-            <Picker
-              selectedValue={eventType}
-              onValueChange={(itemValue) => setEventType(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="Appointment" value="appointment" />
-              <Picker.Item label="Task" value="task" />
-              <Picker.Item label="Habit" value="habit" />
-            </Picker>
-          </View>
-
-          {/* Reminder Picker */}
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Reminder:</Text>
-            <Picker
-              selectedValue={reminder}
-              onValueChange={(itemValue) => setReminder(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="None" value="none" />
-              <Picker.Item label="10 minutes before" value="10m" />
-              <Picker.Item label="30 minutes before" value="30m" />
-              <Picker.Item label="1 hour before" value="1h" />
-              <Picker.Item label="1 day before" value="1d" />
-            </Picker>
-          </View>
-
-          {/* Notes Input */}
-          <Input
-            placeholder="Notes"
-            value={notes}
-            onChangeText={setNotes}
-            style={styles.input}
-          />
-
           {/* All Day Event toggle */}
           <View style={styles.switchContainer}>
             <Text style={styles.label}>All Day Event</Text>
@@ -298,6 +260,44 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
               )}
             </View>
           )}
+
+          {/* Event Type Picker */}
+          <View style={styles.pickerContainer}>
+            <Text style={styles.pickerLabel}>Event Type:</Text>
+            <Picker
+              selectedValue={eventType}
+              onValueChange={(itemValue) => setEventType(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Appointment" value="appointment" />
+              <Picker.Item label="Task" value="task" />
+              <Picker.Item label="Habit" value="habit" />
+            </Picker>
+          </View>
+
+          {/* Reminder Picker */}
+          <View style={styles.pickerContainer}>
+            <Text style={styles.pickerLabel}>Reminder:</Text>
+            <Picker
+              selectedValue={reminder}
+              onValueChange={(itemValue) => setReminder(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="None" value="none" />
+              <Picker.Item label="10 minutes before" value="10m" />
+              <Picker.Item label="30 minutes before" value="30m" />
+              <Picker.Item label="1 hour before" value="1h" />
+              <Picker.Item label="1 day before" value="1d" />
+            </Picker>
+          </View>
+
+          {/* Notes Input */}
+          <Input
+            placeholder="Notes"
+            value={notes}
+            onChangeText={setNotes}
+            style={styles.input}
+          />
 
           {/* Public Event toggle */}
           <View style={styles.switchContainer}>
@@ -400,7 +400,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "10%",
+    marginTop: "5%",
+    marginBottom: "10%",
   },
   clockButton: {
     width: "85%",
