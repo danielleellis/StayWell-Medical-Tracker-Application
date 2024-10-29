@@ -55,10 +55,24 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const serverEndpoint = configData.API_ENDPOINT;
 
   const saveEvent = async () => {
-    if (!eventName || !calendarID || !eventType) {
+    if (!eventName || !eventType) {
       Alert.alert("Error", "Please fill in all required fields");
       return;
     }
+
+    // compare start and end time format
+    const startDateTime = new Date(startDate);
+    startDateTime.setHours(startTime.getHours(), startTime.getMinutes());
+
+    const endDateTime = new Date(endDate);
+    endDateTime.setHours(endTime.getHours(), endTime.getMinutes());
+
+    // ensure end date/time is before the start date/time
+    if (endDateTime < startDateTime) {
+      Alert.alert("Error", "End time must be after start time");
+      return;
+    }
+
     try {
       const response = await axios.post(`${serverEndpoint}/events`, {
         eventName,
