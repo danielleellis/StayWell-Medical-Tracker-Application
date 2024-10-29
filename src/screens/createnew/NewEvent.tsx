@@ -269,9 +269,9 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
               onValueChange={(itemValue) => setEventType(itemValue)}
               style={styles.picker}
             >
-              <Picker.Item label="Appointment" value="appointment" />
-              <Picker.Item label="Task" value="task" />
-              <Picker.Item label="Habit" value="habit" />
+              <Picker.Item label="One-Time Appointment" value="appointment" />
+              <Picker.Item label="Daily Task" value="task" />
+              <Picker.Item label="Recurring Habit" value="habit" />
             </Picker>
           </View>
 
