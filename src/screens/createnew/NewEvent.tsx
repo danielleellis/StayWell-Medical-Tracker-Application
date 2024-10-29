@@ -120,7 +120,16 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Input
             placeholder="Event Name"
             value={eventName}
-            onChangeText={setEventName}
+            onChangeText={(text) => {
+              if (text.length <= 30) {
+                setEventName(text);
+              } else {
+                Alert.alert(
+                  "Limit Reached",
+                  "Event Name cannot exceed 30 characters."
+                );
+              }
+            }}
             autoCapitalize="words"
             style={styles.input}
           />
