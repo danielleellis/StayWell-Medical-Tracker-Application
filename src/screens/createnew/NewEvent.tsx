@@ -310,7 +310,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
 
           {/* Completed Event toggle */}
           <View style={styles.switchContainer}>
-            <Text style={styles.label}>Completed</Text>
+            <Text style={styles.label}>Already Completed</Text>
             <Switch
               value={completed}
               onValueChange={(value) => setCompleted(value)}
