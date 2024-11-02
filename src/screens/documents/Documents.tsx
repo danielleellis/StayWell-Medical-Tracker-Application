@@ -198,18 +198,19 @@ const styles = StyleSheet.create({
     buttonText: {
         color: colors.blue,
         fontSize: 16,
-        fontFamily: "JosefinSans-Bold",
+        fontFamily: fonts.regular, // Consistent font
     },
     heading: {
         fontSize: 30,
         color: colors.blue,
         marginTop: "5%",
-        fontFamily: fonts.regular,
+        fontFamily: fonts.regular, // Consistent font
         textAlign: "center",
     },
     text: {
         fontSize: 20,
         color: colors.white,
+        fontFamily: fonts.regular, // Consistent font
     },
     documentsContainer: {
         paddingBottom: 20, // To ensure last item isn't hidden
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
         color: "gray",
         fontSize: 18,
         marginTop: 20,
-        fontFamily: fonts.regular,
+        fontFamily: fonts.regular, // Consistent font
     },
     row: {
         flexDirection: "row",
@@ -240,8 +241,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     documentIcon: {
-        width: 13,
-        height: 20,
+        width: 15,
+        height: 19,
         marginRight: 10,
     },
     lockIcon: {
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontFamily: fonts.regular, // Consistent font
         marginBottom: 10,
     },
     input: {

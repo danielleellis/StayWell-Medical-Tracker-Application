@@ -25,7 +25,7 @@ const DocumentNavigator: React.FC = () => {
             <DocumentStack.Screen
                 name="NewDocument"
                 component={NewDocument}
-                options={{ headerShown: true, title: "Upload New Document" }}
+                options={{ headerShown: false }} // Disable default header for NewDocument
             />
             <DocumentStack.Screen
                 name="LoadDocument"
