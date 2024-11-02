@@ -216,11 +216,11 @@ const styles = StyleSheet.create({
         paddingBottom: 20, // To ensure last item isn't hidden
     },
     documentContainer: {
-        backgroundColor: "#45A6FF",
+        backgroundColor: colors.blue,
         width: "90%",
         margin: 5,
         borderWidth: 2,
-        borderColor: "#6BB7ED",
+        borderColor: colors.blue,
         borderRadius: 20,
         padding: 15,
         flexDirection: "row",

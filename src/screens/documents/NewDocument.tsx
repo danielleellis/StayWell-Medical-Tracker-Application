@@ -195,9 +195,9 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
                     <View style={styles.row}>
                         <Text style={styles.switchText}>Password Protected</Text>
                         <Switch
-                            trackColor={{ false: "#B0B0B0", true: "#66B3FF" }}
+                            trackColor={{ false: colors.lightblue, true: colors.lightblue }}
                             thumbColor={isLocked ? colors.white : colors.white}
-                            ios_backgroundColor="#B0B0B0"
+                            ios_backgroundColor= {colors.lightblue}
                             onValueChange={toggleSwitch}
                             value={isLocked}
                         />
