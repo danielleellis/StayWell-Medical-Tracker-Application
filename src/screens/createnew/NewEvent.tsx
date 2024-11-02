@@ -60,14 +60,12 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
       return;
     }
 
-    // compare start and end time format
     const startDateTime = new Date(startDate);
     startDateTime.setHours(startTime.getHours(), startTime.getMinutes());
 
     const endDateTime = new Date(endDate);
     endDateTime.setHours(endTime.getHours(), endTime.getMinutes());
 
-    // ensure end date/time is before the start date/time
     if (endDateTime < startDateTime) {
       Alert.alert("Error", "End time must be after start time");
       return;
@@ -103,45 +101,47 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  // handles endDate when allDay is true
   useEffect(() => {
     if (allDay) {
       const nextDay = new Date(startDate);
       nextDay.setDate(nextDay.getDate() + 1);
       setEndDate(nextDay);
     } else {
-      setEndDate(startDate); // reset endDate if allDay is false
+      setEndDate(startDate);
     }
   }, [allDay, startDate]);
 
-  // Set the initial startTime and endTime
   useEffect(() => {
     const now = new Date();
     setStartDate(now);
     setStartTime(now);
     const initialEndTime = new Date(now);
-    initialEndTime.setHours(now.getHours() + 1); // set end time to 1 hour after start time
+    initialEndTime.setHours(now.getHours() + 1);
     setEndTime(initialEndTime);
     setEndDate(now);
   }, []);
 
-  // handles recurring events
   const toggleDay = (day: string) => {
     setSelectedDays((prev) => {
       if (prev.includes(day)) {
-        return prev.filter((d) => d !== day); // remove if already selected
+        return prev.filter((d) => d !== day);
       } else {
-        return [...prev, day]; // add if not selected
+        return [...prev, day];
       }
     });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
         <View style={styles.innerContainer}>
           <Text style={styles.heading}>Create Event</Text>
-
+            
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Calendar")}
+            style={styles.backButton} >
+            <Text style={styles.backButtonText}>{"BACK"}</Text>
+          </TouchableOpacity>
           <Input
             placeholder="Event Name"
             value={eventName}
@@ -159,9 +159,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             style={styles.input}
           />
 
-          {/* Start Date and Time Pickers */}
           <View style={styles.rowContainer}>
-            {/* Start Date */}
             <TouchableOpacity
               style={[styles.halfClockButton, { marginRight: 5 }]}
               onPress={() => setShowStartDatePicker(true)}
@@ -183,7 +181,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
               />
             )}
 
-            {/* Start Time */}
             {!allDay && (
               <TouchableOpacity
                 style={styles.halfClockButton}
@@ -208,9 +205,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             )}
           </View>
 
-          {/* End Date and Time Pickers */}
           <View style={styles.rowContainer}>
-            {/* End Date */}
             <TouchableOpacity
               style={[styles.halfClockButton, { marginRight: 5 }]}
               onPress={() => setShowEndDatePicker(true)}
@@ -232,7 +227,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
               />
             )}
 
-            {/* End Time */}
             {!allDay && (
               <TouchableOpacity
                 style={styles.halfClockButton}
@@ -257,7 +251,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             )}
           </View>
 
-          {/* All Day Event toggle */}
           <View style={styles.switchContainer}>
             <Text style={styles.label}>All Day Event</Text>
             <Switch
@@ -266,7 +259,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             />
           </View>
 
-          {/* Recurring Event toggle */}
           <View style={styles.switchContainer}>
             <Text style={styles.label}>Recurring</Text>
             <Switch
@@ -275,7 +267,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             />
           </View>
 
-          {/* Recurring Event Details */}
           {recurring && (
             <View style={styles.recurrenceContainer}>
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
@@ -295,7 +286,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             </View>
           )}
 
-          {/* Event Type Picker */}
           <View style={styles.pickerContainer}>
             <Text style={styles.pickerLabel}>Event Type:</Text>
             <Picker
@@ -309,7 +299,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             </Picker>
           </View>
 
-          {/* Reminder Picker */}
           <View style={styles.pickerContainer}>
             <Text style={styles.pickerLabel}>Reminder:</Text>
             <Picker
@@ -325,7 +314,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             </Picker>
           </View>
 
-          {/* Notes Input */}
           <Input
             placeholder="Notes"
             value={notes}
@@ -333,7 +321,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             style={styles.input}
           />
 
-          {/* Public Event toggle */}
           <View style={styles.switchContainer}>
             <Text style={styles.label}>Public</Text>
             <Switch
@@ -342,7 +329,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
             />
           </View>
 
-          {/* Completed Event toggle */}
           <View style={styles.switchContainer}>
             <Text style={styles.label}>Already Completed</Text>
             <Switch
@@ -350,31 +336,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
               onValueChange={(value) => setCompleted(value)}
             />
           </View>
-
-          {/* For future implementation
-          <Input
-            placeholder="Color"
-            value={color}
-            onChangeText={setColor}
-            style={styles.input}
-          />
-
-          <Input
-            placeholder="Viewable By"
-            value={viewableBy}
-            onChangeText={setViewableBy}
-            style={styles.input}
-          />
-            
-
-          <Input
-            placeholder="Streak Days"
-            value={streakDays.toString()}
-            onChangeText={(text) => setStreakDays(Number(text))}
-            keyboardType="numeric"
-            style={styles.input}
-          />
-            */}
 
           <View style={styles.saveContainer}>
             <TouchableOpacity style={styles.saveButton} onPress={saveEvent}>
@@ -392,13 +353,26 @@ export default NewEvent;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "stretch",
     backgroundColor: colors.white,
+    paddingTop: '5%',
   },
   scrollView: {
-    flex: 1,
     width: "100%",
+  },
+  contentContainerStyle: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+  },
+  backButton: {
+    position: "absolute",
+    top: '2%',
+    left: '5%'
+  },
+  backButtonText: {
+    fontSize: 18,
+    color: colors.white,
+    fontFamily: fonts.regular,
   },
   heading: {
     fontSize: 30,
@@ -408,12 +382,13 @@ const styles = StyleSheet.create({
     padding: "10%",
   },
   innerContainer: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
     backgroundColor: colors.blue,
-    width: "100%",
-    borderRadius: 15,
+    width: '90%',
+    borderRadius: 20,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginVertical: 20,
   },
   input: {
     width: "85%",
@@ -429,6 +404,7 @@ const styles = StyleSheet.create({
     margin: 10,
     color: colors.blue,
     fontWeight: "bold",
+    fontFamily: fonts.regular,
   },
   saveContainer: {
     flex: 1,
@@ -449,6 +425,7 @@ const styles = StyleSheet.create({
   clockText: {
     fontSize: 16,
     color: colors.blue,
+    fontFamily: fonts.regular,
   },
   switchContainer: {
     flexDirection: "row",
@@ -460,6 +437,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     color: colors.white,
+    fontFamily: fonts.regular,
   },
   pickerContainer: {
     width: "85%",
@@ -489,10 +467,14 @@ const styles = StyleSheet.create({
   },
   centeredText: {
     textAlign: "center",
+    fontFamily: fonts.regular,
+    color: colors.blue,
   },
   pickerLabel: {
     textAlign: "left",
-    margin: "2%",
+    margin: "3%",
+    fontFamily: fonts.regular,
+    color: colors.blue,
   },
   recurrenceContainer: {
     flexDirection: "row",
@@ -503,6 +485,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
     color: colors.black,
+    fontFamily: fonts.regular,
   },
   dayButton: {
     padding: 8,
@@ -513,6 +496,7 @@ const styles = StyleSheet.create({
   dayButtonText: {
     color: colors.blue,
     fontSize: 16,
+    fontFamily: fonts.regular,
   },
   selectedDayButton: {
     backgroundColor: colors.green,
