@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     margin: 10,
     color: colors.blue,
-    fontWeight: "bold",
+    fontFamily: fonts.regular,
   },
   saveContainer: {
     flex: 1,
