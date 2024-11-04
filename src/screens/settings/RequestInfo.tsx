@@ -1,11 +1,18 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { colors, fonts } from "../../constants/constants";
 
-const RequestInfo = () => {
+const RequestInfo:React.FC<{navigation:any}> = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Request Information</Text>
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate("SettingsHome")}
+        style={styles.backButton} >
+            <Text style={styles.backButtonText}>{"BACK"}</Text>
+      </TouchableOpacity>
+      
     </View>
   );
 };
@@ -18,10 +25,23 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     paddingTop: 50,
+    backgroundColor: colors.white,
   },
   heading: {
     fontSize: 30,
-    color: colors.black,
+    color: colors.blue,
+    fontFamily: fonts.regular,
+    padding: '5%'
+  },
+  backButton: {
+    position: "absolute",
+    top: '2%',
+    left: '5%',
+    paddingTop: '5%'
+  },
+  backButtonText: {
+    fontSize: 18,
+    color: colors.blue,
     fontFamily: fonts.regular,
   },
 });

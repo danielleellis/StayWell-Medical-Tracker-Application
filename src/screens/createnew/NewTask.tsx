@@ -1,4 +1,4 @@
-import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Alert, FlatList} from "react-native";
+import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Alert, ScrollView} from "react-native";
 import { colors, fonts } from "../../constants/constants";
 import Input from "../../components/Input";
 import React, { useState } from "react";
@@ -32,7 +32,8 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}> 
-      <View style={styles.innerContainer}>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}> 
+    <View style={styles.innerContainer}>
       <Text style={styles.heading}>Create Habit</Text>
       
       <TouchableOpacity
@@ -87,6 +88,8 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>  
 
       </View>
+    </ScrollView>
+      
     </SafeAreaView>
   );
 };
@@ -184,5 +187,13 @@ const styles = StyleSheet.create({
     fontSize:16,
     color: colors.blue,
     fontFamily: fonts.regular,
+  },
+  contentContainerStyle: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+  },
+  scrollView: {
+    width: "100%",
   },
   });

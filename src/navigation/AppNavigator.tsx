@@ -121,12 +121,12 @@ const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="Friends"
         component={FriendsListScreen}
-        options={{ headerShown: true }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="FriendProfile"
         component={FriendProfileScreen}
-        options={{ headerShown: true }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Dashboard"
