@@ -263,7 +263,7 @@ const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const createNewEvent = () => {
-    navigation.navigate("NewEvent");
+    navigation.navigate("NewEvent", { userID });
   };
 
   // -----------------------------------
