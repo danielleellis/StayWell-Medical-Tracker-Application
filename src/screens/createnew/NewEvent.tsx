@@ -21,6 +21,7 @@ import { Picker } from "@react-native-picker/picker";
 import { ColorPicker } from "react-native-color-picker";
 import axios from "axios";
 import configData from "../../../config.json";
+import { useRoute } from "@react-navigation/native";
 
 const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [eventName, setEventName] = useState("");
@@ -60,6 +61,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
       return;
     }
 
+    // start/end date and time together to match database
     const startDateTime = new Date(startDate);
     startDateTime.setHours(startTime.getHours(), startTime.getMinutes());
 
@@ -74,22 +76,19 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
     try {
       const response = await axios.post(`${serverEndpoint}/events`, {
         eventName,
-        startDate,
-        startTime,
-        endDate,
-        endTime,
-        allDay,
         color,
         isPublic,
         viewableBy,
         notes,
         streakDays,
         reminder,
+        startTime: startDateTime.toISOString(), // format for database compatibility
+        endTime: endDateTime.toISOString(),
+        allDay,
         eventType,
         calendarID,
         userID,
         completed,
-        recurring,
       });
 
       if (response.status === 200) {
@@ -97,6 +96,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate("Events");
       }
     } catch (error) {
+      console.error(error);
       Alert.alert("Error", "Failed to create event");
     }
   };
@@ -133,13 +133,17 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentContainerStyle}
+      >
         <View style={styles.innerContainer}>
           <Text style={styles.heading}>Create Event</Text>
-            
+
           <TouchableOpacity
             onPress={() => navigation.navigate("Calendar")}
-            style={styles.backButton} >
+            style={styles.backButton}
+          >
             <Text style={styles.backButtonText}>{"BACK"}</Text>
           </TouchableOpacity>
           <Input
@@ -354,7 +358,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingTop: '5%',
+    paddingTop: "5%",
   },
   scrollView: {
     width: "100%",
@@ -366,8 +370,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: '2%',
-    left: '5%'
+    top: "2%",
+    left: "5%",
   },
   backButtonText: {
     fontSize: 18,
@@ -383,11 +387,11 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     backgroundColor: colors.blue,
-    width: '90%',
+    width: "90%",
     borderRadius: 20,
     paddingVertical: 40,
     paddingHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 20,
   },
   input: {
