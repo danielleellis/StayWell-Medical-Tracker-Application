@@ -1,4 +1,4 @@
-import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Alert, ScrollView} from "react-native";
+import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Alert, ScrollView, Switch} from "react-native";
 import { colors, fonts } from "../../constants/constants";
 import Input from "../../components/Input";
 import React, { useState } from "react";
@@ -18,6 +18,17 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
     {id:'6', title:'F'},
     {id:'7', title:'S'},
 ]
+
+const [selectedDays, setSelectedDays] = useState<string[]>([]);
+const toggleDay = (day: string) => {
+  setSelectedDays((prev) => {
+    if (prev.includes(day)) {
+      return prev.filter((d) => d !== day);
+    } else {
+      return [...prev, day];
+    }
+  });
+};
 
   const serverEndpoint = configData.API_ENDPOINT;
 
@@ -66,6 +77,24 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
         autoCapitalize="words"
         style={styles.inputEmoji}
       />
+
+      <View style={styles.recurrenceContainer}>
+        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+          (day, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.dayButton,
+                selectedDays.includes(day) && styles.selectedDayButton,
+              ]}
+              onPress={() => toggleDay(day)}
+              >
+                <Text style={styles.dayButtonText}>{day}</Text>
+            </TouchableOpacity>
+          )
+        )}
+      </View>
+
 
       {/*
         <FlatList
@@ -123,18 +152,18 @@ const styles = StyleSheet.create({
   input: {
     width: '90%',
     backgroundColor: colors.white,
-    margin:'3%'
+    margin:'2%'
   },
   inputDescription: {
     width: '90%',
     height: '15%',
     backgroundColor: colors.white,
-    margin:'3%'
+    margin:'2%'
   },
   inputEmoji: {
     width: '20%',
     backgroundColor: colors.white,
-    margin:'3%',
+    margin:'2%',
     justifyContent: 'flex-start'
   },
   saveButton: {
@@ -195,5 +224,25 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: "100%",
+  },
+  recurrenceContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    padding:'5%',
+    justifyContent:'center'
+  },
+  dayButton: {
+    padding: '2%',
+    margin: '2%',
+    borderRadius: 15,
+    backgroundColor: colors.white,
+  },
+  dayButtonText: {
+    color: colors.blue,
+    fontSize: 16,
+    fontFamily: fonts.regular,
+  },
+  selectedDayButton: {
+    backgroundColor: colors.green,
   },
   });
