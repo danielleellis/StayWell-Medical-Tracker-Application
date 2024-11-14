@@ -25,32 +25,32 @@ const SettingsNavigator: React.FC = () => {
             <SettingsStack.Screen
                 name="SettingsHome"
                 component={SettingsScreen}
-                options={{ headerShown: true, title: "Settings" }}
+                options={{ headerShown: false, title: "Settings" }}
             />
             <SettingsStack.Screen
                 name="Account"
                 component={Account}
-                options={{ headerShown: true, title: "Account Settings" }}
+                options={{ headerShown: false, title: "Account Settings" }}
             />
             <SettingsStack.Screen
                 name="Privacy"
                 component={Privacy}
-                options={{ headerShown: true, title: "Privacy Settings" }}
+                options={{ headerShown: false, title: "Privacy Settings" }}
             />
             <SettingsStack.Screen
                 name="Notification"
                 component={Notification}
-                options={{ headerShown: true, title: "Notification Settings" }}
+                options={{ headerShown: false, title: "Notification Settings" }}
             />
             <SettingsStack.Screen
                 name="RequestInfo"
                 component={RequestInfo}
-                options={{ headerShown: true, title: "Request Information" }}
+                options={{ headerShown: false, title: "Request Information" }}
             />
             <SettingsStack.Screen
                 name="Deactivate"
                 component={Deactivate}
-                options={{ headerShown: true, title: "Deactivate Account" }}
+                options={{ headerShown: false, title: "Deactivate Account" }}
             />
         </SettingsStack.Navigator>
     );

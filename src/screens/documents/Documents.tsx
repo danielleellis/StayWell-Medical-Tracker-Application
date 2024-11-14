@@ -132,28 +132,29 @@ const styles = StyleSheet.create({
     buttonText: {
         color: colors.blue,
         fontSize: 16,
-        fontFamily: "JosefinSans-Bold",
+        fontFamily: fonts.regular, // Consistent font
     },
     heading: {
         fontSize: 30,
         color: colors.blue,
         marginTop: "5%",
-        fontFamily: fonts.regular,
+        fontFamily: fonts.regular, // Consistent font
         textAlign: "center",
     },
     text: {
         fontSize: 20,
         color: colors.white,
+        fontFamily: fonts.regular, // Consistent font
     },
     documentsContainer: {
         paddingBottom: 20, // To ensure last item isn't hidden
     },
     documentContainer: {
-        backgroundColor: "#45A6FF",
+        backgroundColor: colors.blue,
         width: "90%",
         margin: 5,
         borderWidth: 2,
-        borderColor: "#6BB7ED",
+        borderColor: colors.blue,
         borderRadius: 20,
         padding: 15,
         flexDirection: "row",
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
         color: "gray",
         fontSize: 18,
         marginTop: 20,
-        fontFamily: fonts.regular,
+        fontFamily: fonts.regular, // Consistent font
     },
     row: {
         flexDirection: "row",
@@ -174,8 +175,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     documentIcon: {
-        width: 13,
-        height: 20,
+        width: 15,
+        height: 19,
         marginRight: 10,
     },
     lockIcon: {
@@ -187,5 +188,37 @@ const styles = StyleSheet.create({
         width: 53,
         height: 52,
         margin: 10,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        width: "80%",
+        backgroundColor: "white",
+        borderRadius: 10,
+        padding: 20,
+        alignItems: "center",
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontFamily: fonts.regular, // Consistent font
+        marginBottom: 10,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "gray",
+        borderRadius: 5,
+        width: "100%",
+        padding: 10,
+        marginBottom: 15,
+        textAlign: "center",
+    },
+    modalButtons: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
     },
 });

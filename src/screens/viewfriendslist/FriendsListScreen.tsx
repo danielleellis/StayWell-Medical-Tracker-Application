@@ -27,6 +27,16 @@ const FriendsListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.headingContainer}> 
+        <Text style={styles.heading}>Friends List</Text>
+      </View>
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Profile")}
+        style={styles.backButton} >
+            <Text style={styles.backButtonText}>{"BACK"}</Text>
+      </TouchableOpacity>
+
       {friends.map((friend, index) => (
         <TouchableOpacity
           key={friend.id + index} // Combining id and index for uniqueness
@@ -43,17 +53,38 @@ const FriendsListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.white,
+      justifyContent: "flex-start",  
+      backgroundColor: colors.white,
   },
   friendContainer: {
     padding: 10,
     marginVertical: 8,
     backgroundColor: colors.white,
+    alignItems: 'center'
   },
   friendName: {
     fontSize: 18,
+  },
+  heading: {
+    fontSize: 30,
+    color: colors.blue,
+    fontFamily: fonts.regular,
+    padding: '5%'
+  },
+  headingContainer:{
+    alignItems: 'center',
+    paddingTop: '10%'
+  },
+  backButton: {
+    position: "absolute",
+    top: '2%',
+    left: '5%',
+    paddingTop: '5%'
+  },
+  backButtonText: {
+    fontSize: 18,
+    color: colors.blue,
+    fontFamily: fonts.regular,
   },
 });
 

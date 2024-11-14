@@ -1,7 +1,6 @@
 export const colors = {
   blue: "#45A6FF",
-  //green: "#B0DAB6", - too light, visibility issue
-  green: "#97C17F",
+  green: "#B0DAB6", //- too light, visibility issue
   white: "#FFFFFF",
   black: "#000000",
   grey: "#ccc",

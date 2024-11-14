@@ -687,3 +687,74 @@ app.put("/events/:eventID", async (req, res) => {
     }
 });
 
+// Endpoint to create a new event
+app.post("/events", async (req, res) => {
+    console.log("/events POST endpoint reached");
+    const {
+        eventName,
+        color,
+        isPublic,
+        viewableBy,
+        notes,
+        streakDays,
+        reminder,
+        startTime,
+        endTime,
+        allDay,
+        eventType,
+        calendarID,
+        userID,
+        completed,
+    } = req.body;
+
+    // Check to ensure required fields are filled
+    if (!eventName || !startTime || !userID) {
+        return res.status(400).json({ error: "Missing required event data" });
+    }
+
+    const sql = `
+        INSERT INTO Events 
+        (eventName, color, isPublic, viewableBy, notes, streakDays, reminder, startTime, endTime, allDay, eventType, calendarID, userID, completed)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    try {
+        const result = await new Promise((resolve, reject) => {
+            connection.query(
+                sql,
+                [
+                    eventName,
+                    color || null,
+                    isPublic ? 1 : 0,  // boolean
+                    viewableBy || null,
+                    notes || null,
+                    streakDays || null,
+                    reminder || null,
+                    startTime,
+                    endTime || null,
+                    allDay ? 1 : 0,  // boolean
+                    eventType || null,
+                    calendarID || null,
+                    userID,
+                    completed ? 1 : 0  // boolean
+                ],
+                (err, result) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                }
+            );
+        });
+
+        if (result.affectedRows > 0) {
+            res.status(201).json({ message: "Event created successfully", eventID: result.insertId });
+        } else {
+            res.status(500).json({ error: "Failed to create event" });
+        }
+    } catch (error) {
+        console.error("Error creating event:", error.message);
+        res.status(500).json({ error: "Error creating event" });
+    }
+});

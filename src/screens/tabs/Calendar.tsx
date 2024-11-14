@@ -19,21 +19,28 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
+  Text,
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  Text,
   Dimensions,
   TouchableOpacity,
   Modal,
   TextInput,
+  Button,
+  Image,
+  Alert,
 } from "react-native";
 import configData from "../../../config.json";
 import axios, { AxiosError } from "axios";
 import { Calendar } from "react-native-calendars";
 import { format, parseISO, isSameDay } from "date-fns";
 import { colors, fonts } from "../../constants/constants";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import NewEvent from "../createnew/NewEvent";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
 const { width, height } = Dimensions.get("window");
 
@@ -64,7 +71,9 @@ type Event = {
 // -----------------------------------
 
 const formatDate = (dateString: string) => {
-  return format(parseISO(dateString), "MMMM dd, yyyy");
+  const utcDate = parseISO(dateString);
+  const zonedDate = toZonedTime(utcDate, "UTC");
+  return format(zonedDate, "MMMM dd, yyyy");
 };
 
 const isSameDayEvent = (eventDate: string, selectedDate: string) => {
@@ -75,7 +84,7 @@ const isSameDayEvent = (eventDate: string, selectedDate: string) => {
 //          MAIN COMPONENT
 // -----------------------------------
 
-const CalendarScreen: React.FC = () => {
+const CalendarScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const currentDate = new Date().toLocaleDateString("en-CA");
   const [selectedDate, setSelectedDate] = useState<string>(currentDate);
   const [currentDateDisplay, setCurrentDateDisplay] = useState<string>(
@@ -92,6 +101,8 @@ const CalendarScreen: React.FC = () => {
   //      AND HANDLER FUNCTIONS
   // -----------------------------------
 
+  const user = useSelector((state: RootState) => state.auth.user);
+  const userID = user?.userID; // get userID from Redux
   const serverEndpoint = configData.API_ENDPOINT;
 
   // Fetch events from the server
@@ -142,19 +153,28 @@ const CalendarScreen: React.FC = () => {
   };
 
   // Fetch events every time the screen is focused
-  // Hard-coded for now - will replace with dynamic userID
   useFocusEffect(
     useCallback(() => {
-      const userID = "C5vj8Ibdks";
-      fetchEvents(userID);
-    }, [])
+      if (userID) {
+        fetchEvents(userID);
+      }
+    }, [userID]) // userID is a dependency
   );
 
   // Filter events based on selected date
   const filterEvents = (selectedDate: string) => {
+    const selectedDateStartOfDay = new Date(selectedDate);
+    selectedDateStartOfDay.setHours(0, 0, 0, 0); // Set to the start of the day
+
+    const selectedDateEndOfDay = new Date(selectedDate);
+    selectedDateEndOfDay.setHours(23, 59, 59, 999); // Set to the end of the day
+
     const filtered = events.filter((event) => {
-      // Compare event start time with selected date
-      return isSameDayEvent(event.startTime, selectedDate);
+      const eventStartTime = new Date(event.startTime); // Convert startTime to Date object
+      return (
+        eventStartTime >= selectedDateStartOfDay &&
+        eventStartTime <= selectedDateEndOfDay
+      );
     });
 
     console.log("Filtered events:", filtered);
@@ -242,6 +262,10 @@ const CalendarScreen: React.FC = () => {
     setModalVisible(false);
   };
 
+  const createNewEvent = () => {
+    navigation.navigate("NewEvent", { userID });
+  };
+
   // -----------------------------------
   //            POP-UP MODAL
   // -----------------------------------
@@ -308,6 +332,7 @@ const CalendarScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        <Text style={styles.heading}>S T A Y W E L L</Text>
         <View style={styles.calendarContainer}>
           <Calendar
             style={{ width: "100%", height: calendarHeight }} // make width 100% of the container
@@ -343,6 +368,16 @@ const CalendarScreen: React.FC = () => {
             }}
           />
         </View>
+
+        <TouchableOpacity style={styles.button} onPress={createNewEvent}>
+          <View style={styles.row}>
+            <Image
+              source={require("../../../assets/images/plus-icon.png")}
+              style={styles.plusIcon}
+            />
+            <Text style={styles.buttonText}>Create New Event</Text>
+          </View>
+        </TouchableOpacity>
 
         <View style={styles.dateContainer}>
           <Text style={styles.currentDate}>
@@ -401,11 +436,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: "2%",
+    paddingTop: "5%",
   },
-
+  heading: {
+    fontSize: 30,
+    marginTop: "5%",
+    color: colors.blue,
+    fontFamily: fonts.regular,
+    textAlign: "center",
+  },
   calendarContainer: {
-    marginBottom: "6%",
     marginTop: "1%",
     width: "100%",
   },
@@ -437,9 +477,9 @@ const styles = StyleSheet.create({
   eventContainer: {
     paddingHorizontal: "4%",
     paddingVertical: "3%",
-    shadowColor: colors.black,
+    shadowColor: colors.grey,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.8,
     shadowRadius: 3,
     elevation: 3,
     backgroundColor: "rgba(240, 240, 240, 0.1)",
@@ -449,16 +489,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: "3%",
+    marginBottom: "4%",
+    marginTop: "4%",
     paddingVertical: "4%",
     paddingHorizontal: "4%",
     borderRadius: 15,
-    backgroundColor: "rgba(69, 166, 255, 0.8)",
+    backgroundColor: "rgba(69, 166, 255, 0.7)",
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 3,
+    //elevation: 3,
   },
   titleText: {
     fontFamily: fonts.regular,
@@ -467,7 +508,6 @@ const styles = StyleSheet.create({
     marginLeft: "3%",
     flex: 1,
     textAlign: "left",
-    paddingTop: "1%",
   },
   indicator: {
     width: 18,
@@ -578,6 +618,33 @@ const styles = StyleSheet.create({
     color: colors.white,
     textAlign: "center",
     fontSize: 14,
+  },
+
+  //styling for create event button
+  button: {
+    padding: 5,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: "2%",
+    backgroundColor: colors.white,
+    flexDirection: "row",
+  },
+  buttonText: {
+    color: colors.blue,
+    fontSize: 16,
+    fontFamily: "JosefinSans-Bold",
+    alignItems: "center",
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  plusIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 5,
   },
 });
 

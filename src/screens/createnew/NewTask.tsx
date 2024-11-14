@@ -1,84 +1,34 @@
-import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Alert} from "react-native";
+import { Button, Text, View, StyleSheet, SafeAreaView, TouchableOpacity, Alert, ScrollView, Switch} from "react-native";
 import { colors, fonts } from "../../constants/constants";
 import Input from "../../components/Input";
 import React, { useState } from "react";
-import DateTimePicker from '@react-native-community/datetimepicker';
-
 import axios from "axios";
 import configData from "../../../config.json";
-import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [habitName, setHabitName] = useState("");
-  const [allDay, setAllDay] = useState(false);
-  
-  // recurring
-  const [recurring, setRecurring] = useState(false);
+  const [description, setDescription] = useState("");
+  const [emoji, setEmoji] = useState("");
+  const freqDays = [
+    {id:'1', title:'S'},
+    {id:'2', title:'M'},
+    {id:'3', title:'T'},
+    {id:'4', title:'W'},
+    {id:'5', title:'T'},
+    {id:'6', title:'F'},
+    {id:'7', title:'S'},
+]
 
-  //mode??
-  const [mode, setMode] = useState('date');
-
-  //start date, declare vars and set up show/hide functions
-  const [startDate, setStartDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(new Date());
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
-
-  const showMode = (currentMode: any) => {
-    setShowStartDatePicker(true);
-    setMode(currentMode);
-  }; 
-
-  //when start date button clicked and user selects date it'll close the picker
-  const onChangeStartDate = (event: any, selectedDate: any) => {
-    const currentStart = selectedDate;
-    setStartDate(currentStart);
-    setShowStartDatePicker(false);
-  }; 
-
-  //show start time picker
-  const showStartTimeMode = (currentMode: any) => {
-    setShowStartTimePicker(true);
-  }; 
-
-  //when start time button clicked and user selects time it'll close the picker
-  const onChangeStartTime = (event: any, selectedDate: any) => {
-    const currentStart = selectedDate;
-    setStartTime(currentStart);
-    setShowStartTimePicker(false);
-  }; 
-  
-
-  // end date
-  const [endDate, setEndDate] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
-
-  //when end date button clicked and user selects date it'll close the picker
-  const onChangeEndDate = (event: any, selectedDate: any) => {
-    const currentStart = selectedDate;
-    setEndDate(currentStart);
-    setShowEndDatePicker(false);
-  }; 
-
-  //show end date picker
-  const showEndDateMode = (currentMode: any) => {
-    setShowEndDatePicker(true);
-  }; 
-
-  //show end time picker
-  const showEndTimeMode = (currentMode: any) => {
-    setShowEndTimePicker(true);
-  }; 
-
-  //when end time button clicked and user selects time it'll close the picker
-  const onChangeEndTime = (event: any, selectedDate: any) => {
-    const currentEnd = selectedDate;
-    setEndTime(currentEnd);
-    setShowEndTimePicker(false);
-  }; 
-  
+const [selectedDays, setSelectedDays] = useState<string[]>([]);
+const toggleDay = (day: string) => {
+  setSelectedDays((prev) => {
+    if (prev.includes(day)) {
+      return prev.filter((d) => d !== day);
+    } else {
+      return [...prev, day];
+    }
+  });
+};
 
   const serverEndpoint = configData.API_ENDPOINT;
 
@@ -88,15 +38,13 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
       Alert.alert("Error", "Habit name is required");
       return;
   }
-
     navigation.navigate("Habits");
-
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      
-      <View style={styles.innerContainer}>
+    <SafeAreaView style={styles.container}> 
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}> 
+    <View style={styles.innerContainer}>
       <Text style={styles.heading}>Create Habit</Text>
       
       <TouchableOpacity
@@ -114,63 +62,54 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
         style={styles.input}
       />   
 
-      <View style= {styles.dateContainer}>
-      
-        <View style= {styles.testContainer}>
-          <TouchableOpacity style={styles.clockButton} onPress={() => showMode('date')}>
-            <Text style={styles.clockText}>Start Date</Text>
-          </TouchableOpacity>
-          {showStartDatePicker && (<DateTimePicker
-            mode={"date"}
-            display="default" 
-            value = {startDate}
-            onChange={onChangeStartDate}
-            />)}
-          <Text style={styles.regularText}>{startDate.toLocaleDateString()}</Text> 
-        </View>
+      <Input
+        placeholder="Description"
+        value={description}
+        onChangeText={setDescription}
+        autoCapitalize="words"
+        style={styles.inputDescription}
+      />
 
-        <View style= {styles.testContainer}>
-          <TouchableOpacity style={styles.clockButton} onPress={showStartTimeMode}>
-            <Text style={styles.clockText}>Start Time</Text>
-          </TouchableOpacity>
-          {showStartTimePicker && (<DateTimePicker
-            mode="time"
-            display="default" 
-            value = {startTime}
-            onChange={onChangeStartTime}
-            />)}
-          <Text style={styles.regularText}>{startTime.toLocaleTimeString()}</Text>
-        </View> 
+      <Input
+        placeholder="Emoji"
+        value={emoji}
+        onChangeText={setEmoji}
+        autoCapitalize="words"
+        style={styles.inputEmoji}
+      />
 
-
-        <View style= {styles.testContainer}>
-          <TouchableOpacity style={styles.clockButton} onPress={showEndDateMode}>
-            <Text style={styles.clockText}>End Date</Text>
-          </TouchableOpacity>
-          {showEndDatePicker && (<DateTimePicker
-            mode="date"
-            display="default" 
-            value = {endDate}
-            onChange={onChangeEndDate}
-            />)}
-          <Text style={styles.regularText}>{endDate.toLocaleDateString()}</Text> 
-        </View>
-
-        <View style= {styles.testContainer}>
-          <TouchableOpacity style={styles.clockButton} onPress={showEndTimeMode}>
-            <Text style={styles.clockText}>End Time</Text>
-          </TouchableOpacity>
-          {showEndTimePicker && (<DateTimePicker
-            mode="time"
-            display="default" 
-            value = {endTime}
-            onChange={onChangeEndTime}
-            />)}
-          <Text style={styles.regularText}>{endTime.toLocaleTimeString()}</Text>
-        </View>
-
+      <View style={styles.recurrenceContainer}>
+        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+          (day, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.dayButton,
+                selectedDays.includes(day) && styles.selectedDayButton,
+              ]}
+              onPress={() => toggleDay(day)}
+              >
+                <Text style={styles.dayButtonText}>{day}</Text>
+            </TouchableOpacity>
+          )
+        )}
       </View>
 
+
+      {/*
+        <FlatList
+        data={freqDays}
+        horizontal={true}
+        keyExtractor={item => item.id}
+        renderItem={({item}) =>(
+        <View style={styles.item}>
+          <TouchableOpacity>
+            <Text style={styles.title}>{item.title}</Text> 
+          </TouchableOpacity>
+        </View>)}     
+      />
+      */}
+        
       <View style={styles.saveContainer}>
         <TouchableOpacity style={styles.saveButton} onPress={saveHabit}>
           <Text style={styles.saveButtonText}>Save</Text>
@@ -178,6 +117,8 @@ const NewTask: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>  
 
       </View>
+    </ScrollView>
+      
     </SafeAreaView>
   );
 };
@@ -186,7 +127,7 @@ export default NewTask;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "flex-start",
     alignItems: "center",
     paddingTop: '5%',
@@ -196,12 +137,12 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: colors.white,
     fontFamily: fonts.regular,
-    marginTop:'10%',
+    marginTop:'15%',
     padding: '10%'
   },
   innerContainer: {
-    flex: 1,
-    justifyContent: "center",
+    flexGrow: 1,
+    justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: colors.blue,
     width:'90%',
@@ -209,9 +150,21 @@ const styles = StyleSheet.create({
     margin:'10%'
   },
   input: {
-    width: '85%',
+    width: '90%',
     backgroundColor: colors.white,
-    margin:'3%'
+    margin:'2%'
+  },
+  inputDescription: {
+    width: '90%',
+    height: '15%',
+    backgroundColor: colors.white,
+    margin:'2%'
+  },
+  inputEmoji: {
+    width: '20%',
+    backgroundColor: colors.white,
+    margin:'2%',
+    justifyContent: 'flex-start'
   },
   saveButton: {
     borderRadius: 10,
@@ -221,18 +174,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     margin: 10,
     color: colors.blue,
-    fontWeight: "bold",
+    fontFamily: fonts.regular,
   },
   saveContainer: {
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
     margin: '10%'
-  },
-  dateContainer:{
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: 'baseline',
   },
   backButton: {
     position: "absolute",
@@ -247,6 +195,7 @@ const styles = StyleSheet.create({
   testContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: '2%',
   },
   regularText: {
     fontSize: 16,
@@ -254,14 +203,46 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     margin: '5%'
   },
-  clockText: {
+  item:{
+    backgroundColor: 'white',
+    alignContent: 'center',
+    //padding: '5%',
+    //margin: '4%', 
+    borderRadius: 10,
+    height: 'auto',
+    width: 'auto'
+},
+  title:{
+    fontSize:16,
     color: colors.blue,
-    fontSize: 14,
-    fontFamily: fonts.bold,
-    padding: '3%',
-  }, 
-  clockButton: {
-    borderRadius: 20,
+    fontFamily: fonts.regular,
+  },
+  contentContainerStyle: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+  },
+  scrollView: {
+    width: "100%",
+  },
+  recurrenceContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    padding:'5%',
+    justifyContent:'center'
+  },
+  dayButton: {
+    padding: '2%',
+    margin: '2%',
+    borderRadius: 15,
     backgroundColor: colors.white,
+  },
+  dayButtonText: {
+    color: colors.blue,
+    fontSize: 16,
+    fontFamily: fonts.regular,
+  },
+  selectedDayButton: {
+    backgroundColor: colors.green,
   },
   });
