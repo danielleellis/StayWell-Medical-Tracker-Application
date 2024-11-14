@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { setupProfile } from "../../redux/slices/authSlice";
 import { useFonts } from "expo-font";
@@ -17,18 +17,26 @@ import * as ImagePicker from "expo-image-picker";
 import { colors, fonts } from "../../constants/constants";
 import axios from "axios";
 import configData from "../../../config.json";
-import { useSelector } from "react-redux";
 
-const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-    const [username, setUsername] = useState("");
-    const [pronouns, setPronouns] = useState("");
-    const [phone, setPhone] = useState("");
-    const [birthday, setBirthday] = useState("");
-    const [profilePhotoUri, setProfilePhotoUri] = useState<string | null>(null);
+const ProfileSetupScreen: React.FC<{ navigation: any, route: any }> = ({ navigation, route }) => {
+    // Access user data from Redux store
+    const user = useSelector((state: RootState) => state.auth.user);
+    const userID = user ? user.userID : null;
+
+    const { from } = route.params; // to determine whether to return to profile or go to calendar once done
+
+    // State for form fields
+    const [username, setUsername] = useState(user?.username || "");
+    const [pronouns, setPronouns] = useState(user?.pronouns || "");
+    const [phone, setPhone] = useState(user?.phone || "");
+    const [birthday, setBirthday] = useState(user?.birthday || "");
+    const [profilePhotoUri, setProfilePhotoUri] = useState<string | null>(user?.profilePhoto || null);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
     const dispatch = useDispatch<AppDispatch>();
     const serverEndpoint = configData.API_ENDPOINT;
 
+    // Load fonts
     const [loaded] = useFonts({
         "JosefinSans-Regular": require("../../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
         "JosefinSans-Bold": require("../../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
@@ -38,10 +46,18 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         return null;
     }
 
-    const user = useSelector((state: RootState) => state.auth.user);
-    const userID = user ? user.userID : null;
+    useEffect(() => {
+        if (user) {
+            setUsername(user.username || "");
+            setPronouns(user.pronouns || "");
+            setPhone(user.phone || "");
+            setBirthday(user.birthday || "");
+            setProfilePhotoUri(user.profilePhoto || null); // Use profile photo from Redux
+        }
+    }, [user]); // Only run when `user` changes
 
-    // Allows the user to select a photo when they click the profile-picture circle
+
+    // Function to allow user to select profile photo
     const handleProfilePhotoUpload = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
@@ -71,12 +87,11 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             pronouns,
             phone,
             birthday,
-            profilePhoto: null, // Initially null, we'll update if there's an image
+            profilePhoto: profilePhotoUri, // Use current profile photo URI
         };
 
         try {
-            if (profilePhotoUri) {
-                // Prepare the form data to upload the image
+            if (profilePhotoUri && profilePhotoUri !== user?.profilePhoto) {
                 const formData = new FormData();
                 formData.append("image", {
                     uri: profilePhotoUri,
@@ -91,9 +106,14 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
 
-                // Use uploaded image URL in user data
+                const newImageUrl = uploadResponse.data.imageUrl;
+
+                // Update Redux with the new image URL
                 userData.profilePhoto = uploadResponse.data.imageUrl;
+                setProfilePhotoUri(newImageUrl);
+                dispatch(setupProfile({ ...userData, profilePhoto: uploadResponse.data.imageUrl }));
             }
+
 
             // Submit the user data to the backend
             const response = await axios.put(
@@ -102,8 +122,18 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             );
 
             if (response.status === 200 && response.data.success) {
-                dispatch(setupProfile(userData));
-                navigation.navigate("Dashboard");
+                dispatch(setupProfile(userData)); // Update Redux
+
+                // Check how the user reached this screen and navigate accordingly
+                
+                if (from === "signup") {
+                    navigation.navigate("Dashboard");
+                } else {
+                    navigation.navigate("Dashboard", {
+                        screen: "Profile", // Target the Profile tab in the TabNavigator
+                    });
+
+                }
             } else {
                 console.error("Profile setup failed:", response.data);
             }
@@ -112,7 +142,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         }
     };
 
-    // Phone number formatting function
+    // Format phone number as (xxx) xxx-xxxx
     const formatPhoneNumber = (input: string) => {
         const cleanedInput = input.replace(/\D/g, "");
         let formattedInput = cleanedInput;
@@ -128,14 +158,11 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         return formattedInput;
     };
 
-    // Birthday formatting function
+    // Format birthday as MM/DD/YYYY
     const formatBirthday = (input: string) => {
-        // Remove all non-digit characters
         const cleanedInput = input.replace(/\D/g, "");
-
         let formattedInput = cleanedInput;
 
-        // Format MM/DD/YYYY as the user types
         if (cleanedInput.length > 2) {
             formattedInput = `${cleanedInput.slice(0, 2)}/`;
             if (cleanedInput.length > 4) {
@@ -145,25 +172,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             }
         }
 
-        // Return formatted input (MM/DD/YYYY)
         return formattedInput;
-    };
-
-    // Function to validate the formatted birthday (checks for valid month, day, and year)
-    const isValidBirthday = (input: string) => {
-        const [month, day, year] = input.split('/').map(Number);
-
-        // Check if the format is correct (MM/DD/YYYY)
-        if (input.length !== 10 || isNaN(month) || isNaN(day) || isNaN(year)) {
-            return false;
-        }
-
-        // Check if month, day, and year are valid
-        const isValidMonth = month >= 1 && month <= 12;
-        const isValidDay = day >= 1 && day <= 31;
-        const isValidYear = year >= 1900 && year <= new Date().getFullYear(); // Adjust year range as needed
-
-        return isValidMonth && isValidDay && isValidYear;
     };
 
     const validateForm = () => {
@@ -177,7 +186,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             newErrors.phone = "Please enter a valid 10-digit phone number";
         }
 
-        if (!/^(\d{2})\/(\d{2})\/(\d{4})$/.test(birthday) || !isValidBirthday(birthday)) {
+        if (!/^(\d{2})\/(\d{2})\/(\d{4})$/.test(birthday)) {
             newErrors.birthday = "Please enter a valid date in MM/DD/YYYY format";
         }
 
@@ -185,11 +194,16 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         return Object.keys(newErrors).length === 0;
     };
 
+    // Handle cancel to navigate back to the Profile screen
+    const handleCancel = () => {
+        navigation.navigate("Dashboard", { screen: "Profile" });
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Set Up Profile</Text>
 
-            {/* Only show selected image if it exists, otherwise show placeholder */}
+            {/* Show selected image or placeholder */}
             <TouchableOpacity onPress={handleProfilePhotoUpload}>
                 <Image
                     source={
@@ -208,12 +222,14 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 style={styles.input}
             />
             {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+
             <Input
                 placeholder="Pronouns (optional)"
                 value={pronouns}
                 onChangeText={setPronouns}
                 style={styles.input}
             />
+
             <Input
                 placeholder="Phone (xxx)-xxx-xxxx"
                 value={phone}
@@ -222,6 +238,7 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 style={styles.input}
             />
             {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+
             <Input
                 placeholder="Birthday MM/DD/YYYY"
                 value={birthday}
@@ -230,7 +247,15 @@ const ProfileSetupScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 style={styles.input}
             />
             {errors.birthday && <Text style={styles.errorText}>{errors.birthday}</Text>}
+
             <Button title="Save" onPress={handleProfileSetup} />
+
+            <Button
+                title="Cancel"
+                onPress={handleCancel}
+                buttonStyle={styles.redButton}
+                textStyle={styles.redButtonText}
+            />
         </View>
     );
 };
@@ -267,5 +292,28 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: -12,
         marginBottom: 16,
+    },
+    cancelButton: {
+        marginTop: 20,
+        padding: 10,
+        backgroundColor: "red",
+        borderRadius: 5,
+        alignItems: "center",
+    },
+    cancelButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontFamily: fonts.regular,
+    },
+    redButton: {
+        backgroundColor: "red",
+        marginTop: 20,
+        padding: 15,
+        borderRadius: 10,
+    },
+    redButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontFamily: 'JosefinSans-Bold',
     },
 });

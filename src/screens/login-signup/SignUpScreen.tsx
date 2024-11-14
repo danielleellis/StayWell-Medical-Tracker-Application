@@ -138,7 +138,12 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                     const updatedUserData = { ...userData, userID: userID, password: hashedPassword };
 
                     dispatch(signUp(updatedUserData));
-                    navigation.navigate('EmailVerification');
+
+                    //// Send the verification code after successful signup
+                    //await sendVerificationCode(email);
+
+                    // Navigate to CodeVerification screen
+                    navigation.navigate("CodeVerification", { from: "signup" });
                     console.log('Sign up successful. UserData:', updatedUserData);
                 } else {
                     console.error('Failed to sign up:', response.data);
@@ -151,7 +156,8 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     const sendVerificationCode = async (email: string) => {
         try {
-            const response = await axios.put(`${serverEndpoint}/api/verify-code/${email}`);
+            console.log("Requesting to send verification code to server.js");
+            const response = await axios.get(`${serverEndpoint}/verify-code/${email}`);
 
             if (response.status === 200) {
                 setVerificationCodeSent(true);
@@ -183,12 +189,12 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.navigate("Splash")}
-                style={styles.backButton}
-            >
-                <Text style={styles.backButtonText}>{"BACK"}</Text>
-            </TouchableOpacity>
+            {/*<TouchableOpacity*/}
+            {/*    onPress={() => navigation.navigate("Splash")}*/}
+            {/*    style={styles.backButton}*/}
+            {/*>*/}
+            {/*    <Text style={styles.backButtonText}>{"BACK"}</Text>*/}
+            {/*</TouchableOpacity>*/}
             <Image
                 source={require("../../../assets/images/sun.png")}
                 style={styles.logo}

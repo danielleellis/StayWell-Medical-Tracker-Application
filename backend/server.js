@@ -29,9 +29,22 @@
     const multer = require("multer");
     const upload = multer();
 
-    // ==============================================================================
-    // Functions for connection of MYSQL database
-    // ==============================================================================
+// Configure Multer to handle both images and a PDF
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10 MB
+}).fields([
+    { name: "images", maxCount: 15 }, // Allow up to 15 images
+    { name: "pdf", maxCount: 1 }      // Allow only one PDF
+]);
+
+// Resend used for verification codes sent in emails
+const { Resend } = require('resend');
+const resend = new Resend(String(process.env.EMAIL_API_KEY));
+
+// ==============================================================================
+// Functions for connection of MYSQL database
+// ==============================================================================
 
     // Start the server
     app.listen(port, () => {
@@ -181,29 +194,42 @@
         });
     });
 
-    // Endpoint to check if email is already taken
-    app.get("/check-email/:email", (req, res) => {
-        console.log("/check-email/:email endpoint reached");
-        const email = req.params.email;
-        console.log(`Checking email on sign up: ${email}`);
-        const sql = "SELECT * FROM Users WHERE email = ?";
-        connection.query(sql, [email], (err, results) => {
-            if (err) {
-                res.status(500).json({ error: err.message });
-                console.error("Error checking email:", err.message);
-                return;
-            }
-            if (results.length > 0) {
-                // Email is already taken
-                res.json({ taken: true });
-                console.log(`Email ${email} is already taken`);
-            } else {
-                // Email is available
-                res.json({ taken: false });
-                console.log(`Email ${email} is available`);
-            }
-        });
+// Endpoint to check if email is already taken
+app.get("/check-email/:email", (req, res) => {
+    console.log("/check-email/:email endpoint reached");
+    const email = req.params.email;
+    console.log(`Checking email on sign up: ${email}`);
+    const sql = "SELECT * FROM Users WHERE email = ?";
+
+    connection.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error("Error checking email:", err.message);
+            return res.status(500).json({
+                status: "error",
+                message: "An error occurred while checking the email. Please try again later.",
+                error: err.message
+            });
+        }
+
+        if (results.length > 0) {
+            // Email is already taken
+            console.log(`Email ${email} is already taken`);
+            return res.json({
+                status: "success",
+                taken: true,
+                message: `The email address ${email} is already in use.`
+            });
+        } else {
+            // Email is available
+            console.log(`Email ${email} is available`);
+            return res.json({
+                status: "success",
+                taken: false,
+                message: `The email address ${email} is available.`
+            });
+        }
     });
+});
 
     // ==============================================================================
     // Functions for posting info to database
@@ -252,41 +278,82 @@
             const userID = generateRandomID(10);
             console.log("Generated userID:", userID);
 
-            const sql =
-                "INSERT INTO Users (userID, firstName, lastName, email, password, profilePhoto) VALUES (?, ?, ?, ?, ?, ?)";
-            connection.query(
-                sql,
-                [userID, firstName, lastName, email, hashedPassword, profilePhoto],
-                (err) => {
-                    if (err) {
-                        console.log(
-                            `Error encountered during signup: ${err.message}`
-                        );
-                        return res.status(400).json({ error: err.message });
-                    }
-                    console.log(
-                        `Signup successful for ${userID}: ${firstName} ${lastName} ${email}`
-                    );
-                    res.status(200).json({ success: true, userID, hashedPassword });
-                }
-            );
-        } catch (error) {
-            console.log(`Error caught during signup: ${error.message}`);
-            res.status(500).json({ error: error.message });
-        }
-    });
+        // Generate a random 4-digit verification code
+        const verificationCode = Math.floor(1000 + Math.random() * 9000);  // Random 4-digit code
+        console.log("Generated verification code:", verificationCode);
 
-    // Endpoint to update user profile
-    app.put("/profile-setup", async (req, res) => {
-        console.log("/profile-setup endpoint reached");
-        const {
-            userID,
-            username,
-            pronouns = "",
-            phone,
-            birthday,
-            profilePhoto,
-        } = req.body;
+        const sql =
+            "INSERT INTO Users (userID, firstName, lastName, email, password, profilePhoto, verificationCode) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        connection.query(
+            sql,
+            [userID, firstName, lastName, email, hashedPassword, profilePhoto, verificationCode],
+            (err) => {
+                if (err) {
+                    console.log(
+                        `Error encountered during signup: ${err.message}`
+                    );
+                    return res.status(400).json({ error: err.message });
+                }
+                console.log(
+                    `Signup successful for ${userID}: ${firstName} ${lastName} ${email}`
+                );
+                res.status(200).json({ success: true, userID, hashedPassword });
+            }
+        );
+    } catch (error) {
+        console.log(`Error caught during signup: ${error.message}`);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Endpoint to change password of a registered user
+app.post("/change-password", async (req, res) => {
+    console.log("/change-password endpoint reached");
+    const { email, password } = req.body; // Get the email and new password from the request body
+
+    // Check if the email and password were provided
+    if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required." });
+    }
+
+    try {
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log(`Hashed password for ${email}:`, hashedPassword);
+
+        // Update the user's password in the database
+        const sql = "UPDATE Users SET password = ? WHERE email = ?";
+        connection.query(sql, [hashedPassword, email], (err, result) => {
+            if (err) {
+                console.log(`Error encountered during password change for ${email}: ${err.message}`);
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Check if any rows were affected (i.e., if the email exists)
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "User not found with this email." });
+            }
+
+            console.log(`Password changed successfully for ${email}`);
+            res.status(200).json({ success: true, message: "Password changed successfully." });
+        });
+    } catch (error) {
+        console.log(`Error caught during password change: ${error.message}`);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Endpoint to update user profile
+app.put("/profile-setup", async (req, res) => {
+    console.log("/profile-setup endpoint reached");
+    const {
+        userID,
+        username,
+        pronouns = "",
+        phone,
+        birthday,
+        profilePhoto,
+    } = req.body;
 
         console.log("Received userID:", userID);
         console.log("Received data:", {
@@ -358,132 +425,302 @@
     // Functions for email verification and forgot password codes
     // ==============================================================================
 
-    // Endpoint to retrieve verification code for a specific email
-    app.get("/verify-code/:email", (req, res) => {
-        console.log("//verify-code/:email endpoint reached");
-        const email = req.params.email;
+// Endpoint to send and generate a new verification code for a specific email
+app.get("/verify-code/:email", async (req, res) => {
+    console.log("/verify-code/:email endpoint reached");
 
-        const sql = "SELECT verificationCode FROM Users WHERE email = ?";
-        connection.query(sql, [email], (err, results) => {
+    const email = req.params.email;
+    const currentTime = new Date();
+
+    // Check the last resend time from the database
+    const checkTimeSql = "SELECT lastResendTime FROM Users WHERE email = ?";
+    connection.query(checkTimeSql, [email], (err, results) => {
+        if (err) {
+            console.error(`Error checking last resend time for ${email}:`, err.message);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0) {
+            console.log(`User with email ${email} not found`);
+            return res.status(404).json({ error: `User with email ${email} not found` });
+        }
+
+        const lastResendTime = results[0].lastResendTime ? new Date(results[0].lastResendTime) : null;
+
+        // Check if 2 minutes have passed since the last resend
+        if (lastResendTime && (currentTime - lastResendTime) < 120000) { // 120000 ms = 2 minutes
+            const waitTime = Math.ceil((120000 - (currentTime - lastResendTime)) / 1000);
+            console.log(`Cannot resend code. ${waitTime} seconds remaining before another code can be sent.`);
+            return res.status(429).json({ error: `Please wait ${waitTime} seconds before resending the code.` });
+        }
+
+        // Generate a new verification code and update database
+        const newVerificationCode = Math.floor(1000 + Math.random() * 9000);
+        console.log(`Generated new verification code: ${newVerificationCode}`);
+
+        const updateSql = "UPDATE Users SET verificationCode = ?, verificationAttempts = 0, lastResendTime = ? WHERE email = ?";
+        connection.query(updateSql, [newVerificationCode, currentTime, email], async (err, results) => {
             if (err) {
-                console.error("Error retrieving verification code:", err.message);
-                return res.status(500).json({ error: err.message });
-            }
-
-            if (results.length === 0) {
-                console.log("User not found");
-                return res.status(404).json({ error: "User not found" });
-            }
-
-            console.log("Verification code retrieved successfully");
-            res.status(200).json({ verificationCode: results[0].verificationCode });
-        });
-    });
-
-    // Endpoint to update verification code for a specific email
-    app.put("/update-verify-code", (req, res) => {
-        console.log("/update-verify-code endpoint reached");
-        const { email, verificationCode } = req.body;
-
-        const sql = "UPDATE Users SET verificationCode = ? WHERE email = ?";
-        connection.query(sql, [verificationCode, email], (err, results) => {
-            if (err) {
-                console.error("Error updating verification code:", err.message);
-                return res.status(500).json({ error: err.message });
+                console.error(`Error updating verification code for ${email}:`, err.message);
+                return res.status(500).json({ error: 'Internal server error' });
             }
 
             if (results.affectedRows === 0) {
-                console.log("User not found");
-                return res.status(404).json({ error: "User not found" });
+                console.log(`User with email ${email} not found`);
+                return res.status(404).json({ error: `User with email ${email} not found` });
             }
 
-            console.log("Verification code updated successfully");
-            res.status(200).json({ success: true });
+            console.log(`Verification code updated for ${email}:`, newVerificationCode);
+
+            // Send the new verification code via email
+            try {
+                console.log(`Sending new verification code to ${email}...`);
+                const emailResponse = await resend.emails.send({
+                    from: 'onboarding@resend.dev',
+                    to: 'meschum2@asu.edu',
+                    subject: 'StayWell Verification Code',
+                    html: `<strong>Your new verification code is: ${newVerificationCode}</strong>`,
+                });
+
+                console.log(`Email sent to ${email} successfully`);
+                return res.status(200).json({ message: 'New verification code sent via email!', data: emailResponse });
+            } catch (error) {
+                console.error(`Error sending verification code to ${email}:`, error.message);
+                return res.status(500).json({ error: 'Failed to send verification code via email' });
+            }
         });
     });
+});
 
-    // ==============================================================================
-    // Documents page
-    // ==============================================================================
-    app.post("/new-document", upload.array("images", 10), async (req, res) => {
-        const { userID, documentName, lockPasscode } = req.body;
+
+
+// Endpoint to verify if the user's entered code matches the one in the database
+app.post("/check-verification-code", (req, res) => {
+    console.log("/check-verification-code endpoint reached");
+
+    const { email, userVerificationCode } = req.body;
+
+    // Query to get stored verification code and attempts
+    const sql = "SELECT verificationCode, verificationAttempts FROM Users WHERE email = ?";
+    connection.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error("Error retrieving verification code from the database:", err.message);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0) {
+            console.log("User not found with the provided email");
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const { verificationCode: storedVerificationCode, verificationAttempts } = results[0];
+        console.log(`Code verification attempt ${verificationAttempts}: ${storedVerificationCode}`);
+
+        // Check if attempts have reached the maximum limit
+        if (verificationAttempts >= 5) {
+            console.log("Max verification attempts reached for this user");
+            return res.status(429).json({ error: "Max verification attempts reached. Please resend the code." });
+        }
+
+        if (parseInt(userVerificationCode, 10) === parseInt(storedVerificationCode, 10)) {
+            console.log("Verification code matched successfully");
+
+            // Reset attempts and lastResendTime after a successful verification
+            const resetSql = "UPDATE Users SET verificationAttempts = 0, lastResendTime = NULL WHERE email = ?";
+            connection.query(resetSql, [email], (err) => {
+                if (err) {
+                    console.error("Error resetting verification attempts and lastResendTime:", err.message);
+                    return res.status(500).json({ error: 'Internal server error' });
+                }
+                res.status(200).json({ message: "Verification successful!" });
+            });
+        } else {
+            console.log(`Verification code ${userVerificationCode} did not match.`);
+
+            // Increment verificationAttempts on incorrect code
+            const incrementAttemptsSql = "UPDATE Users SET verificationAttempts = verificationAttempts + 1 WHERE email = ?";
+            connection.query(incrementAttemptsSql, [email]);
+
+            return res.status(400).json({ error: "Invalid verification code" });
+        }
+    });
+});
+
+
+// ==============================================================================
+// Documents page
+// ==============================================================================
+// Endpoint to send request to create a new document with the current name
+app.post("/new-document", async (req, res) => {
+    console.log("new-document creation endpoint reached");
+    const { userID, documentName, lockPasscode } = req.body;
 
         if (!documentName || !userID) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        try {
-            // Insert the document into the Documents table
-            const insertDocumentSql = `INSERT INTO Documents (documentID, documentName, userID, lockPasscode) VALUES (?, ?, ?, ?)`;
-            const documentID = generateRandomID(10); // Generate unique documentID
-            connection.query(
-                insertDocumentSql,
-                [documentID, documentName, userID, lockPasscode],
-                (err) => {
-                    if (err) {
-                        console.error("Error inserting document:", err);
-                        return res
-                            .status(500)
-                            .json({ error: "Error inserting document" });
-                    }
+    try {
+        // Generate a unique documentID
+        const documentID = generateRandomID(10);
 
-                    // Upload images to S3 and save URLs in the Images table
-                    const promises = req.files.map((file) => {
-                        const imageID = generateRandomID(10); // Generate unique imageID
-                        const filePath = `users/${userID}/documents/${documentID}/${imageID}`;
+        // Insert the document into the Documents table
+        const insertDocumentSql = `INSERT INTO Documents (documentID, documentName, userID, lockPasscode) VALUES (?, ?, ?, ?)`;
+        connection.query(insertDocumentSql, [documentID, documentName, userID, lockPasscode], (err) => {
+            if (err) {
+                console.error("Error inserting document:", err);
+                return res.status(500).json({ error: "Error inserting document" });
+            }
+            console.log(`Created Document entry: ${documentID} : ${documentName}`);
+            res.status(200).json({ success: true, documentID });
+        });
+    } catch (error) {
+        console.error("Error creating document:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
-                        const params = {
-                            Bucket: s3_bucket,
-                            Key: filePath,
-                            Body: file.buffer,
-                            ContentType: file.mimetype,
-                        };
+// Endpoint to store new images or PDF
+app.post("/upload-files", upload, async (req, res) => {
+    console.log("upload-files endpoint reached");
+    const { documentID, userID } = req.body;
 
-                        return s3
-                            .upload(params)
-                            .promise()
-                            .then((data) => {
-                                const imageURL = data.Location;
-                                const insertImageSql = `INSERT INTO Images (imageID, documentID, imageURL) VALUES (?, ?, ?)`;
-                                connection.query(
-                                    insertImageSql,
-                                    [imageID, documentID, imageURL],
-                                    (err) => {
-                                        if (err) {
-                                            console.error(
-                                                "Error inserting image:",
-                                                err
-                                            );
-                                        }
-                                    }
-                                );
-                            });
+    if (!documentID || !userID) {
+        return res.status(400).json({ error: "Missing documentID or userID" });
+    }
+
+    try {
+        const uploadPromises = []; // Array to store all upload promises
+
+        // Handle PDF upload if provided
+        if (req.files.pdf && req.files.pdf.length > 0) {
+            const pdfFile = req.files.pdf[0];
+            const pdfID = generateRandomID(10); // Generate unique ID for the PDF
+            const pdfPath = `users/${userID}/documents/${documentID}/${pdfID}.pdf`;
+
+            const params = {
+                Bucket: s3_bucket,
+                Key: pdfPath,
+                Body: pdfFile.buffer,
+                ContentType: pdfFile.mimetype,
+            };
+
+            // Upload the PDF to S3
+            uploadPromises.push(
+                s3.upload(params).promise().then((data) => {
+                    const pdfURL = data.Location;
+                    // Insert the PDF URL into the Images table
+                    const insertPdfSql = `INSERT INTO Images (imageID, documentID, imageURL, fileType) VALUES (?, ?, ?, 'pdf')`;
+                    connection.query(insertPdfSql, [pdfID, documentID, pdfURL], (err) => {
+                        if (err) {
+                            console.error("Error inserting PDF as an image:", err);
+                        }
                     });
-
-                    Promise.all(promises)
-                        .then(() => {
-                            console.log(
-                                `Created Document: ${documentID} : ${documentName}`
-                            );
-                            res.status(200).json({ success: true, documentID });
-                        })
-                        .catch((error) => {
-                            console.error("Error uploading images:", error);
-                            res.status(500).json({
-                                error: "Error uploading images",
-                            });
-                        });
-                }
+                })
             );
-        } catch (error) {
-            console.error("Error creating document:", error);
-            res.status(500).json({ error: "Internal server error" });
+        }
+
+        // Handle image uploads if provided
+        if (req.files.images && req.files.images.length > 0) {
+            const imageUploadPromises = req.files.images.map((file) => {
+                const imageID = generateRandomID(10); // Generate unique imageID
+                const filePath = `users/${userID}/documents/${documentID}/${imageID}.jpg`;
+
+                const params = {
+                    Bucket: s3_bucket,
+                    Key: filePath,
+                    Body: file.buffer,
+                    ContentType: file.mimetype,
+                };
+
+                return s3.upload(params).promise().then((data) => {
+                    const imageURL = data.Location;
+                    const insertImageSql = `INSERT INTO Images (imageID, documentID, imageURL, fileType) VALUES (?, ?, ?, 'image')`;
+                    connection.query(insertImageSql, [imageID, documentID, imageURL], (err) => {
+                        if (err) {
+                            console.error("Error inserting image:", err);
+                        }
+                    });
+                });
+            });
+
+            uploadPromises.push(...imageUploadPromises);
+        }
+
+        // Wait for all uploads to complete
+        Promise.all(uploadPromises)
+            .then(() => {
+                console.log(`Uploaded files for Document: ${documentID}`);
+                res.status(200).json({ success: true });
+            })
+            .catch((error) => {
+                console.error("Error uploading files:", error);
+                res.status(500).json({ error: "Error uploading files" });
+            });
+    } catch (error) {
+        console.error("Error uploading files:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+// Endpoint to update the document name
+app.put("/documents/:userID/:documentID", (req, res) => {
+    console.log("documents/:userID/:documentID endpoint reached");
+    const { userID, documentID } = req.params;
+    const { newName } = req.body;
+
+    if (!newName) {
+        return res.status(400).json({ error: "New document name is required" });
+    }
+
+    const sql = "UPDATE Documents SET documentName = ? WHERE documentID = ? AND userID = ?";
+    connection.query(sql, [newName, documentID, userID], (err, result) => {
+        if (err) {
+            console.error("Error updating document name:", err);
+            return res.status(500).json({ error: "Error updating document name" });
+        }
+
+        if (result.affectedRows > 0) {
+            console.log(`Document name updated for documentID: ${documentID}`);
+            res.status(200).json({ success: true });
+        } else {
+            res.status(404).json({ error: "Document not found" });
         }
     });
+});
 
-    // Get all the documents, name, their passcode
-    app.get("/documents/:userID", (req, res) => {
-        const userID = req.params.userID;
+// Endpoint to generate a signed URL for a PDF file
+app.get("/documents/:userID/:documentID/signed-url", (req, res) => {
+    console.log("documents/:userID/:documentID/signed-url endpoint reached");
+    const { userID, documentID } = req.params;
+    const fileName = req.query.fileName;
+
+    if (!fileName) {
+        return res.status(400).json({ error: "File name is required" });
+    }
+
+    const filePath = `users/${userID}/documents/${documentID}/${fileName}`;
+
+    const params = {
+        Bucket: s3_bucket,
+        Key: filePath,
+        Expires: 300, // URL expiration time in seconds (5 minutes)
+        ResponseContentDisposition: "inline" // Suggest viewing the file inline
+    };
+
+    try {
+        const signedUrl = s3.getSignedUrl("getObject", params);
+        res.status(200).json({ signedUrl });
+    } catch (error) {
+        console.error("Error generating signed URL:", error);
+        res.status(500).json({ error: "Error generating signed URL" });
+    }
+});
+
+// Get all the documents, name, their passcode
+app.get("/documents/:userID", (req, res) => {
+    console.log("document-userID endpoint reached");
+    const userID = req.params.userID;
 
         const sql =
             "SELECT documentID, documentName, lockPasscode FROM Documents WHERE userID = ?";
@@ -497,9 +734,43 @@
                 console.log(`Fetched Document: ${document.documentID} : ${document.documentName}`);
             });
 
-            res.status(200).json({ documents: results });
-        });
+        res.status(200).json({ documents: results });
     });
+});
+
+// Reset the passcode for a document
+app.post("/document-passcode-reset", async (req, res) => {
+    console.log("document-passcode-reset endpoint reached");
+    const { documentID, passcode } = req.body;
+
+    // Verify both documentID and passcode are provided
+    if (!documentID || !passcode) {
+        return res.status(400).json({ error: "Document ID and passcode are required." });
+    }
+
+    try {
+        //// Hash the new passcode
+        //const hashedPasscode = await bcrypt.hash(passcode, 10);
+
+        // Update the document's passcode in the database using the correct column name 'lockPasscode'
+        const sql = "UPDATE Documents SET lockPasscode = ? WHERE documentID = ?";
+        connection.query(sql, [passcode, documentID], (err, results) => {
+            if (err) {
+                console.error("Database error:", err);
+                return res.status(500).json({ error: "Database error" });
+            }
+
+            if (results.affectedRows === 0) {
+                return res.status(404).json({ error: "Document not found." });
+            }
+
+            return res.status(200).json({ success: true });
+        });
+    } catch (error) {
+        console.error("Error hashing passcode:", error);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
 
     // Endpoint to fetch all images for a specific document
     app.get("/documents/:userID/:documentID", (req, res) => {
@@ -656,6 +927,7 @@
         res.status(500).json({ error: "Error fetching events" });
     }
 });
+
 
 // Endpoint to mark an event as complete
 app.put("/events/:eventID", async (req, res) => {

@@ -3,12 +3,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Documents from "../screens/documents/Documents";
 import NewDocument from "../screens/documents/NewDocument";
 import LoadDocument from "../screens/documents/LoadDocument";
+import ChangeDocumentPasscode from "../screens/documents/ChangePasscode";
 import ImageViewer from "../screens/documents/ImageViewer";
 
 export type DocumentStackParamList = {
     Documents: undefined;
     NewDocument: undefined;
     LoadDocument: { documentID: string; documentName: string };
+    ChangeDocumentPasscode: { documentID: string; documentName: string };
     ImageViewer: { imageUri: string };
 };
 
@@ -31,6 +33,11 @@ const DocumentNavigator: React.FC = () => {
                 name="LoadDocument"
                 component={LoadDocument}
                 options={{ headerShown: true, title: "Document" }}
+            />
+            <DocumentStack.Screen
+                name="ChangeDocumentPasscode"
+                component={ChangeDocumentPasscode}
+                options={{ headerShown: false, title: "Change Passcode" }}
             />
             <DocumentStack.Screen
                 name="ImageViewer"

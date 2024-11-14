@@ -30,23 +30,47 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         signUp: (state, action: PayloadAction<Omit<User, 'username' | 'pronouns' | 'phone' | 'birthday' | 'profilePhoto'>>) => {
-            state.user = action.payload as User;
+            // Populate default values for omitted fields
+            state.user = {
+                ...action.payload,
+                username: '', // default
+                pronouns: '', // default
+                phone: '', // default
+                birthday: '', // default
+                profilePhoto: null, // default
+            } as User;
         },
         signIn: (state, action: PayloadAction<User>) => {
             state.user = action.payload;
-            state.user.userID = action.payload.userID; // Ensure userID is updated
         },
         signOut: (state) => {
             state.user = null;
             state.isVerified = false;
             state.profileComplete = false;
             console.log('User signed out');
+            console.log(`User: ${state.user}`);
+        },
+        verifyEmail: (state) => {
+            state.isVerified = true;
         },
         forgotPassword: (state, action: PayloadAction<string>) => {
-            console.log('Reset password email sent to:', action.payload);
-        },
-        verifyEmail: (state, action: PayloadAction<string>) => {
-            state.isVerified = true;
+            if (state.user) {
+                state.user.email = action.payload; // Update the email if user exists
+            } else {
+                // Initialize the user with just the email if state.user is null
+                state.user = {
+                    firstName: '',
+                    lastName: '',
+                    email: action.payload,
+                    password: '',
+                    username: '',
+                    userID: null,
+                    pronouns: '',
+                    phone: '',
+                    birthday: '',
+                    profilePhoto: null,
+                };
+            }
         },
         setupProfile: (state, action: PayloadAction<Omit<User, 'firstName' | 'lastName' | 'email' | 'password'>>) => {
             state.profileComplete = true;

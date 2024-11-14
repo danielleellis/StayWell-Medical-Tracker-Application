@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
-import friendsReducer from './slices/friendsSlice';  // Import the friends reducer
+import forgotDocumentPasscodeReducer from './slices/forgotDocumentPasscodeSlice';
+import friendsReducer from './slices/friendsSlice';
 
 const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    friends: friendsReducer,  // Add the friends reducer
-  },
+    reducer: {
+        auth: authReducer,
+        forgotDocumentPasscode: forgotDocumentPasscodeReducer,
+        friends: friendsReducer,
+    },
 });
 
 export default store;

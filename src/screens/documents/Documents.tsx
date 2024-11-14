@@ -14,11 +14,14 @@ import { RootState } from "../../redux/store";
 import { colors, fonts } from "../../constants/constants";
 import configData from "../../../config.json";
 import { useFocusEffect } from "@react-navigation/native";
+import { useDispatch } from 'react-redux';
+import { setDocumentInfo } from '../../redux/slices/forgotDocumentPasscodeSlice';
 
 const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [documents, setDocuments] = useState<any[]>([]); // State to hold documents
     const user = useSelector((state: RootState) => state.auth.user);
     const userID = user?.userID; // Get userID from Redux
+    const dispatch = useDispatch();
     const serverEndpoint = configData.API_ENDPOINT;
 
     // Function to fetch documents from the backend
@@ -51,6 +54,59 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     const openDocument = (documentID: string, documentName: string) => {
         navigation.navigate("LoadDocument", { documentID, documentName });
+    };
+
+    const validatePasscode = () => {
+        if (selectedDocument && enteredPasscode === selectedDocument.lockPasscode) {
+            // Passcode is correct, open the document
+            setModalVisible(false);
+            setEnteredPasscode("");
+            navigation.navigate("LoadDocument", {
+                documentID: selectedDocument.documentID,
+                documentName: selectedDocument.documentName,
+            });
+        } else {
+            // Incorrect passcode
+            Alert.alert("Error", "Incorrect passcode. Please try again.");
+        }
+    };
+
+    const handleForgotPasscode = async () => {
+        try {
+            // Assume the email is stored in Redux, or you pass it from somewhere
+            const email = user?.email;
+
+            if (!email) {
+                Alert.alert("Error", "Unable to retrieve email.");
+                return;
+            }
+
+            // Use selectedDocument to get documentID and documentName
+            if (!selectedDocument) {
+                Alert.alert("Error", "No document selected.");
+                return;
+            }
+
+            const { documentID, documentName } = selectedDocument;
+
+            // Dispatch to store the document info in Redux
+            dispatch(setDocumentInfo({ documentID, documentName }));
+
+            //// Call your backend to send the verification code to the user's email
+            //const response = await axios.get(`${serverEndpoint}/verify-code/${email}`);
+
+            //if (response.status === 200) {
+            //    Alert.alert("Success", "A verification code has been sent to your email.");
+
+            //    // Navigate to CodeVerificationScreen, passing the email
+                navigation.navigate("CodeVerification", { from: "forgotPasscode" });
+            //} else {
+            //    Alert.alert("Error", "Failed to send verification code. Please try again.");
+            //}
+        } catch (error) {
+            console.error("Error sending passcode reset:", error);
+            Alert.alert("Error", "An error occurred while sending the passcode reset.");
+        }
     };
 
     return (
@@ -109,6 +165,47 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
                     </View>
                 )}
             </ScrollView>
+
+            {/* Modal for entering the passcode */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => {
+                    setModalVisible(false);
+                    setEnteredPasscode("");
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Enter Passcode</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter Passcode"
+                            secureTextEntry
+                            value={enteredPasscode}
+                            onChangeText={setEnteredPasscode}
+                            keyboardType="number-pad"
+                        />
+                        <TouchableOpacity onPress={handleForgotPasscode}>
+                            <Text style={styles.forgotPasscodeText}>Forgot Passcode?</Text>
+                        </TouchableOpacity>
+                        <View style={styles.modalButtons}>
+                            <Button
+                                title="Cancel"
+                                onPress={() => {
+                                    setModalVisible(false);
+                                    setEnteredPasscode("");
+                                }}
+                            />
+                            <Button
+                                title="OK"
+                                onPress={validatePasscode}
+                            />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -147,7 +244,7 @@ const styles = StyleSheet.create({
         fontFamily: fonts.regular, // Consistent font
     },
     documentsContainer: {
-        paddingBottom: 20, // To ensure last item isn't hidden
+        paddingBottom: 20,
     },
     documentContainer: {
         backgroundColor: colors.blue,
@@ -220,5 +317,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
+    },
+    forgotPasscodeText: {
+        color: "red",
+        textAlign: "center",
+        textDecorationLine: "underline",
+        fontFamily: fonts.regular,
     },
 });

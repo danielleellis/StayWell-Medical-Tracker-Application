@@ -3,18 +3,22 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SplashScreen from "../screens/login-signup/SplashScreen";
 import SignInScreen from "../screens/login-signup/SignInScreen";
 import ForgotPasswordScreen from "../screens/login-signup/ForgotPasswordScreen";
+import ChangePasswordScreen from "../screens/login-signup/ChangePasswordScreen";
 import SignUpScreen from "../screens/login-signup/SignUpScreen";
-import EmailVerificationScreen from "../screens/login-signup/EmailVerificationScreen";
+import CodeVerificationScreen from "../screens/login-signup/CodeVerificationScreen";
 import ProfileSetupScreen from "../screens/login-signup/ProfileSetupScreen";
+import Button from "../components/Button";
 
 type LoginSignupStackParamList = {
     Splash: undefined;
     SignIn: undefined;
     ForgotPassword: undefined;
+    ChangePassword: undefined;
     SignUp: undefined;
-    EmailVerification: undefined;
+    CodeVerification: { from: 'signup' | 'forgotPassword' | 'forgotPasscode' | 'documents' }; // Added `from` parameter
     ProfileSetup: undefined;
 };
+
 
 const LoginSignupStack = createStackNavigator<LoginSignupStackParamList>();
 
@@ -37,14 +41,25 @@ const LoginSignupNavigator: React.FC = () => {
                 options={{ headerShown: false }}
             />
             <LoginSignupStack.Screen
+                name="ChangePassword"
+                component={ChangePasswordScreen}
+                options={{
+                    headerShown: false,
+                    title: 'Go Back to Sign In',
+                }}
+            />
+            <LoginSignupStack.Screen
                 name="SignUp"
                 component={SignUpScreen}
                 options={{ headerShown: false }}
             />
             <LoginSignupStack.Screen
-                name="EmailVerification"
-                component={EmailVerificationScreen}
-                options={{ headerShown: false }}
+                name="CodeVerification"
+                component={CodeVerificationScreen}
+                options={({ navigation, route }) => ({
+                    headerShown: true,
+                    title: 'Code Verification',
+                })}
             />
             <LoginSignupStack.Screen
                 name="ProfileSetup"

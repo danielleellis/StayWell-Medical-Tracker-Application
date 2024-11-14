@@ -8,9 +8,8 @@ import {
     Image,
     ScrollView,
     Alert,
-    SafeAreaView,
-    Keyboard,
-    TouchableWithoutFeedback,
+    ActivityIndicator,
+    Modal,
 } from "react-native";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
@@ -19,16 +18,17 @@ import { RootState } from "../../redux/store";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import configData from "../../../config.json";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { colors, fonts } from "../../constants/constants";
+import { colors } from "../../constants/constants";
+import { buttonStyles } from "../styles/buttonStyles";
 
 const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
-    // State variables for document details
+    const [documentID, setDocumentID] = useState<string | null>(null);
     const [documentName, setDocumentName] = useState("");
-    const [selectedImages, setSelectedImages] = useState<string[]>([]); // Storing URIs of selected images
-    const [isLocked, setIsLocked] = useState(false); // State to handle whether the document is locked
-    const [lockPasscode, setLockPasscode] = useState<string | null>(null); // State for the passcode
+    const [selectedImages, setSelectedImages] = useState<string[]>([]);
+    const [selectedPdf, setSelectedPdf] = useState<{ uri: string; name: string } | null>(null);
+    const [isLocked, setIsLocked] = useState(false);
+    const [lockPasscode, setLockPasscode] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
     const serverEndpoint = configData.API_ENDPOINT;
 
     // Retrieve the user ID from Redux state
@@ -80,154 +80,197 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
         }
     };
 
-    // Save the document by sending data to the backend
-    const saveDocument = async () => {
-        // Validate fields before sending
+    const createDocument = async (): Promise<string | null> => {
         if (!documentName) {
             Alert.alert("Error", "Document name is required");
-            return;
-        }
-
-        if (selectedImages.length === 0 && !selectedPdf) {
-            Alert.alert("Error", "You cannot create a document without images or a file!");
-            return;
-        }
-
-        if (isLocked && (!lockPasscode || lockPasscode.trim() === "")) {
-            Alert.alert("Error", "Password Protect is turned on, but no password was added!\n\nTurn the setting off or add a password.");
-            return;
-        }
-
-        if (!userID) {
-            Alert.alert("Error", "User ID not found. Please log in.");
-            return;
+            return null;
         }
 
         try {
-            const formData = new FormData();
-            formData.append("userID", userID);
-            formData.append("documentName", documentName);
-
-            // Add lock passcode if document is password protected
-            if (isLocked && lockPasscode) {
-                formData.append("lockPasscode", lockPasscode);
-            }
-
-            // Append selected PDF or images to formData
-            if (selectedPdf) {
-                formData.append("pdf", {
-                    uri: selectedPdf.uri,
-                    name: selectedPdf.name,
-                    type: "application/pdf",
-                } as any);
-            } else {
-                for (const [index, imageUri] of selectedImages.entries()) {
-                    formData.append("images", {
-                        uri: imageUri,
-                        name: `image${index}.jpg`,
-                        type: "image/jpeg",
-                    } as any);
-                }
-            }
-
-            const response = await axios.post(`${serverEndpoint}/new-document`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
+            const response = await axios.post(`${serverEndpoint}/new-document`, {
+                userID,
+                documentName,
+                lockPasscode: isLocked ? lockPasscode : null,
             });
 
             if (response.data.success) {
-                navigation.navigate("Documents"); // Navigate to Documents screen on success
+                setDocumentID(response.data.documentID); // Store documentID for next request
+                return response.data.documentID; // Return documentID
             } else {
                 Alert.alert("Error", "Failed to create document");
+                return null;
             }
         } catch (error) {
             console.error("Error creating document:", error);
             Alert.alert("Error", "An error occurred");
+            return null;
+        }
+    };
+
+
+    const uploadFiles = async (documentID: string) => {
+        const formData = new FormData();
+        formData.append("userID", userID as string);
+        formData.append("documentID", documentID); // Attach the documentID
+
+        if (selectedPdf) {
+            formData.append("pdf", {
+                uri: selectedPdf.uri,
+                name: selectedPdf.name,
+                type: "application/pdf",
+            } as any);
+        } else {
+            selectedImages.forEach((imageUri, index) => {
+                formData.append("images", {
+                    uri: imageUri,
+                    name: `image${index}.jpg`,
+                    type: "image/jpeg",
+                } as any);
+            });
+        }
+
+        try {
+            const response = await axios.post(`${serverEndpoint}/upload-files`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.data.success) {
+                Alert.alert("Success", "Files uploaded successfully.");
+                navigation.navigate("Documents");
+            } else {
+                Alert.alert("Error", "Failed to upload files");
+            }
+        } catch (error) {
+            console.error("Error uploading files:", error);
+            Alert.alert("Error", "An error occurred during file upload.");
+        }
+    };
+
+
+    const handleSave = async () => {
+        setLoading(true);
+
+        console.log("Creating new document");
+        const newDocumentID = await createDocument(); // Retrieve document ID
+        if (!newDocumentID) {
+            console.log("Failed to create new document");
+            setLoading(false);
+            return; // Stop if document creation failed
+        }
+
+        console.log("Starting upload");
+        await uploadFiles(newDocumentID); // Pass documentID directly to uploadFiles
+        console.log("Finished upload");
+        setLoading(false); // Only set loading to false after both steps are done
+    };
+
+
+    const cancelDocument = async () => {
+        try {
+            const response = await axios.delete(`${serverEndpoint}/documents/${userID}/${documentID}`);
+            if (response.data.success) {
+                Alert.alert("Upload canceled", "Document upload canceled and files deleted.");
+                navigation.navigate("Documents"); // Navigate back to Documents screen
+            } else {
+                Alert.alert("Error", "Failed to delete document.");
+            }
+        } catch (error) {
+            console.error("Error deleting document:", error);
+            Alert.alert("Error", "An error occurred while deleting the document.");
         }
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <SafeAreaView style={styles.container}>
-                <View style={styles.innerContainer}>
-                    {/* Back Button */}
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("Documents")}
-                        style={styles.backButton} >
-                        <Text style={styles.backButtonText}>{"BACK"}</Text>
-                    </TouchableOpacity>
+        <View style={styles.container}>
+            {/* Loading Modal */}
+            <Modal transparent={true} visible={loading} animationType="fade">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <ActivityIndicator size="large" color={colors.blue} />
+                        <Text style={styles.modalText}>
+                            Your images are being uploaded. Please do not close the app.
+                        </Text>
 
-                    {/* Page Heading */}
-                    <Text style={styles.heading}>Upload Document</Text>
-                    
-                    {/* Document Title Input */}
-                    <Input
-                        placeholder="Title"
-                        value={documentName}
-                        onChangeText={(text) => {
-                            if (text.length <= 50) {
-                                setDocumentName(text);
-                            }
-                        }}
-                        autoCapitalize="words"
-                        style={styles.input}
+                        <TouchableOpacity onPress={cancelDocument} style={buttonStyles.cancelButton}>
+                            <Text style={buttonStyles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Main Content */}
+            <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
+                <Input
+                    placeholder="Document Name"
+                    value={documentName}
+                    onChangeText={(text) => {
+                        if (text.length <= 50) {
+                            setDocumentName(text);
+                        }
+                    }}
+                    autoCapitalize="words"
+                    style={styles.input}
+                />
+
+                <View style={styles.row}>
+                    <Image source={require("../../../assets/images/lock-icon.png")} style={styles.lockIcon} />
+                    <Text style={styles.text}>Password Protect</Text>
+                    <Switch
+                        trackColor={{ false: colors.grey, true: colors.grey }}
+                        thumbColor={isLocked ? colors.white : colors.white}
+                        ios_backgroundColor={colors.grey}
+                        onValueChange={toggleSwitch}
+                        value={isLocked}
                     />
+                </View>
 
-                    {/* Image and PDF Upload Buttons */}
-                    <View style={styles.buttonRow}>
-                        <TouchableOpacity style={styles.uploadButton} onPress={handleImageUpload}>
-                            <Text style={styles.buttonText}>Upload Image</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.uploadButton} onPress={handlePdfUpload}>
-                            <Text style={styles.buttonText}>Upload PDF</Text>
-                        </TouchableOpacity>
-                    </View>
+                {isLocked && (
+                    <Input
+                        placeholder="Enter Passcode"
+                        value={lockPasscode || ""}
+                        onChangeText={setLockPasscode}
+                        secureTextEntry
+                        style={styles.input}
+                        keyboardType="numeric"
+                    />
+                )}
 
-                    {/* Display selected images or PDF */}
-                    {selectedImages.length > 0 ? (
-                        <ScrollView horizontal contentContainerStyle={styles.imageScrollView} showsHorizontalScrollIndicator={false}>
-                            {selectedImages.map((imageUri, index) => (
-                                <Image key={index} source={{ uri: imageUri }} style={styles.uploadedImage} />
-                            ))}
-                        </ScrollView>
-                    ) : selectedPdf ? (
-                        <View style={styles.pdfPreviewContainer}>
-                            <Image source={require("../../../assets/images/pdf-icon.png")} style={styles.pdfIcon} />
-                            <Text style={styles.pdfText}>{selectedPdf.name}</Text>
-                        </View>
-                    ) : null}
-
-                    {/* Password Protection Toggle */}
-                    <View style={styles.row}>
-                        <Text style={styles.switchText}>Password Protected</Text>
-                        <Switch
-                            trackColor={{ false: colors.lightblue, true: colors.lightblue }}
-                            thumbColor={isLocked ? colors.white : colors.white}
-                            ios_backgroundColor= {colors.lightblue}
-                            onValueChange={toggleSwitch}
-                            value={isLocked}
-                        />
-                    </View>
-
-                    {/* Passcode Input if Password Protection is enabled */}
-                    {isLocked && (
-                        <Input
-                            placeholder="Enter Passcode"
-                            value={lockPasscode || ""}
-                            onChangeText={setLockPasscode}
-                            secureTextEntry
-                            style={styles.input}
-                            keyboardType="numeric"
-                        />
-                    )}
-
-                    {/* Save Document Button */}
-                    <TouchableOpacity style={styles.saveButton} onPress={saveDocument}>
-                        <Text style={styles.saveButtonText}>Save</Text>
+                <View style={styles.buttonRow}>
+                    <TouchableOpacity style={styles.uploadButton} onPress={handleImageUpload}>
+                        <Text style={styles.buttonText}>Upload Images</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.uploadButton} onPress={handlePdfUpload}>
+                        <Text style={styles.buttonText}>Upload a PDF</Text>
                     </TouchableOpacity>
                 </View>
-            </SafeAreaView>
-        </TouchableWithoutFeedback>
+
+                {selectedImages.length > 0 ? (
+                    <ScrollView horizontal contentContainerStyle={styles.imageScrollView} showsHorizontalScrollIndicator={false}>
+                        {selectedImages.map((imageUri, index) => (
+                            <Image key={index} source={{ uri: imageUri }} style={styles.uploadedImage} />
+                        ))}
+                    </ScrollView>
+                ) : selectedPdf ? (
+                    <View style={styles.pdfPreviewContainer}>
+                        <Image
+                            source={require("../../../assets/images/pdf-icon.png")}
+                            style={styles.pdfIcon}
+                        />
+                        <Text style={styles.pdfText}>{selectedPdf.name}</Text>
+                    </View>
+                ) : null}
+
+                <TouchableOpacity style={buttonStyles.saveButton} onPress={handleSave}>
+                    <Text style={buttonStyles.saveButtonText}>Save Document</Text>
+                </TouchableOpacity>
+
+            </ScrollView>
+        </View>
     );
+
 };
 
 export default NewDocument;
@@ -298,8 +341,17 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        color: colors.blue,
-        fontFamily: fonts.regular,
+        color: "#45A6FF",
+        fontWeight: "bold",
+    },
+    lockIcon: {
+        width: 30,
+        height: 35,
+        margin: 10,
+    },
+    input: {
+        marginBottom: 16,
+        backgroundColor: colors.white,
     },
     imageScrollView: {
         flexDirection: "row",
@@ -323,6 +375,32 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: colors.white,
         marginTop: 5,
+    },
+    loadingIndicator: {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: [{ translateX: -25 }, { translateY: -25 }],
+        zIndex: 1,
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContainer: {
+        width: "80%",
+        padding: 20,
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    modalText: {
+        fontSize: 16,
+        color: "#333",
+        marginTop: 10,
+        textAlign: "center",
     },
     row: {
         flexDirection: "row",
