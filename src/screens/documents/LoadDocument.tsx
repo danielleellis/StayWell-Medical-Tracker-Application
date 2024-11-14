@@ -9,6 +9,7 @@ import {
     Alert,
     Dimensions,
     TextInput,
+    ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -32,6 +33,7 @@ const LoadDocument: React.FC = () => {
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const route = useRoute<LoadDocumentRouteProp>();
     const navigation = useNavigation<LoadDocumentNavigationProp>();
+    const [loading, setLoading] = useState(false);
 
     const user = useSelector((state: RootState) => state.auth.user);
     const userID = user?.userID;
@@ -94,6 +96,8 @@ const LoadDocument: React.FC = () => {
     }, [newDocumentName, isEditing]); // Update header options when newDocumentName or isEditing changes
 
     const fetchDocumentImages = async () => {
+        setLoading(true); // Start loading
+
         try {
             const response = await axios.get(`${serverEndpoint}/documents/${userID}/${documentID}`);
             if (response.status === 200) {
@@ -118,6 +122,8 @@ const LoadDocument: React.FC = () => {
         } catch (error) {
             console.error("Error fetching document details:", error);
             Alert.alert("Error", "An error occurred while loading the document.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -187,6 +193,7 @@ const LoadDocument: React.FC = () => {
 
     return (
         <View style={styles.container}>
+            {loading && <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />}
             {pdfUrl ? (
                 <WebView
                     source={{ uri: pdfUrl }}
@@ -206,11 +213,7 @@ const LoadDocument: React.FC = () => {
                             style={styles.imageWrapper}
                             onPress={() => navigation.navigate("ImageViewer", { imageUri: item })}
                         >
-                            <Image
-                                source={{ uri: item }}
-                                style={styles.image}
-                                resizeMode="contain"
-                            />
+                            <Image source={{ uri: item }} style={styles.image} resizeMode="contain" />
                         </TouchableOpacity>
                     )}
                     ListEmptyComponent={() => <Text style={styles.noImagesText}>No images found.</Text>}
@@ -218,6 +221,7 @@ const LoadDocument: React.FC = () => {
             )}
         </View>
     );
+
 };
 
 export default LoadDocument;
@@ -295,4 +299,12 @@ const styles = StyleSheet.create({
         color: "red",
         fontWeight: "bold",
     },
+    loadingIndicator: {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: [{ translateX: -25 }, { translateY: -25 }],
+        zIndex: 1,
+    },
+
 });

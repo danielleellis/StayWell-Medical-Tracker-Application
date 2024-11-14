@@ -46,6 +46,17 @@ const ProfileSetupScreen: React.FC<{ navigation: any, route: any }> = ({ navigat
         return null;
     }
 
+    useEffect(() => {
+        if (user) {
+            setUsername(user.username || "");
+            setPronouns(user.pronouns || "");
+            setPhone(user.phone || "");
+            setBirthday(user.birthday || "");
+            setProfilePhotoUri(user.profilePhoto || null); // Use profile photo from Redux
+        }
+    }, [user]); // Only run when `user` changes
+
+
     // Function to allow user to select profile photo
     const handleProfilePhotoUpload = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -81,7 +92,6 @@ const ProfileSetupScreen: React.FC<{ navigation: any, route: any }> = ({ navigat
 
         try {
             if (profilePhotoUri && profilePhotoUri !== user?.profilePhoto) {
-                // Prepare the form data to upload the image
                 const formData = new FormData();
                 formData.append("image", {
                     uri: profilePhotoUri,
@@ -96,9 +106,14 @@ const ProfileSetupScreen: React.FC<{ navigation: any, route: any }> = ({ navigat
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
 
-                // Use uploaded image URL in user data
+                const newImageUrl = uploadResponse.data.imageUrl;
+
+                // Update Redux with the new image URL
                 userData.profilePhoto = uploadResponse.data.imageUrl;
+                setProfilePhotoUri(newImageUrl);
+                dispatch(setupProfile({ ...userData, profilePhoto: uploadResponse.data.imageUrl }));
             }
+
 
             // Submit the user data to the backend
             const response = await axios.put(
@@ -238,8 +253,8 @@ const ProfileSetupScreen: React.FC<{ navigation: any, route: any }> = ({ navigat
             <Button
                 title="Cancel"
                 onPress={handleCancel}
-                buttonStyle={styles.redButton} // Pass custom red style
-                textStyle={styles.redButtonText} // Pass custom text style
+                buttonStyle={styles.redButton}
+                textStyle={styles.redButtonText}
             />
         </View>
     );

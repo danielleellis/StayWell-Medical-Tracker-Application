@@ -48,54 +48,49 @@ const ChangePasswordScreen: React.FC<{ navigation: any, route: any }> = ({ navig
     };
 
     const validateForm = () => {
+        const newErrors: { [key: string]: string } = {};
         if (!password) {
-            errors.password = "Password is required";
+            newErrors.password = "Password is required";
         } else if (!isValidPassword(password)) {
-            errors.password =
+            newErrors.password =
                 "Password must be between 8 and 32 characters, contain at least one uppercase letter, and one of these symbols: !@#$%^&*";
         }
         if (password !== passwordConfirmed) {
-            errors.passwordConfirmed = "Passwords do not match";
+            newErrors.passwordConfirmed = "Passwords do not match";
         }
-        setErrors(errors);
-        return Object.keys(errors).length === 0;
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleNext = async () => {
         setHasAttemptedSubmit(true);
 
         if (validateForm()) {
-
             if (password !== passwordConfirmed) {
                 alert("Passwords do not match. Please check and try again.");
                 return;
             }
 
-            setHasAttemptedSubmit(true);
-
-            const userData = {
-                email,
-                password,
-            };
+            const userData = { email, password };
 
             try {
                 const response = await axios.post(`${serverEndpoint}/change-password`, userData);
 
                 if (response.status === 200 && response.data.success) {
                     console.log("Password changed successfully.");
-                    // Navigate to sign-in screen or dashboard
-                    navigation.navigate("SignIn");
+                    navigation.replace("SignIn");
+
                 } else {
                     console.error("Failed to change password:", response.data);
                     Alert.alert("Error", response.data.error || "Failed to change password.");
                 }
             } catch (error) {
+                // Check and log error details
                 console.error("An error occurred during password change:", error);
                 Alert.alert("Error", "An error occurred. Please try again later.");
             }
         }
     };
-
 
     const isFormFilled = () => {
         return (
@@ -110,12 +105,6 @@ const ChangePasswordScreen: React.FC<{ navigation: any, route: any }> = ({ navig
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.navigate("Splash")}
-                style={styles.backButton}
-            >
-                <Text style={styles.backButtonText}>{"BACK"}</Text>
-            </TouchableOpacity>
             <Image
                 source={require("../../../assets/images/sun.png")}
                 style={styles.logo}

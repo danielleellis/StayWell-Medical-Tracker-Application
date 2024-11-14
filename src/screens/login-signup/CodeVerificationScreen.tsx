@@ -1,85 +1,153 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  TextInput,
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    TextInput,
+    Alert,
 } from "react-native";
 import Button from "../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
-import { verifyEmail } from "../../redux/slices/authSlice";
-import { useFonts } from "expo-font";
-import { colors, fonts } from "../../constants/constants";
 import axios from 'axios';
 import configData from "../../../config.json";
+import { colors, fonts } from "../../constants/constants";
+import { useFocusEffect } from "@react-navigation/native";
 const serverEndpoint = configData.API_ENDPOINT;
 
 const CodeVerificationScreen: React.FC<{ navigation: any, route: any }> = ({ navigation, route }) => {
-  const { from } = route.params; // to determine what code we're verifying
+    const { from } = route.params; // to determine what code we're verifying
 
-  const [code1, setCode1] = useState("");
-  const [code2, setCode2] = useState("");
-  const [code3, setCode3] = useState("");
-  const [code4, setCode4] = useState("");
-  const dispatch = useDispatch<AppDispatch>();
-  const email = useSelector((state: RootState) => state.auth.user?.email);
+    const [code1, setCode1] = useState("");
+    const [code2, setCode2] = useState("");
+    const [code3, setCode3] = useState("");
+    const [code4, setCode4] = useState("");
+    const dispatch = useDispatch<AppDispatch>();
+    const email = useSelector((state: RootState) => state.auth.user?.email);
 
-  const code2Ref = useRef<TextInput>(null);
-  const code3Ref = useRef<TextInput>(null);
-  const code4Ref = useRef<TextInput>(null);
+    const code2Ref = useRef<TextInput>(null);
+    const code3Ref = useRef<TextInput>(null);
+    const code4Ref = useRef<TextInput>(null);
 
-  const [loaded] = useFonts({
-    "JosefinSans-Regular": require("../../../assets/fonts/JosefinSans/JosefinSans-Regular.ttf"),
-    "JosefinSans-Bold": require("../../../assets/fonts/JosefinSans/JosefinSans-Bold.ttf"),
-  });
+    // Inside CodeVerificationScreen component
+    useFocusEffect(
+        useCallback(() => {
+            // Clear code fields whenever the screen is focused
+            setCode1("");
+            setCode2("");
+            setCode3("");
+            setCode4("");
 
-  if (!loaded) {
-    return null;
-  }
+            return () => {
+                // Optionally, reset fields on blur if needed
+                setCode1("");
+                setCode2("");
+                setCode3("");
+                setCode4("");
+            };
+        }, [])
+    );
 
-  const handleVerifyEmail = () => {
-    const verificationCode = code1 + code2 + code3 + code4;
-    dispatch(verifyEmail(verificationCode));
+    useEffect(() => {
+        // Resend verification code when the component loads
+        handleResendCode();
 
-      if (from === "signup") {
-          navigation.navigate("Dashboard");
-      } else if (from === "forgotPassword") {
-          navigation.navigate("ChangePassword");
-      } else {
-          navigation.navigate("Calendar");
-      }
+        // Intercept the back button press
+        const unsubscribe = navigation.addListener('beforeRemove', (e:any) => {
+            e.preventDefault();
 
-  };
+            // Custom back navigation logic based on 'from'
+            if (from === "signup" || from === "forgotPassword") {
+                navigation.navigate("SignIn");
+            } else if (from === "forgotPasscode") {
+                navigation.navigate('Dashboard', {
+                    screen: 'DocumentsHome', // The name of the tab
+                    params: {
+                        screen: 'Documents', // The screen within the DocumentNavigator
+                    },
+                });
+            } else {
+                navigation.goBack();
+            }
+        });
 
-  const handleResendCode = async () => {
-      try {
-          const response = await axios.get(`${serverEndpoint}/verify-code/${email}`);
+        return unsubscribe; // Cleanup on unmount
+    }, [navigation, from]);
 
-          if (response.status === 200) {
-              // Show success message to user
-              console.log("Verification code resent successfully");
-              alert(`A new verification code has been sent to ${email}.`);
-          } else {
-              console.error('Failed to resend verification code:', response.data);
-              alert("Failed to resend verification code. Please try again later.");
-          }
-      } catch (error) {
-          console.error('An error occurred while resending the verification code:', error);
-          alert("Network error. Please check your connection and try again.");
-      }
-  };
-  
+    const handleVerifyCode = async () => {
+        const verificationCode = code1 + code2 + code3 + code4;
+        try {
+            const response = await axios.post(`${serverEndpoint}/check-verification-code`, {
+                email,
+                userVerificationCode: verificationCode,
+            });
+
+            if (response.status === 200) {
+                if (from === "signup") {
+                    navigation.navigate("Dashboard");
+                } else if (from === "forgotPassword") {
+                    navigation.navigate("ChangePassword");
+                } else if (from === "forgotPasscode") {
+                    navigation.navigate('Dashboard', {
+                        screen: 'DocumentsHome', // The name of the tab
+                        params: {
+                            screen: 'ChangeDocumentPasscode', // The screen within the DocumentNavigator
+                        },
+                    });
+                } else {
+                    navigation.navigate("Calendar");
+                }
+            }
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 400) {
+                    // Incorrect code
+                    Alert.alert(
+                        "Verification Failed",
+                        "Incorrect code entered, please try again."
+                    );
+                } else if (error.response?.status === 429) {
+                    // Max attempts reached
+                    Alert.alert(
+                        "Max Attempts Reached",
+                        "Please click 'Resend Verification Code' to request a new code."
+                    );
+                } else {
+                    Alert.alert("Error", "An unexpected error occurred. Please try again.");
+                }
+            } else {
+                Alert.alert("Error", "An unexpected error occurred. Please try again.");
+            }
+        }
+    };
+
+
+    const handleResendCode = async () => {
+        try {
+            const response = await axios.get(`${serverEndpoint}/verify-code/${email}`);
+            if (response.status === 200) {
+                alert(`A new verification code has been sent to ${email}.`);
+            } else {
+                alert("Failed to resend verification code. Please try again later.");
+            }
+        } catch (error: any) {
+            if (axios.isAxiosError(error) && error.response?.status === 429) {
+                // Show a simple alert if the user has to wait
+                Alert.alert(
+                    "Wait Required",
+                    "You have to wait 2 minutes between sending new verification codes."
+                );
+            } else {
+                alert("Network error. Please try again.");
+            }
+        }
+    };
+
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("ProfileSetup", { from: "signup" })}
-        style={styles.backButton}
-      >
-        <Text style={styles.backButtonText}>{"BACK"}</Text>
-      </TouchableOpacity>
       <Image
         source={require("../../../assets/images/sun.png")}
         style={styles.logo}
@@ -89,52 +157,62 @@ const CodeVerificationScreen: React.FC<{ navigation: any, route: any }> = ({ nav
         Please enter the code sent to: {email}
       </Text>
       <View style={styles.codeInputContainer}>
-        <TextInput
-          style={styles.codeInput}
-          keyboardType="number-pad"
-          maxLength={1}
-          onChangeText={(text) => {
-            setCode1(text);
-            if (text.length === 1) {
-              code2Ref.current?.focus();
-            }
-          }}
-        />
-        <TextInput
-          ref={code2Ref}
-          style={styles.codeInput}
-          keyboardType="number-pad"
-          maxLength={1}
-          onChangeText={(text) => {
-            setCode2(text);
-            if (text.length === 1) {
-              code3Ref.current?.focus();
-            }
-          }}
-        />
-        <TextInput
-          ref={code3Ref}
-          style={styles.codeInput}
-          keyboardType="number-pad"
-          maxLength={1}
-          onChangeText={(text) => {
-            setCode3(text);
-            if (text.length === 1) {
-              code4Ref.current?.focus();
-            }
-          }}
-        />
-        <TextInput
-          ref={code4Ref}
-          style={styles.codeInput}
-          keyboardType="number-pad"
-          maxLength={1}
-          onChangeText={setCode4}
-        />
+              <TextInput
+                  key={`code1-${code1}`} // Make each key unique by adding an identifier
+                  style={styles.codeInput}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  value={code1}
+                  onChangeText={(text) => {
+                      setCode1(text);
+                      if (text.length === 1) {
+                          code2Ref.current?.focus();
+                      }
+                  }}
+              />
+              <TextInput
+                  key={`code2-${code2}`} // Unique key for each input
+                  ref={code2Ref}
+                  style={styles.codeInput}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  value={code2}
+                  onChangeText={(text) => {
+                      setCode2(text);
+                      if (text.length === 1) {
+                          code3Ref.current?.focus();
+                      }
+                  }}
+              />
+              <TextInput
+                  key={`code3-${code3}`} // Unique key for each input
+                  ref={code3Ref}
+                  style={styles.codeInput}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  value={code3}
+                  onChangeText={(text) => {
+                      setCode3(text);
+                      if (text.length === 1) {
+                          code4Ref.current?.focus();
+                      }
+                  }}
+              />
+              <TextInput
+                  key={`code4-${code4}`} // Unique key for each input
+                  ref={code4Ref}
+                  style={styles.codeInput}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  value={code4}
+                  onChangeText={setCode4}
+              />
+
+
       </View>
       <Button
         title="Next"
-        onPress={handleVerifyEmail}
+              onPress={handleVerifyCode}
         disabled={!code1 || !code2 || !code3 || !code4}
       />
       <TouchableOpacity onPress={handleResendCode}>

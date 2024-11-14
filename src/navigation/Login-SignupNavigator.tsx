@@ -7,6 +7,7 @@ import ChangePasswordScreen from "../screens/login-signup/ChangePasswordScreen";
 import SignUpScreen from "../screens/login-signup/SignUpScreen";
 import CodeVerificationScreen from "../screens/login-signup/CodeVerificationScreen";
 import ProfileSetupScreen from "../screens/login-signup/ProfileSetupScreen";
+import Button from "../components/Button";
 
 type LoginSignupStackParamList = {
     Splash: undefined;
@@ -14,9 +15,10 @@ type LoginSignupStackParamList = {
     ForgotPassword: undefined;
     ChangePassword: undefined;
     SignUp: undefined;
-    CodeVerification: undefined;
+    CodeVerification: { from: 'signup' | 'forgotPassword' | 'forgotPasscode' | 'documents' }; // Added `from` parameter
     ProfileSetup: undefined;
 };
+
 
 const LoginSignupStack = createStackNavigator<LoginSignupStackParamList>();
 
@@ -41,7 +43,10 @@ const LoginSignupNavigator: React.FC = () => {
             <LoginSignupStack.Screen
                 name="ChangePassword"
                 component={ChangePasswordScreen}
-                options={{ headerShown: false }}
+                options={{
+                    headerShown: false,
+                    title: 'Go Back to Sign In',
+                }}
             />
             <LoginSignupStack.Screen
                 name="SignUp"
@@ -51,7 +56,10 @@ const LoginSignupNavigator: React.FC = () => {
             <LoginSignupStack.Screen
                 name="CodeVerification"
                 component={CodeVerificationScreen}
-                options={{ headerShown: false }}
+                options={({ navigation, route }) => ({
+                    headerShown: true,
+                    title: 'Code Verification',
+                })}
             />
             <LoginSignupStack.Screen
                 name="ProfileSetup"

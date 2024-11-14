@@ -139,8 +139,8 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
                     dispatch(signUp(updatedUserData));
 
-                    // Send the verification code after successful signup
-                    await sendVerificationCode(email);
+                    //// Send the verification code after successful signup
+                    //await sendVerificationCode(email);
 
                     // Navigate to CodeVerification screen
                     navigation.navigate("CodeVerification", { from: "signup" });
@@ -157,7 +157,7 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const sendVerificationCode = async (email: string) => {
         try {
             console.log("Requesting to send verification code to server.js");
-            const response = await axios.put(`${serverEndpoint}/verify-code/${email}`);
+            const response = await axios.get(`${serverEndpoint}/verify-code/${email}`);
 
             if (response.status === 200) {
                 setVerificationCodeSent(true);
@@ -189,12 +189,12 @@ const SignUpScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.navigate("Splash")}
-                style={styles.backButton}
-            >
-                <Text style={styles.backButtonText}>{"BACK"}</Text>
-            </TouchableOpacity>
+            {/*<TouchableOpacity*/}
+            {/*    onPress={() => navigation.navigate("Splash")}*/}
+            {/*    style={styles.backButton}*/}
+            {/*>*/}
+            {/*    <Text style={styles.backButtonText}>{"BACK"}</Text>*/}
+            {/*</TouchableOpacity>*/}
             <Image
                 source={require("../../../assets/images/sun.png")}
                 style={styles.logo}

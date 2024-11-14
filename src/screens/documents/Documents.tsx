@@ -17,6 +17,8 @@ import { RootState } from "../../redux/store";
 import { colors, fonts } from "../../constants/constants";
 import configData from "../../../config.json";
 import { useFocusEffect } from "@react-navigation/native";
+import { useDispatch } from 'react-redux';
+import { setDocumentInfo } from '../../redux/slices/forgotDocumentPasscodeSlice';
 
 const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [documents, setDocuments] = useState<any[]>([]); // State to hold documents
@@ -25,6 +27,7 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [enteredPasscode, setEnteredPasscode] = useState(""); // State for the entered passcode
     const user = useSelector((state: RootState) => state.auth.user);
     const userID = user?.userID; // Get userID from Redux
+    const dispatch = useDispatch();
     const serverEndpoint = configData.API_ENDPOINT;
 
     // Function to fetch documents from the backend
@@ -78,6 +81,44 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
         } else {
             // Incorrect passcode
             Alert.alert("Error", "Incorrect passcode. Please try again.");
+        }
+    };
+
+    const handleForgotPasscode = async () => {
+        try {
+            // Assume the email is stored in Redux, or you pass it from somewhere
+            const email = user?.email;
+
+            if (!email) {
+                Alert.alert("Error", "Unable to retrieve email.");
+                return;
+            }
+
+            // Use selectedDocument to get documentID and documentName
+            if (!selectedDocument) {
+                Alert.alert("Error", "No document selected.");
+                return;
+            }
+
+            const { documentID, documentName } = selectedDocument;
+
+            // Dispatch to store the document info in Redux
+            dispatch(setDocumentInfo({ documentID, documentName }));
+
+            //// Call your backend to send the verification code to the user's email
+            //const response = await axios.get(`${serverEndpoint}/verify-code/${email}`);
+
+            //if (response.status === 200) {
+            //    Alert.alert("Success", "A verification code has been sent to your email.");
+
+            //    // Navigate to CodeVerificationScreen, passing the email
+                navigation.navigate("CodeVerification", { from: "forgotPasscode" });
+            //} else {
+            //    Alert.alert("Error", "Failed to send verification code. Please try again.");
+            //}
+        } catch (error) {
+            console.error("Error sending passcode reset:", error);
+            Alert.alert("Error", "An error occurred while sending the passcode reset.");
         }
     };
 
@@ -159,6 +200,9 @@ const Documents: React.FC<{ navigation: any }> = ({ navigation }) => {
                             onChangeText={setEnteredPasscode}
                             keyboardType="number-pad"
                         />
+                        <TouchableOpacity onPress={handleForgotPasscode}>
+                            <Text style={styles.forgotPasscodeText}>Forgot Passcode?</Text>
+                        </TouchableOpacity>
                         <View style={styles.modalButtons}>
                             <Button
                                 title="Cancel"
@@ -212,7 +256,7 @@ const styles = StyleSheet.create({
         color: colors.white,
     },
     documentsContainer: {
-        paddingBottom: 20, // To ensure last item isn't hidden
+        paddingBottom: 20,
     },
     documentContainer: {
         backgroundColor: "#45A6FF",
@@ -285,5 +329,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
+    },
+    forgotPasscodeText: {
+        color: "red",
+        textAlign: "center",
+        textDecorationLine: "underline",
+        fontFamily: fonts.regular,
     },
 });

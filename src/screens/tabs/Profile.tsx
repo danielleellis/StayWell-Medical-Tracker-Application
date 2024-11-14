@@ -24,9 +24,21 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const serverEndpoint = configData.API_ENDPOINT;
 
     const handleSignOut = () => {
+        // Dispatch the signOut action
         dispatch(signOut());
-        navigation.navigate("SignIn");
+
+        // Use a slight delay to ensure Redux state clears before navigating
+        setTimeout(() => {
+            // Reset the navigation stack and navigate to SignIn screen
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'SignIn' }],
+            });
+        }, 100); // 100ms delay to allow Redux state to update
+
+        navigation.navigate("SignIn");  // Not sure why but it can't just reset. Navigating a second time fixes it
     };
+
 
     const handleViewFriends = () => {
         navigation.navigate("Friends");
