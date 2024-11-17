@@ -143,6 +143,7 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView style={styles.container}>
+                <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
                 <View style={styles.innerContainer}>
                     {/* Back Button */}
                     <TouchableOpacity
@@ -220,6 +221,7 @@ const NewDocument: React.FC<{ navigation: any }> = ({ navigation }) => {
                         <Text style={styles.saveButtonText}>Save</Text>
                     </TouchableOpacity>
                 </View>
+                </ScrollView>
             </SafeAreaView>
         </TouchableWithoutFeedback>
     );
@@ -348,4 +350,12 @@ const styles = StyleSheet.create({
         color: colors.blue,
         fontFamily: fonts.regular,
     },
+    contentContainerStyle: {
+        alignItems: "center",
+        justifyContent: "center",
+        paddingVertical: 20,
+      },
+    scrollView: {
+        width: "100%",
+      },
 });
