@@ -895,7 +895,7 @@ app.put("/events/:eventID", async (req, res) => {
 // Endpoint to create a new event for a specific user
 app.post("/events", async (req, res) => {
     const { 
-        userID, 
+        eventID, 
         eventName, 
         color, 
         isPublic, 
@@ -908,6 +908,7 @@ app.post("/events", async (req, res) => {
         allDay, 
         eventType, 
         calendarID, 
+        userID,
         completed 
     } = req.body;
 
@@ -920,7 +921,7 @@ app.post("/events", async (req, res) => {
 
     const sql = `
         INSERT INTO Events 
-        (eventName, color, isPublic, viewableBy, notes, streakDays, reminder, startTime, endTime, allDay, eventType, calendarID, userID, completed)
+        (eventID, eventName, color, isPublic, viewableBy, notes, streakDays, reminder, startTime, endTime, allDay, eventType, calendarID, userID, completed)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
@@ -929,7 +930,7 @@ app.post("/events", async (req, res) => {
             connection.query(
                 sql,
                 [
-                    userID,
+                    eventID,
                     eventName,
                     color || null,
                     isPublic ? 1 : 0,  // boolean
@@ -942,6 +943,7 @@ app.post("/events", async (req, res) => {
                     allDay ? 1 : 0,  // boolean
                     eventType || null,
                     calendarID || null,
+                    userID,
                     completed ? 1 : 0  // boolean
                 ],
                 (err, result) => {
