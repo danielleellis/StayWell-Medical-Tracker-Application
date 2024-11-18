@@ -22,6 +22,12 @@ import { ColorPicker } from "react-native-color-picker";
 import axios from "axios";
 import configData from "../../../config.json";
 import { useRoute } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+
+// Custom UUID function without crypto
+const generateUUID = (): string =>
+  (Math.random().toString(16) + Math.random().toString(16)).substring(2, 12);
 
 const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [eventName, setEventName] = useState("");
@@ -34,7 +40,6 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [reminder, setReminder] = useState("");
   const [eventType, setEventType] = useState("");
   const [calendarID, setCalendarID] = useState("");
-  const [userID, setUserID] = useState("");
   const [completed, setCompleted] = useState(false);
   const [recurring, setRecurring] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -49,6 +54,9 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
+  const user = useSelector((state: RootState) => state.auth.user);
+  const userID = user?.userID; // get userID from Redux
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
@@ -56,10 +64,18 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
   const serverEndpoint = configData.API_ENDPOINT;
 
   const saveEvent = async () => {
+    console.log("Save event triggered");
+    console.log("API Endpoint:", serverEndpoint);
+    console.log("User ID:", userID);
+
+    const eventID = generateUUID();
+
     if (!eventName || !eventType) {
       Alert.alert("Error", "Please fill in all required fields");
       return;
     }
+
+    console.log("test1");
 
     // start/end date and time together to match database
     const startDateTime = new Date(startDate);
@@ -73,31 +89,57 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
       return;
     }
 
+    console.log("Event Data:", {
+      eventID,
+      eventName,
+      color,
+      isPublic,
+      viewableBy,
+      notes,
+      streakDays,
+      reminder,
+      startTime: startDateTime.toISOString(),
+      endTime: endDateTime.toISOString(),
+      allDay,
+      eventType,
+      calendarID,
+      userID,
+      completed,
+    });
+
     try {
-      const response = await axios.post(`${serverEndpoint}/events`, {
-        eventName,
-        color,
-        isPublic,
-        viewableBy,
-        notes,
-        streakDays,
-        reminder,
-        startTime: startDateTime.toISOString(), // format for database compatibility
-        endTime: endDateTime.toISOString(),
-        allDay,
-        eventType,
-        calendarID,
-        userID,
-        completed,
-      });
+      const response = await axios.post(
+        `${serverEndpoint}/events/${userID}`,
+        {
+          eventID,
+          eventName,
+          color,
+          isPublic,
+          viewableBy,
+          notes,
+          streakDays,
+          reminder,
+          startTime: startDateTime.toISOString(),
+          endTime: endDateTime.toISOString(),
+          allDay,
+          eventType,
+          calendarID,
+          userID,
+          completed,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.status === 200) {
         Alert.alert("Success", "Event created successfully!");
-        navigation.navigate("Events");
+        navigation.navigate("Calendar", { userID });
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Failed to create event");
+      console.error("Save event failed:", error);
     }
   };
 
@@ -343,7 +385,7 @@ const NewEvent: React.FC<{ navigation: any }> = ({ navigation }) => {
 
           <View style={styles.saveContainer}>
             <TouchableOpacity style={styles.saveButton} onPress={saveEvent}>
-              <Text style={styles.saveButtonText}>Save</Text>
+              <Text style={styles.saveButtonText}>Save Event</Text>
             </TouchableOpacity>
           </View>
         </View>

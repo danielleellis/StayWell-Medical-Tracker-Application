@@ -893,7 +893,7 @@ app.put("/events/:eventID", async (req, res) => {
 });
 
 // Endpoint to create a new event for a specific user
-app.post("/events", async (req, res) => {
+app.post("/events/:userID", async (req, res) => {
     const { 
         eventID, 
         eventName, 
@@ -912,7 +912,7 @@ app.post("/events", async (req, res) => {
         completed 
     } = req.body;
 
-    console.log("/events POST endpoint reached for user:", userID);
+    console.log("/events/:userID POST endpoint reached for user:", userID);
 
     // Check to ensure required fields are filled
     if (!eventName || !startTime || !userID) {
