@@ -892,9 +892,11 @@ app.put("/events/:eventID", async (req, res) => {
     }
 });
 
-// Endpoint to create a new event
-app.post("/events", async (req, res) => {
-    console.log("/events POST endpoint reached");
+// Endpoint to create a new event for a specific user
+app.post("/events/:userID", async (req, res) => {
+    const { userID } = req.params;  // Extract userID from the URL
+    console.log("/events/:userID POST endpoint reached for user:", userID);
+
     const {
         eventName,
         color,
@@ -908,7 +910,6 @@ app.post("/events", async (req, res) => {
         allDay,
         eventType,
         calendarID,
-        userID,
         completed,
     } = req.body;
 
