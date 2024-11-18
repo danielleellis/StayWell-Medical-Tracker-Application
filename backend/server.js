@@ -894,6 +894,7 @@ app.put("/events/:eventID", async (req, res) => {
 
 // Endpoint to create a new event for a specific user
 app.post("/events/:userID", async (req, res) => {
+    const { userID } = req.params;
     const { 
         eventID, 
         eventName, 
@@ -907,15 +908,14 @@ app.post("/events/:userID", async (req, res) => {
         endTime, 
         allDay, 
         eventType, 
-        calendarID, 
-        userID,
+        calendarID,
         completed 
     } = req.body;
 
     console.log("/events/:userID POST endpoint reached for user:", userID);
 
     // Check to ensure required fields are filled
-    if (!eventName || !startTime || !userID) {
+    if (!eventName || !userID || !eventID) {
         return res.status(400).json({ error: "Missing required event data" });
     }
 
@@ -938,7 +938,7 @@ app.post("/events/:userID", async (req, res) => {
                     notes || null,
                     streakDays || null,
                     reminder || null,
-                    startTime,
+                    startTime || null,
                     endTime || null,
                     allDay ? 1 : 0,  // boolean
                     eventType || null,
