@@ -893,25 +893,25 @@ app.put("/events/:eventID", async (req, res) => {
 });
 
 // Endpoint to create a new event for a specific user
-app.post("/events/:userID", async (req, res) => {
-    const { userID } = req.params;  // Extract userID from the URL
-    console.log("/events/:userID POST endpoint reached for user:", userID);
-
-    const {
-        eventName,
-        color,
-        isPublic,
-        viewableBy,
-        notes,
-        streakDays,
-        reminder,
-        startTime,
-        endTime,
-        allDay,
-        eventType,
-        calendarID,
-        completed,
+app.post("/events", async (req, res) => {
+    const { 
+        userID, 
+        eventName, 
+        color, 
+        isPublic, 
+        viewableBy, 
+        notes, 
+        streakDays, 
+        reminder, 
+        startTime, 
+        endTime, 
+        allDay, 
+        eventType, 
+        calendarID, 
+        completed 
     } = req.body;
+
+    console.log("/events POST endpoint reached for user:", userID);
 
     // Check to ensure required fields are filled
     if (!eventName || !startTime || !userID) {
@@ -929,6 +929,7 @@ app.post("/events/:userID", async (req, res) => {
             connection.query(
                 sql,
                 [
+                    userID,
                     eventName,
                     color || null,
                     isPublic ? 1 : 0,  // boolean
@@ -941,7 +942,6 @@ app.post("/events/:userID", async (req, res) => {
                     allDay ? 1 : 0,  // boolean
                     eventType || null,
                     calendarID || null,
-                    userID,
                     completed ? 1 : 0  // boolean
                 ],
                 (err, result) => {
